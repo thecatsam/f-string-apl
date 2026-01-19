@@ -286,7 +286,7 @@ For n=┌─┐, n×Pi=┌───────┐
 </details>
 
 <div class="page-break"></div> 
-<NOGit>
+<NOGIT>
 
 # ∆F Examples: A Primer
 
@@ -1383,7 +1383,7 @@ Below, we summarize key information you've already gleaned from the examples.
 
 </details>
 <div class="page-break"></div> 
-</NOGit>
+</NOGIT>
 
 # ∆F Reference 
 
