@@ -529,6 +529,7 @@ expressions, and multi­dimensional objects using extensions to
 <em>dfns</em> and other familiar tools.
 </center>
 </div>
+<p><NOGIT></p>
 <h3 class="unnumbered" id="major-headings">Major Headings</h3>
 <details id="TOC" open>
 <!-- option: open  Set id="TOC" here only. -->
@@ -562,7 +563,7 @@ class="header-section-number">1</span> Preparing to Run
  <span style="opacity:0.6;">Show/Hide</span> <em>Preparing to Run
 <bold>∆F</bold></em>
 </summary>
-<p><a id="inside-preparing" class="scroll-target"></a></p>
+<p><a id="inside-preparing" class="scroll-target"></a> </NOGIT></p>
 <h2 data-number="1.1" id="f-installation"><span
 class="header-section-number">1.1</span> <strong>∆F</strong>
 Installation</h2>
@@ -904,6 +905,7 @@ more…</strong></span></h3>
 <div class="page-break">
 
 </div>
+<p><NOGit></p>
 <h1 data-number="4" id="f-examples-a-primer"><span
 class="header-section-number">4</span> ∆F Examples: A Primer</h1>
 <details>
@@ -988,6 +990,9 @@ This    Of         Text
 is      multiline  Fields
 an
 example</code></pre>
+<div class="page-break">
+
+</div>
 <h2 data-number="4.3" id="null-space-fields"><span
 class="header-section-number">4.3</span> Null Space Fields</h2>
 <p>Two adjacent <strong>Text</strong> fields can be separated by a null
@@ -1402,6 +1407,9 @@ href="#f-option-details">option</a>, <em>namespace</em> style.</p>
 │Current employee: │ name↓    │ │age↓│.│
 │                  │John Smith│ │ 34 │ │
 └──────────────────┴──────────┴─┴────┴─┘</code></pre>
+<div class="page-break">
+
+</div>
 <h2 data-number="4.12" id="the-above-shortcut"><span
 class="header-section-number">4.12</span> The Above Shortcut</h2>
 <blockquote>
@@ -1809,8 +1817,10 @@ workspace; if the name appears on the left-side of a
 <p><big>👉</big>  If <strong>∆F</strong> is unable to find the item
 during its search, a standard <em>APL</em> error will be signaled when
 the <strong>Code</strong> field is evaluated.</p>
-<p>In this next example, we use <em>for the first time</em> the function
-<code>pco</code> from the <code>dfns</code> workspace.</p>
+<p>In this next example, we use the function <code>pco</code> from the
+<code>dfns</code> workspace. If this is the <em>first</em> use, it is
+quietly copied in (unless the <strong>verbose</strong> option is
+specified).</p>
 <pre><code>    ∆F &#39;{ ⍸ 1 £.pco ⍳100 }&#39;
 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97</code></pre>
 <details id="pPeek">
@@ -1818,20 +1828,20 @@ the <strong>Code</strong> field is evaluated.</p>
  Peek: Using the <em><strong>verbose</strong></em> option
 </summary>
 <p><big>👉</big> To understand <em>when</em> an object is automatically
-copied into a £ibrary, or to see <em>where</em> it’s copied from, use
+copied into a £ibrary, and to see <em>where</em> it’s copied from, use
 <strong>∆F</strong>’s <strong><em>verbose</em></strong> option:</p>
 <p><span class="margin-note"><br>First use of <code>£.pco</code> this
-<em>session.</em> Subsequent uses will use the <code>£.pco</code>
-already copied in.</span></p>
+<em>session.</em> Since subsequent uses will use the <code>£.pco</code>
+already copied into the library, they are
+<strong><em>quiet</em></strong>.</span></p>
 <pre><code>   0 1 ∆F &#39;{ ⍸ 1 £.pco ⍳100 }&#39;    ⍝ 0 1 &lt;==&gt; (verbose: 1)
 ∆F: Copied &quot;pco&quot; into £=[⎕SE.⍙FUtils.library] from &quot;ws:dfns&quot;
 { ⎕SE.⍙FUtils.M ⌽⍬({⍸ 1 (⎕SE.⍙FUtils.library).pco ⍳100}⍵)}⍵
 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97</code></pre>
+<p><big>👉</big> With the default <em>verbose</em> setting,
+<code>(verbose: 0)</code>, the autoload process works the same way, but
+quietly!</p>
 </details>
-<blockquote>
-<p>With the default <em>verbose</em> setting, <code>(verbose: 0)</code>,
-the process is identical, but quieter!</p>
-</blockquote>
 <h3 data-number="4.21.3" id="session-library-variables"><span
 class="header-section-number">4.21.3</span> Session Library
 Variables</h3>
@@ -2033,6 +2043,7 @@ examples.</p>
 <div class="page-break">
 
 </div>
+<p></NOGit></p>
 <h1 data-number="5" id="f-reference"><span
 class="header-section-number">5</span> ∆F Reference</h1>
 <details>
@@ -2598,8 +2609,8 @@ Strings</strong> appear <strong><em>only</em></strong> in
 </table>
 <p>Other instances of the backtick character in <strong>Text</strong>
 fields or <strong>Quoted strings</strong> in <strong>Code</strong>
-fields will be treated literally, <em>i.e.</em> sometimes a backtick is
-just a backtick.</p>
+fields will be <span class="margin-note">Sometimes a backtick is just a
+back­tick.</span> treated literally.</p>
 <h2 data-number="5.7" id="quoted-strings-in-code-fields"><span
 class="header-section-number">5.7</span> Quoted Strings in Code
 Fields</h2>
@@ -2704,9 +2715,10 @@ for details).</p>
 <ol type="1">
 <li>Serialise displays objects of classes 2 and 9— data arrays and
 namespaces— in Array Notation, as long as they contain
-<strong><em>no</em></strong> functions or operators. If <code>⍵</code>
-<em>includes</em> a function or operator,<code>`S</code> will display
-<code>⍵</code> <em>unformatted</em>, rather than in APLAN format.</li>
+<strong><em>no</em></strong> functions or operators.</li>
+<li>If <code>⍵</code> <em>includes</em> a function or
+operator,<code>`S</code> will display <code>⍵</code>
+<em>unformatted</em>, rather than in APLAN format.</li>
 </ol>
 <div>
 <h2 data-number="5.10" id="wrap-shortcut-details"><span
@@ -2907,7 +2919,7 @@ file name during the object search;</li>
 <li><strong>suffix:</strong> <span class="margin-note">More details
 appear below.<br>Don’t forget the ‘.’ prefix!</span>filetypes that
 indicate the types of objects in our “library,” along with any expected
-conversions;</li>
+conversions.</li>
 </ul>
 <p>The built-in <em>(default)</em> parameter file <span
 class="margin-note">Additional doc­ument­ation is need­ed, should this go
@@ -3008,7 +3020,7 @@ Code</h3>
 option</a> is <code>¯1</code>, <em>equivalently</em>
 <code>(dfn: ¯1)</code><span class="margin-note">In simple terms, this
 option returns the character representation of the <em>dfn</em> returned
-via the <strong><em>dfn</em></strong> option. </span>,then
+via the <strong><em>dfn</em></strong> option. </span>, then
 <strong>∆F</strong> returns a character vector that contains the source
 code for the <em>dfn</em> returned via <code>(dfn: 1)</code>. If
 <strong><em>verbose</em></strong> is also set, newlines from
@@ -3047,6 +3059,7 @@ f‑strings</h2>
 <p> <a id="displayText" href="javascript:linkAlert();"><span
 class="linkNote">https://docs.python.org/3/tutorial/inputoutput.html#formatted-string-literals</span></a>.</p>
 </details>
+<p><NOGIT></p>
 <h1 data-number="7" id="index-of-topics"><span
 class="header-section-number">7</span> Index of Topics</h1>
 <details id="TOC">
@@ -3419,8 +3432,9 @@ Window</button></p>
 </div>
 </div>
 <hr />
+<p></NOGIT></p>
 <p><br> <span id="copyright" style="font-family:cursive;"> Copyright
-<big>©</big> 2025 Sam the Cat Foundation. [Version 0.1.1: 2026-01-11]
+<big>©</big> 2026 Sam the Cat Foundation. [Version 0.1.2: 2026-01-18]
 </span> <br></p>
 </div>
 <p><!-- End div for right-margin-bar --></p>
@@ -3431,6 +3445,6 @@ id="pAlertText"
 style="font-weight: bold; font-size: 20px;font-family: Tahoma,  sans-serif;">
 </span></p>
 </div>
-<!-- (C) 2025 Sam the Cat Foundation -->
+<!-- (C) 2026 Sam the Cat Foundation -->
 </body>
 </html>

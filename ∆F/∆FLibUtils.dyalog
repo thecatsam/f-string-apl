@@ -1,4 +1,4 @@
-⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-01-14') 
+⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-01-18') 
 :Namespace libUtils
 
 ⍝ ===================================================================================
@@ -58,15 +58,16 @@
   ⍝ ======================================================================================
   ⍝ LoadObj: Find êNm in £.êNm or `L.êNm and try to load its definition into userLib from path.
   ⍝     (1|0)@B← userLib@ns verbose@B parms@ns ∇ êNm@CVS 
-  ⍝ Semi-globals: <êNm> and <verbose> set at the LoadObj executive and used in children.
+  ⍝ Semi-globals: êNm, êNms, êVerbose, êErrFi, êDMX set in the LoadObj executive and used in children.
   ⍝ Find <êNm> in search directories (parms.path) and dfns workspace, according to parameters <parms>.
-  ⍝ Called by ⍙Auto (above).
+  ⍝ Called by LibAuto (above).
   ⍝    (1|0)← userLib verbose parms ∇ êNm 
-  ⍝ Returns SHY 1 (succ) or SHY 0 (fail), having established <êNm> in userLib (ns) on success.
-  ⍝   - On input, <êNm> is always exactly one name, which must be both an object name AND
-  ⍝     the name of a file (with case respected) or a workspace object.
-  ⍝   - When complete successfully, êNm may contain just the original <êNm> or, if
-  ⍝     additional names were created by, e.g., ⎕FIX, those names as well.
+  ⍝ Returns SHY 1 (succ) or SHY 0 (fail).
+  ⍝   - êNm is always exactly one name, which must be both an object name AND
+  ⍝     the name of a file (with case respected) OR a workspace object (else the load simply returns SHY 0).
+  ⍝   - When complete successfully, êNms may contain just the original ⊂êNm or, if
+  ⍝     additional names were created by, e.g., ⎕FIX, those names as well. 
+  ⍝   - êNm is ALWAYS the first name in êNms.
   LoadObj← { 
   ⍝ LoadObj utilities are shown first, followed by the executive/main for LoadObj.
   ⍝ LoadObj
@@ -97,25 +98,26 @@
     ⍝   as ⎕FIXed or an error (rcEN) is reported.
     ⍝ ∘ Other errors reported as rcER. 
       SubScanFiles← {   
-        0= ≢⍵: rcNF ⍬ ⋄ 11 22:: rcER ⍬⊣ êDMX⊢←⎕DMX      ⍝ 22: FILE NAME ERROR
+        0= ≢⍵: rcNF ⍬ ⋄ 22 11:: rcER ⍬⊣ êDMX⊢←⎕DMX      ⍝ 22: FILE NAME ERROR
         fi← ⊃⍵       
         ~⎕NEXISTS fi: ∇ 1↓⍵ 
         FixByType← { 
           sfx← ⊂⊃⌽⎕NPARTS fi← ⍵  
           ⍝ When ⎕FIX is applied to ¨fi¨, ¨êNm¨ must be among the names listed as ⎕FIXed.  
-          Tf sfx:   rcEN rcOK⊃⍨ (⊂êNm)∊ êNms⊢← 2 userLib.⎕FIX _FOpts êErrFi⊢←fi   ⍝ aplf/o/n, dyalog
-          Ta sfx:   rcOK⊣ userLib ##.∆VSET ⊂êNm (##.AN2Apl ⊃⎕NGET fi 1)           ⍝ apla
-          Tj sfx:   rcOK⊣ userLib ##.∆VSET ⊂êNm (⎕JSON _JOpts ⊃⎕NGET fi 0)        ⍝ json
-          Tt sfx:   rcOK⊣ userLib ##.∆VSET ⊂êNm ⊃⎕NGET fi (Ot sfx)                ⍝ aplv, txt, aplvv, aplm
+          IfF sfx:  rcEN rcOK⊃⍨ (⊂êNm)∊ êNms⊢← 2 userLib.⎕FIX _FOpts êErrFi⊢←fi   ⍝ aplf/o/n, dyalog
+          IfA sfx:  rcOK⊣ userLib ##.∆VSET ⊂êNm (##.AN2Apl ⊃⎕NGET fi 1)           ⍝ apla
+          IfJ sfx:  rcOK⊣ userLib ##.∆VSET ⊂êNm (⎕JSON _JOpts ⊃⎕NGET fi 0)        ⍝ json
+          IfT sfx:  rcOK⊣ userLib ##.∆VSET ⊂êNm ⊃⎕NGET fi (OptT sfx)              ⍝ aplv, txt, aplvv, aplm
                     rcEN rcOK⊃⍨ (⊂êNm)∊ êNms⊢← êNm FixOrAssign fi                 ⍝ Any other suffix                    
         }
         (FixByType fi) ('file:"',fi,'"')         
       } 
-    ⍝ T: Types for FixByType (above); Ot: Option for ⎕NGET for type <t>
-      Tf← ∊∘'.aplf' '.aplo' '.apln' '.dyalog'    ⋄ Ta← ≡∘(⊂'.apla')   ⋄   Tj← ≡∘(⊂'.json')                         
-      Tt← ∊∘(s4←'.aplv' '.txt' '.aplvv' '.aplm') ⋄ Ot← ⌷∘0 1 1 2(s4∘⍳)    
+    ⍝ IfF, etc.: Type tests for FixByType (above); OptT: Option for ⎕NGET for type <t>
+      IfF←    ∊∘'.aplf' '.aplo' '.apln' '.dyalog'     ⋄ IfA←  ≡∘(⊂'.apla')     ⋄   IfJ← ≡∘(⊂'.json')                         
+      IfT←    ∊∘(st←'.aplv' '.txt' '.aplvv' '.aplm')  ⋄ OptT← ⌷∘0 1 1 2(st∘⍳)    
       _FOpts← ⍠('FixWithErrors' 0)('Quiet' 1)    
       _JOpts← ⍠('Dialect' 'JSON5')('Compact' 0)('Null' ⎕NULL)  
+
     ⍝ FixOrAssign:    nms← nm ∇ fi  
     ⍝ Try to ⎕FIX file <fi> inside userLib. 
     ⍝ If it fails due to 19/11, try reading <fi> as an array notation object, assigning its value to <nm>.
@@ -190,17 +192,15 @@
     ⍝   ===========================================================================
     ⍝ ê... "External" objects that are used within various subfunctions that are initialised here.
       userLib ê parms← ⍺     ⍝ ê - From the ∆F runtime code. => ns.  
-
+      êNms← ,⊂êNm←     ⍵     ⍝ êNm - always => CV. êNms - always => VCV, initialliy ,⊂êNm.  See ScanPath.
       êDMX←   ⍬              ⍝ Set in SubScanFiles; ref'd in EndScan only. => ⍬|ns
       êErrFi← ''             ⍝ Referenced in EndScan only...   => CV.
-    ⍝ êNms may be modifled in ScanPath, if multiple objects are ⎕FIXed.
-      êNms← ,⊂êNm← ⍵         ⍝ êNm - always => CV. êNms - always => VCV, initialliy ,⊂êNm. 
       êVerbose←   ê.verbose ∨ parms.verbose         
       ⍝ Return codes: 
-      ⍝   rcOK (<êNm> found and loaded), 
-      ⍝   rcNF (<êNm> file or w/s not found), 
+      ⍝   rcOK (êNm found and loaded), 
+      ⍝   rcNF (êNm file or w/s not found), 
       ⍝   rcER (specific APL errors, typically a failure to load), 
-      ⍝   rcEN (file loaded fine, but <êNm> wasn't one of the top-level objects, which we reject) 
+      ⍝   rcEN (file loaded fine, but êNm wasn't one of the top-level objects, which we reject) 
       rcOK rcNF rcER rcEN← 1 0 ¯1 ¯2   
     ⍝ êVerbose: READ in SubScanFiles and EndScan 
       rc where← ScanPath parms._fullPath 

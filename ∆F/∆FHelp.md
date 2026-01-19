@@ -19,11 +19,12 @@ a concise, yet powerful way to display multiline *APL* text, arbitrary
 _dfns_ and other familiar tools.
 </center></div>
 
+<NOGIT>
+
 ### Major Headings {.unnumbered}
 
 <details id="TOC" open>     <!-- option: open  Set id="TOC" here only. -->
 <summary class="summary">&ensp;<span style="opacity:0.6;">Show/Hide</span> <em>Major Headings</em></summary>
-
 
 <span class="margin-note"><br><br><br>
 **Quick Start:** If you want the minimum before diving in.
@@ -50,6 +51,7 @@ _dfns_ and other familiar tools.
 <summary class="summary">&ensp;<span style="opacity:0.6;">Show/Hide</span> <em>Preparing to Run <bold>∆F</bold></em>
 </summary>
 <a id="inside-preparing" class="scroll-target"></a> 
+</NOGIT>
 
 ## **∆F** Installation
 
@@ -284,6 +286,7 @@ For n=┌─┐, n×Pi=┌───────┐
 </details>
 
 <div class="page-break"></div> 
+<NOGit>
 
 # ∆F Examples: A Primer
 
@@ -386,6 +389,7 @@ an
 example
 ```
 
+<div class="page-break"></div> 
 ## Null Space Fields
 
 Two adjacent **Text** fields can be separated by a null **Space** field `{}`,
@@ -726,6 +730,7 @@ each field&mdash;using the **Box** [option](#f-option-details), _namespace_ styl
 └──────────────────┴──────────┴─┴────┴─┘
 ```
 
+<div class="page-break"></div> 
 ## The Above Shortcut
 
 > A cut above the rest…
@@ -1152,8 +1157,8 @@ an attempt is made to copy that name into the library either from a text file in
 If **∆F** is unable to find the item during its search,
 a standard _APL_ error will be signaled when the **Code** field is evaluated.
 
-In this next example, we use _for the first time_ the function `pco` from the
-`dfns` workspace.
+In this next example, we use the function `pco` from the
+`dfns` workspace. If this is the *first* use, it is quietly copied in (unless the **verbose** option is specified).
 
 ```
     ∆F '{ ⍸ 1 £.pco ⍳100 }'
@@ -1164,9 +1169,9 @@ In this next example, we use _for the first time_ the function `pco` from the
 <summary class="summary">&ensp;Peek: Using the <em><strong>verbose</strong></em> option</summary>
 
 <big>👉</big>&nbsp;To understand _when_ an object is automatically copied into a £ibrary,
-or to see _where_ it's copied from, use **∆F**'s **_verbose_** option:
+and to see _where_ it's copied from, use **∆F**'s **_verbose_** option:
 
-<span class="margin-note"><br>First use of `£.pco` this _session._ Subsequent uses will use the `£.pco` already copied in.</span>
+<span class="margin-note"><br>First use of `£.pco` this _session._ Since subsequent uses will use the `£.pco` already copied into the library, they are ***quiet***.</span>
 
 ```
    0 1 ∆F '{ ⍸ 1 £.pco ⍳100 }'    ⍝ 0 1 <==> (verbose: 1)
@@ -1175,9 +1180,10 @@ or to see _where_ it's copied from, use **∆F**'s **_verbose_** option:
 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97
 ```
 
+<big>👉</big>&nbsp;With the default _verbose_ setting, `(verbose: 0)`, the autoload process works the same way, but quietly!
+
 </details>
 
-> With the default _verbose_ setting, `(verbose: 0)`, the process is identical, but quieter!
 
 ### Session Library Variables
 
@@ -1377,6 +1383,8 @@ Below, we summarize key information you've already gleaned from the examples.
 
 </details>
 <div class="page-break"></div> 
+</NOGit>
+
 # ∆F Reference 
 
 <details>        <!-- option: open -->       
@@ -1528,8 +1536,9 @@ Sequence    <br>Inserts   Description       Where
 ----------------------------------------------------------
 Table: 5e. <strong>Escape Sequences</strong>
 
-Other instances of the backtick character in **Text** fields or **Quoted strings** in **Code** fields will be treated literally, _i.e._
-sometimes a backtick is just a backtick.
+Other instances of the backtick character in **Text** fields or **Quoted strings** in **Code** fields will be <span class="margin-note">Sometimes a backtick is just a back&shy;tick.</span>
+treated literally.
+
 
 ## Quoted Strings in Code Fields
 
@@ -1582,7 +1591,8 @@ Note that the opening quote `«` is treated as an ordinary character within the 
 Serialise ( `` `S ``) uses Dyalog _APL_'s Array Notation (APLAN)<span class="margin-note">**APLAN**: _⎕SE.Dyalog.Array.Serialise_.</span> to display the object to its right. It is intended to have roughly the same behaviour as displaying an object
 with `]APLAN.output on`. (See Dyalog documentation for details).
 
-1.  Serialise displays objects of classes 2 and 9&mdash; data arrays and namespaces&mdash; in Array Notation, as long as they contain **_no_** functions or operators. If `⍵` _includes_ a function or operator,`` `S `` will display `⍵` _unformatted_, rather than in APLAN format.
+1.  Serialise displays objects of classes 2 and 9&mdash; data arrays and namespaces&mdash; in Array Notation, as long as they contain **_no_** functions or operators. 
+1.  If `⍵` _includes_ a function or operator,`` `S `` will display `⍵` _unformatted_, rather than in APLAN format.
 
 <div>
 
@@ -1659,7 +1669,7 @@ In addition, there are user parameters settable in the file **.∆F** in the use
 - **verbose:** providing limited information on parameters, object loading, _etc._;
 - **path:** listing what directories to search for the object definitions;
 - **prefix:** literal character vectors to prefix to each file name during the object search;
-- **suffix:** <span class="margin-note">More details appear below.<br>Don't forget the '.' prefix!</span>filetypes that indicate the types of objects in our "library," along with any expected conversions;
+- **suffix:** <span class="margin-note">More details appear below.<br>Don't forget the '.' prefix!</span>filetypes that indicate the types of objects in our "library," along with any expected conversions.
 
 The built-in _(default)_ parameter file <span class="margin-note">Additional doc&shy;ument&shy;ation
 is need&shy;ed, should this go forward.</span>
@@ -1757,7 +1767,7 @@ is documented _below_.
 
 If the [**_dfn_** option](#f-option-details) is `¯1`, _equivalently_ `(dfn: ¯1)`<span class="margin-note">In simple terms, this option returns the character representation of the
 _dfn_ returned via the **_dfn_** option.
-</span>,then **∆F** returns a character vector that contains the source code for the _dfn_ returned via `(dfn: 1)`.
+</span>, then **∆F** returns a character vector that contains the source code for the _dfn_ returned via `(dfn: 1)`.
 If **_verbose_** is also set, newlines from `` `◇ `` are shown as visible `␤`. However, since this option _returns_ the code string, the **_verbose_** option won't also _display_ the code string.
 
 ### ∆F Help's Secret Variant
@@ -1783,6 +1793,8 @@ For more information on Python f-strings, _see_:
 &emsp;<a id="displayText" href="javascript:linkAlert();"><span class="linkNote">https:\//docs.python.org/3/tutorial/inputoutput.html#formatted-string-literals</span></a>.
 
 </details>
+
+<NOGIT>
 
 # Index of Topics 
 
@@ -1937,9 +1949,11 @@ For more information on Python f-strings, _see_:
 
 ---
 
+</NOGIT>
+
 <br>
 <span id="copyright" style="font-family:cursive;">
-Copyright <big>©</big> 2025 Sam the Cat Foundation.    [Version 0.1.1: 2026-01-11]
+Copyright <big>©</big> 2026 Sam the Cat Foundation.    [Version 0.1.2: 2026-01-18]
 </span>
 <br> 
 </div> <!-- End div for right-margin-bar -->
@@ -1953,4 +1967,4 @@ Copyright <big>©</big> 2025 Sam the Cat Foundation.    [Version 0.1.1: 2026-01-
   </span>
 </div>
 
-<!-- (C) 2025 Sam the Cat Foundation -->
+<!-- (C) 2026 Sam the Cat Foundation -->

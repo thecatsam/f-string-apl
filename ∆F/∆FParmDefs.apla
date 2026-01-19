@@ -30,7 +30,7 @@
   ⍝ verbose: 
   ⍝    If 0 (quiet), 
   ⍝    If 1 (verbose).  
-  ⍝    If ⎕NULL, value is set from VERBOSE (see above).
+  ⍝    If ⎕NULL, value is set from the global setting VERBOSE (see above).
     verbose: ⎕NULL  
                                                           
   ⍝ path: The file dirs and/or workspaces to search IN ORDER left to right:
@@ -43,7 +43,7 @@
   ⍝     best: (load: 0)
   ⍝     ok:   (path: ⎕NULL)
   ⍝           directory      workspace    directory
-    path:  ( 'MyDyalogLib' ⋄ ('dfns'⋄) ⋄ '.' ⋄ )  
+    path:  ( 'MyDyalogLib' ⋄ ('dfns'⋄) ⋄  '.'   ⋄ )  
                   
   ⍝ prefix: literal string to prefix to each name, when searching directories.
   ⍝     Ignored for workspaces.
@@ -54,13 +54,12 @@
                               
   ⍝ suffix: at least one suffix is required for files to be checked.
   ⍝ ∘  Note: Add the '.' prefix! 
-  ⍝ ∘  Suffixes don't apply to workspaces. See documentation for definitions.
-  ⍝ ∘  By default, unknown filetypes are not enabled. 
-  ⍝    If they are enabled, they work the same as '.dyalog'.
-  ⍝ ∘  If possible, place most used suffixes first.
+  ⍝ ∘  Suffixes don't apply to workspaces (so they're ignored). See documentation for definitions.
+  ⍝ ∘  By default, unknown filetypes are not enabled; if they are enabled, they work the same as '.dyalog'.
+  ⍝ ∘  If you wish, place the most likely suffixes first.
     suffix: ('.aplf' ⋄ '.apla' ⋄ '.aplo' ⋄ '.apln' ⋄ '.json' ⋄ '.txt' ⋄ '.dyalog')    
                   
   ⍝  Internal Runtime (hidden) Parameters                                               
-    _readParms:  0 0                    ⍝ Have we read (default parms, user .∆F parms)
+    _readParms:  0 0                    ⍝ Have we read ([0] default parms, [1] user .∆F parms)
     _fullPath:   ⍬                      ⍝ ⍬ Zilde: Generated from path and prefixes.
 )  
