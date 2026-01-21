@@ -1,5 +1,7 @@
 ### ∆F Formatted String Literals (v.0.1.3)
 
+#### Abridged Help Information
+
 ## 0 Introduction
 
 <div class="right-margin-bar">
