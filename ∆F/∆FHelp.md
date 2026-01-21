@@ -1,9 +1,9 @@
 ---
-title: "∆F Formatted String Literals (0.1.2)"
+title: "∆F Formatted String Literals (v.0.1.3)"
 toc: true
 ---
 
-<!-- GIT_ONLY ### ∆F Formatted String Literals (0.1.2) -->
+<!-- GIT_ONLY ### ∆F Formatted String Literals (v.0.1.3) -->
 
 ## 0 Introduction {.unnumbered}
 
@@ -1953,7 +1953,7 @@ For more information on Python f-strings, _see_:
 
 <br>
 <span id="copyright" style="font-family:cursive;">
-Copyright <big>©</big> 2026 Sam the Cat Foundation.    [Version 0.1.2: 2026-01-20]
+Copyright <big>©</big> 2026 Sam the Cat Foundation.    [Version 0.1.99: 2026-01-20]
 </span>
 <br> 
 </div> <!-- End div for right-margin-bar -->
