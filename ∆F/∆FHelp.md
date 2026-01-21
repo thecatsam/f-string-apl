@@ -3,8 +3,7 @@ title: "∆F Formatted String Literals (v.0.1.3)"
 toc: true
 ---
 
-<!-- GIT_ONLY ### ∆F Formatted String Literals (v.0.1.3) -->
-<!-- GIT_ONLY #### Abridged Help Information -->
+
 
 ## 0 Introduction {.unnumbered}
 
@@ -20,7 +19,7 @@ a concise, yet powerful way to display multiline *APL* text, arbitrary
 _dfns_ and other familiar tools.
 </center></div>
 
-<NOGIT>
+
 
 ### Major Headings {.unnumbered}
 
@@ -52,7 +51,7 @@ _dfns_ and other familiar tools.
 <summary class="summary">&ensp;<span style="opacity:0.6;">Show/Hide</span> <em>Preparing to Run <bold>∆F</bold></em>
 </summary>
 <a id="inside-preparing" class="scroll-target"></a> 
-</NOGIT>
+
 
 ## **∆F** Installation
 
@@ -287,7 +286,7 @@ For n=┌─┐, n×Pi=┌───────┐
 </details>
 
 <div class="page-break"></div> 
-<NOGIT>
+
 
 # ∆F Examples: A Primer
 
@@ -1384,7 +1383,7 @@ Below, we summarize key information you've already gleaned from the examples.
 
 </details>
 <div class="page-break"></div> 
-</NOGIT>
+
 
 # ∆F Reference 
 
@@ -1795,7 +1794,7 @@ For more information on Python f-strings, _see_:
 
 </details>
 
-<NOGIT>
+
 
 # Index of Topics 
 
@@ -1950,7 +1949,7 @@ For more information on Python f-strings, _see_:
 
 ---
 
-</NOGIT>
+
 
 <br>
 <span id="copyright" style="font-family:cursive;">

@@ -1,6 +1,6 @@
 ### ∆F Formatted String Literals (v.0.1.3)
 
-#### Abridged Help Information
+#### (Abridged Help information)
 
 ## 0 Introduction
 
@@ -19,8 +19,6 @@ concise, yet powerful way to display multiline *APL* text, arbitrary
 </center>
 
 </div>
-
-<!--GIT ONLY REMOVED-->
 
 ## **∆F** Installation
 
@@ -294,8 +292,6 @@ a file)**
 <div class="page-break">
 
 </div>
-
-<!--GIT ONLY REMOVED-->
 
 # ∆F Reference
 
@@ -770,8 +766,6 @@ For more information on Python f-strings, *see*:
  <a id="displayText" href="javascript:linkAlert();"><span class="linkNote">https://docs.python.org/3/tutorial/inputoutput.html#formatted-string-literals</span></a>.
 
 </details>
-
-<!--GIT ONLY REMOVED-->
 
 <br> <span id="copyright" style="font-family:cursive;"> Copyright
 <big>©</big> 2026 Sam the Cat Foundation. \[Version 0.1.3: 2026-01-20\]
