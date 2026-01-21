@@ -1,9 +1,9 @@
 ---
-title: "∆F Formatted String Literals (v.0.1.1)"
+title: "∆F Formatted String Literals (0.1.2)"
 toc: true
 ---
 
-<!-- GIT_ONLY ### ∆F Formatted String Literals (v.0.1.1) -->
+<!-- GIT_ONLY ### ∆F Formatted String Literals (0.1.2) -->
 
 ## 0 Introduction {.unnumbered}
 
@@ -65,7 +65,7 @@ _dfns_ and other familiar tools.
 ## Loading and Running **∆F**
 
 1. Confirm that your current directory remains as before.
-2. From your Dyalog session<span class="margin-note"><br>**_⎕SE:_** Or any _target_ namespace you desire.</span>, enter: <br>&emsp;`]load ∆F -target=⎕SE`<br>
+2. From your Dyalog session<span class="margin-note">*Or,*&emsp;`⎕SE.⎕FIX'∆F.Dyalog'`<br>**_⎕SE:_** Or any _target_ namespace you desire.</span>, enter: <br>&emsp;`]load ∆F -target=⎕SE`<br>
    Now, the target directory (`⎕SE`) will contain the function `∆F` and namespace `⍙FUtils`.
 3. By default, the ***help*** file, **∆F/∆FHelp.html** is available at `]load` time. If so, it will be copied into **⍙FUtils**. If not available, a message will note the absence of _help_ information.
 4. Namespace <code>_⎕SE_.**⍙FUtils**</code> contains utilities used by **∆F** and, once `]load`ed, **_should not_** be moved, as **∆F** always refers to **⍙FUtils** in its _original_ location.
@@ -1953,7 +1953,7 @@ For more information on Python f-strings, _see_:
 
 <br>
 <span id="copyright" style="font-family:cursive;">
-Copyright <big>©</big> 2026 Sam the Cat Foundation.    [Version 0.1.2: 2026-01-19]
+Copyright <big>©</big> 2026 Sam the Cat Foundation.    [Version 0.1.2: 2026-01-20]
 </span>
 <br> 
 </div> <!-- End div for right-margin-bar -->

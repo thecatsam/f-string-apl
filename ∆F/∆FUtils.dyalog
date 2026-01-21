@@ -1,5 +1,6 @@
 :Namespace ⍙FUtils   
-⍝:Section CORE 
+:Section CORE 
+   :Section      INITIALIZATION
   VERSION←     '0.1.2'          ⍝ Set/updated by ∆F_Publish.dyalog...
   ⎕IO ⎕ML ⎕PP ⎕PW←0 1 34 256    ⍝ Namespace scope. User code is executed in CALLER space (⊃⎕RSI)  
 ⍝ =======================================================================
@@ -9,13 +10,17 @@
 ⍝ TRAP_ERRORS: If 0, turns off error trapping in ∆F
   TRAP_ERRORS← 1              
 ⍝
-⍝ VERBOSE: Compile-time and run-time verbosity flag
+⍝ VERBOSE_RUNTIME: Run-time verbosity flag
 ⍝ (verbose: 1) is ∆F-settable (user) run-time verbosity flag-- which
 ⍝ also changes `⋄ to ␤ instead of an actual new line (⎕UCS 13, for us).
-  VERBOSE←     0
+  VERBOSE_RUNTIME← 0
+
+⍝ VERBOSE_LOADTIME: Load (Fix)-Time verbosity flag
+  VERBOSE_LOADTIME← 0
 ⍝              
 ⍝ SHOW_LIB_ERRS:  
-⍝ - If 0, only report library autoload errors when searching (as messages) if (VERBOSE: 1). 
+⍝ - If 0, only report library autoload errors when searching (as messages) 
+⍝   if (verbose: 1) or (VERBOSE_RUNTIME=1) 
 ⍝   Let APL handle the resulting missing object (typically as a VALUE ERROR) when user code is executed.
 ⍝ - If 1, always ⎕SIGNAL the actual internal error (e.g. OBJECT NOT FOUND ON SEARCH PATH).                             
   SHOW_LIB_ERRS←  0 
@@ -62,6 +67,9 @@
 ⍝ Set char. rendering of ⎕THIS. We may set ⎕THIS.⎕DF later, but ∆THIS will remain as is.
   ∆THIS← ⍕⎕THIS                
 
+   :EndSection   INITIALIZATION
+
+   :Section      ∆F SOURCE
 ⍝ =======================================================================
 ⍝ ∆F USER FUNCTION Source - See ⍙Export_∆F
 ⍝ =======================================================================
@@ -112,9 +120,10 @@
         ⎕SIGNAL ⊂⎕DMX.('EM' 'EN' 'Message' ,⍥⊂¨('∆F ',EM) EN Message) 
     :EndTrap 
   ∇
+   :EndSection   ∆F SOURCE
 ⍝ END ====================   ∆F (User Function)   ==============================  
 
-
+   :Section FmtScan ( Top-Level ∆F Service)
 ⍝ ============================   FmtScan ( top-level routine )   ============================= ⍝
 ⍝ FmtScan: 
 ⍝    result← [options|⍬] ∇ f_string
@@ -237,6 +246,9 @@
   } ⍝ FmtScan 
 ⍝ === End of FmtScan ========================================================  
 
+   :EndSection FmtScan ( Top-Level ∆F Service)
+
+   :Section Constants
 ⍝ ===========================================================================  
 ⍝ Constants (Generated at LOAD time)
 ⍝ ===========================================================================  
@@ -281,7 +293,9 @@
                t1← 'Help file "',HELP_HTML_FI,'" not found in current directory (CD)'
                t2← 'CD: "','"',⍨⊃1 ⎕NPARTS ''
   helpFiÊ←  22 Ê t1,(⎕UCS 13),(17⍴''),t2 ⋄ ⎕EX 't1' 't2'
-  
+   :EndSection Constants
+
+   :Section Utilities (Zero Side Effects) 
 ⍝ ===================================================================================
 ⍝ Utilities (fns/ops) for FmtScan above.
 ⍝ ∘ These must have zero side effects, except those reflected in ê-namespace objects.
@@ -411,10 +425,11 @@
 ⍝   ∘ reverse the ¨result¨  at execution time to achieve apparent L-to-R field-by-field evaluation.
   OrderFlds← '⌽',(∊∘⌽,∘'⍬') 
 
-⍝:EndSection CORE
+   :EndSection Utilities (Zero Side Effects)
 
+:EndSection CORE
 ⍝===================================================================================
-⍝:Section HELP 
+:Section HELP AND ERROR SERVICES
 ⍝===================================================================================
 ⍝ Special: Provides help info and other special info. 
 ⍝ Called with this syntax, where ⍺ stands for the options listed below.
@@ -454,11 +469,12 @@
       1 0⍴⍬⊣ html RenderHtml obj    
   }        
   
-⍝:EndSection HELP 
+:EndSection HELP AND ERROR SERVICES
+
 ⍝ ===================================================================================
 
 ⍝ ===================================================================================
-⍝:Section MINIMAL LIBRARY SERVICES 
+:Section SKELETAL LIBRARY SERVICES 
 ⍝ See libUtils.LinkUserLib
 ⍝ userLibrary is the user library.
 :Namespace userLibrary
@@ -489,11 +505,11 @@
 ⍝ Set name and ref for userLibrary here
   SetLibSimple ##.userLibrary
 :EndNamespace
-⍝:EndSection MINIMAL LIBRARY SERVICES 
+:EndSection SKELETAL LIBRARY SERVICES 
 ⍝ ===================================================================================
 
 ⍝ ===================================================================================
-⍝:Section FIX_TIME_ROUTINES 
+:Section FIX_TIME_ROUTINES 
 ⍝ ===================================================================================
 
 ⍝⍝⍝ Code for emulating Dyalog 20 services in Dyalog 19...
@@ -510,7 +526,7 @@
       ∆NS← { n1 n2← ⍵ ⋄ nl← n2.⎕NL ¯2    
         (⎕NS n1) ∆VSET (↑nl) (n2.⎕OR¨nl)
       }
-      :IF VERBOSE
+      :IF VERBOSE_LOADTIME
           ⎕←59⍴'+'
           ⎕←'+ ∆F: Emulating ⎕VSET, ⎕VGET, and related on Dyalog v.','. +',⍨⍕aplVersion 
           ⎕←59⍴'+'
@@ -554,7 +570,7 @@
 
     nm← destNs.⎕FX CpyR NoEL s∘Apply2 keepCm∘Cm ⎕NR '∆FSrc' 
     :If fixedOk← 0≠1↑0⍴ nm 
-      (⎕∘←)⍣VERBOSE⊢ '>>> Created function ',(⍕destNs),'.',nm 
+      (⎕∘←)⍣VERBOSE_LOADTIME⊢ '>>> Created function ',(⍕destNs),'.',nm 
     :Else 
       ⎕←'>>> There was an error applying ⍙Export_∆F. Could not create "',(⍕destNs),'.∆F"' 
     :EndIf 
@@ -658,7 +674,7 @@
   ⍝ Loading the help html file...
     :Trap 22 
         ⎕THIS.helpHtml← ⊃⎕NGET hfi
-        :IF VERBOSE ⋄ ⎕← '>>> Loaded Help Html File "',hfi,'"' ⋄ :EndIf  
+        :IF VERBOSE_LOADTIME ⋄ ⎕← '>>> Loaded Help Html File "',hfi,'"' ⋄ :EndIf  
         ok← 1 
     :Else 
         e1← '>>> WARNING: When loading ∆Fapl, the help file "',hfi,'" was not found in current directory.'
@@ -678,7 +694,7 @@
     :EndIf 
     :TRAP 22 
         ⎕FIX 'file://',fi
-        :If VERBOSE 
+        :If VERBOSE_LOADTIME 
             ⎕←'>>> Loaded services for Library shortcut (£)',how  
         :EndIf 
     :Else
@@ -692,13 +708,11 @@
 ⍝ Show the following special globals in this namespace.
   ⍙ShowGlobalsIf←{
      These←  'ESCAPE_CHAR'  'HELP_HTML_FI' 'LIB_ACTIVE' 'SHOW_LIB_ERRS' 'LIB_PARM_FI'  
-     These,← 'LIB_USER_FI' 'LIB_SRC_FI' 'OPTS_KW' 'QUOTES_SUPPLEMENTAL' 'TRAP_ERRORS' 'VERBOSE' 'VERSION'
-    ~⍵: _←1 0⍴0 
-      Show← { '  ',(⍺↑⍵,':'),⍕1 ⎕SE.Dyalog.Array.Serialise  ⎕OR ⍵ }
-      r← ⊂,'('
-      r,← (1+⌈/≢¨kk) Show¨ kk← { ⍵/⍨ {∧/⍵∊⎕A,⎕D,'_': 1 ⋄ 0}¨⍵} These 
-      r,← ⊂,')' 
-    1: _← ↑r 
+     These,← 'LIB_USER_FI' 'LIB_SRC_FI' 'OPTS_KW' 'QUOTES_SUPPLEMENTAL' 'TRAP_ERRORS'  
+     These,← 'VERBOSE_LOADTIME' 'VERBOSE_RUNTIME' 'VERSION'
+    ~⍵: _←1 0⍴0  
+      vv← 1∘⎕SE.Dyalog.Array.Serialise∘⎕OR¨ kk← These[⍋These]
+    1: _← ↑  '(', ')',⍨ vv {'  ',⍵ , ⍺}¨ (1+⌈/≢¨ kk)↑¨kk,¨ ':'  
   }
 ⍝ ====================================================================================
 ⍝ Execute the FIX-TIME Routines
@@ -710,8 +724,8 @@
     ⍙Load_Shortcuts
     ⍙Load_Help HELP_HTML_FI
     ⍙Load_LibAuto LIB_SRC_FI LIB_ACTIVE
-    ⍙ShowGlobalsIf VERBOSE
-⍝:EndSection FIX_TIME_ROUTINES 
+    ⍙ShowGlobalsIf VERBOSE_RUNTIME
+:EndSection FIX_TIME_ROUTINES 
 ⍝ === END OF CODE ================================================================================
 :EndNamespace 
 

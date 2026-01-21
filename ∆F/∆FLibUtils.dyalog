@@ -1,6 +1,7 @@
-⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-01-19') 
+⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-01-20') 
 :Namespace libUtils
 
+  :Section Runtime Routines 
 ⍝ ===================================================================================
 ⍝ RUN TIME ROUTINES
 ⍝ ===================================================================================
@@ -63,7 +64,7 @@
   ⍝ Called by LibAuto (above).
   ⍝    (1|0)← userLib verbose parms ∇ êNm 
   ⍝ Returns SHY 1 (succ) or SHY 0 (fail).
-  ⍝   - êNm is always exactly one name, which must be both an object name AND
+  ⍝   - êNm is always exactly one name (segment), which must be both an object name AND
   ⍝     the name of a file (with case respected) OR a workspace object (else the load simply returns SHY 0).
   ⍝   - When complete successfully, êNms may contain just the original ⊂êNm or, if
   ⍝     additional names were created by, e.g., ⎕FIX, those names as well. 
@@ -207,9 +208,10 @@
     1: _← rc ##.SHOW_LIB_ERRS EndScan where userLib  
   } ⍝ End LoadObj 
 
+:EndSection Runtime Routines 
 ⍝ ==========================================================================================================================
 ⍝ ==========================================================================================================================
-
+:Section Loadtime Routines
 ⍝ ===================================================================================
 ⍝ LOAD TIME ROUTINES
 ⍝ ===================================================================================
@@ -285,12 +287,12 @@
       2 6 11:: _← parms ⊣ 0 LoadErr 'Default parameter file "',fi,'" has errors'
       ~⎕NEXISTS fi: fi Err 'does not exist'
           _← 'parms' ⎕NS ##.AN2Apl ⊃⎕NGET fi 1  
-          parms.verbose← (⍬ ⎕NULL∊⍨ ⊂parms.verbose)⊃ parms.verbose ##.VERBOSE 
+          parms.verbose← (⍬ ⎕NULL∊⍨ ⊂parms.verbose)⊃ parms.verbose ##.VERBOSE_RUNTIME 
       1: _← parms⊣ parms._readParms← 1 0 
     }  
     ⍝ Set baseline parms in case we are directed NOT to read the default parms or if it's corrupted...
       SetBaseParms←{
-          _readParms auto path prefix suffix verbose← (0 0) 0 ⍬ ⍬ ⍬ (##.VERBOSE) 
+          _readParms auto path prefix suffix verbose← (0 0) 0 ⍬ ⍬ ⍬ (##.VERBOSE_RUNTIME) 
           'parms' ⎕NS '_readParms' 'auto' 'path' 'prefix' 'suffix' 'verbose' 
       }
     ⍝ What to do if loading defaults or user parms fails.
@@ -313,7 +315,7 @@
     LoadUserParms← {  runtime parmFi← ⍺ ⍵  
       ~parms._readParms[0]:  _← 0 
         _← runtime ReadUserParms parmFi  
-        _← parms ParmsSpecial ('verbose' ##.VERBOSE) ('prefix'(,⊂'')) ('auto' 0) ('path' ⍬) ('suffix' ⍬)
+        _← parms ParmsSpecial ('verbose' ##.VERBOSE_RUNTIME) ('prefix'(,⊂'')) ('auto' 0) ('path' ⍬) ('suffix' ⍬)
 
     }  
     ⍝ ReadUserParms: Update parameters from user parm file.
@@ -359,4 +361,5 @@
 ⍝ EXECUTIVE
   SetLibIDFull ##.userLibrary
   LoadParms  ''
+:EndSection Loadtime Routines
 :EndNamespace   ⍝ libUtils

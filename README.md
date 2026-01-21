@@ -1,4 +1,4 @@
-### ∆F Formatted String Literals (v.0.1.1)
+### ∆F Formatted String Literals (0.1.99)
 
 ## 0 Introduction
 
@@ -772,7 +772,7 @@ For more information on Python f-strings, *see*:
 <!--GIT ONLY REMOVED-->
 
 <br> <span id="copyright" style="font-family:cursive;"> Copyright
-<big>©</big> 2026 Sam the Cat Foundation. \[Version 0.1.2: 2026-01-19\]
+<big>©</big> 2026 Sam the Cat Foundation. \[Version 0.1.99: 2026-01-20\]
 </span> <br>
 
 </div>
