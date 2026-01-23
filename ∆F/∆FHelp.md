@@ -1,5 +1,5 @@
 ---
-title: "∆F Formatted String Literals (v.0.1.3)"
+title: "∆F Formatted String Literals (v.0.1.1)"
 toc: true
 ---
 
@@ -140,7 +140,7 @@ function arguments, or both.
 
 - **Space** fields, providing a simple mechanism both for separating adjacent **Text** fields and inserting (rectangular) blocks of any number of spaces between any two fields, where needed;
 
-  - one space: `{ }`; five spaces: `{     }`; or even, zero spaces: `{}`;
+  - one space: `{ }`; five spaces: `{     }`; or even, zero spaces: `{}`;
   - 1000 spaces? Use a **Code** field instead: `{1000⍴""}`.
 
 - Use of <span class="margin-note">These options are equi&shy;valent:<br>∘ `0 1 1` <br>∘ `(verbose: 1 ◇ box: 1)`</span>

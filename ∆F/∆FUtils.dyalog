@@ -1,7 +1,7 @@
 :Namespace ⍙FUtils   
 :Section CORE 
    :Section      INITIALIZATION
-  VERSION←     '0.1.2'          ⍝ Set/updated by ∆F_Publish.dyalog...
+  VERSION←     'v.0.1.2'          ⍝ Set/updated by ∆F_Publish.dyalog...
   ⎕IO ⎕ML ⎕PP ⎕PW←0 1 34 256    ⍝ Namespace scope. User code is executed in CALLER space (⊃⎕RSI)  
 ⍝ =======================================================================
 ⍝ GENERAL GLOBAL VARIABLES (for debugging and exploration) 
@@ -13,6 +13,7 @@
 ⍝ VERBOSE_RUNTIME: Run-time verbosity flag
 ⍝ (verbose: 1) is ∆F-settable (user) run-time verbosity flag-- which
 ⍝ also changes `⋄ to ␤ instead of an actual new line (⎕UCS 13, for us).
+⍝ Determines the "default" for user parm ¨verbose¨.
   VERBOSE_RUNTIME← 0
 
 ⍝ VERBOSE_LOADTIME: Load (Fix)-Time verbosity flag
@@ -57,8 +58,8 @@
 ⍝ ==================================================================================
 ⍝ VARIABLES FOR ∆F OPTIONS: Positional and keyword 
 ⍝ =======================================================================
-  OPTS_KW←      ↑'dfn' 'verbose' 'box' 'auto' 'inline'          ⍝ In order 
-  OPTS_DEFval←    0     0         0     1      0                ⍝ In order
+  OPTS_KW←      ↑'dfn' 'verbose'        'box' 'auto' 'inline'          ⍝ In order 
+  OPTS_DEFval←    0    VERBOSE_RUNTIME   0     1      0                ⍝ In order
   OPTS_N←       ≢OPTS_DEFval 
 ⍝ OPTS_DEFns: The defaults in namespace form. Treat as a read-only object.
 ⍝ Requires ⍙Gen_LegacyAplAN to define ∆VSET, so is defined after it.
@@ -207,7 +208,8 @@
 ⍝ ¯ ¯¯¯¯¯¯¯ ¯¯¯¯  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
 ⍝ * dfn       0   Defines output format:
 ⍝                 0 (return ∆F mx output), 1 (return dfn), ¯1 (return dfn code string)   
-⍝ * verbose   0   runtime verbosity/debug flag. 
+⍝ * verbose   0*  runtime verbosity/debug flag. 
+⍝              *  1 if VERBOSE_RUNTIME global constant is 1.
 ⍝ * box       0   Display a box around each field, if set.
 ⍝ * auto      1   If 1, honors default/.∆F setting of parms.auto∊ 0 1.
 ⍝ * inline    0   If 1, puts shortcut code defs right in output string; 
@@ -221,7 +223,7 @@
 ⍝   cfL       -   code field running length (for SDCFs). Set in dfn TF_SF.
     ê fstr← ⍺ ⍵                                 
   ⍝ Validate options passed in ê (⍺). dfn in (¯1 0 1), others in (0 1).
-  ê.((|dfn),verbose box auto inline)(0∊∊)0 1: ⎕SIGNAL optÊ   
+  ê.((|dfn),verbose box auto inline)(0∊∊)0 1: ⎕SIGNAL optÊ                             ⍝  
     VMsg← (⎕∘←)⍣(ê.(verbose∧¯1≠dfn))                      ⍝ Verbose option message 
   ⍝ Shortcuts: 
   ⍝    See ⍙Load_Shortcuts.

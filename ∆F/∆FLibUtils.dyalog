@@ -1,4 +1,4 @@
-⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-01-20') 
+⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-01-21') 
 :Namespace libUtils
 
   :Section Runtime Routines 
