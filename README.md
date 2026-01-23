@@ -369,14 +369,6 @@ a file)**
 
 ## ∆F Call Syntax Overview
 
-<span class="margin-note"><br><br><br><br><br><br><br><br>See the
-example of [multiline *f-strings* in Dy­a­log
-20](#multiline-f-strings-in-dyalog-20).</span>
-<span class="margin-note"><br><br><br><br><br>***Options*** may be
-either *positional* or— starting in Dyalog v. 20— *keyword*-based. We
-show the posi­tion­al forms through­out the ex­amples, but doc­ument the
-key­words as well below.</span>
-
 <a id="table-call-syntax" class="scroll-target"></a>
 
 | Call Syntax | Description |

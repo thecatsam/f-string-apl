@@ -1395,9 +1395,11 @@ Below, we summarize key information you've already gleaned from the examples.
 
 ## ∆F Call Syntax Overview
 
+
 <span class="margin-note"><br><br><br><br><br><br><br><br>See the example of [multiline _f-strings_ in Dy&shy;a&shy;log 20](#multiline-f-strings-in-dyalog-20).</span>
 <span class="margin-note"><br><br><br><br><br>**_Options_** may be either _positional_
 or&mdash; starting in Dyalog v. 20&mdash; _keyword_-based. We show the posi&shy;tion&shy;al forms through&shy;out the ex&shy;amples, but doc&shy;ument the key&shy;words as well below.</span>
+
 
 <a id="table-call-syntax" class="scroll-target"></a>
 
