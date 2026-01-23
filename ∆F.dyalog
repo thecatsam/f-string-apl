@@ -6,7 +6,7 @@
 
   SRC_FI←         '∆F/∆FUtils.dyalog'
   DEST_NS←         ⎕THIS.##
-  ADD_∆F_TO_PATH← 1                                           ⍝ If 1, adds ∆F to ⎕PATH.
+  ADD_∆F_TO_PATH← 1                                    ⍝ If 1, adds ∆F to ⎕PATH.
   VERSION←        '0.1.2'
 
   ∇ {rc}← ⍙Load (srcFi destNs codeVersion add∆F2Path) 
@@ -28,7 +28,7 @@
             Err22 srcFi ⋄ ErrAll destNs ⋄ :Return   
         :EndIf 
         destNs.⎕FIX⍠'FixWithErrors' 0⊢ 'file://',srcFi                        
-        :If 9 3∨.≠ destNs.⎕NC↑ '⍙FUtils' '∆F'                 ⍝ Sanity check.  
+        :If 9 3∨.≠ destNs.⎕NC↑ '⍙FUtils' '∆F'          ⍝ Sanity check.  
             ErrAll destNs ⋄ :Return   
         :EndIf 
         (destNs.⍙FUtils.VERBOSE_LOADTIME) CGood ⍕destNs 

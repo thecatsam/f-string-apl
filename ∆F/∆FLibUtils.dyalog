@@ -1,4 +1,4 @@
-⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-01-21') 
+⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-01-22') 
 :Namespace libUtils
 
   :Section Runtime Routines 
@@ -38,20 +38,20 @@
 ⍝ ∘ Invalid names are quietly ignored.
   LibNoAuto← {userLibNmP} 
   LibAuto←{      
-    ~⍺.auto:                 userLibNmP       ⍝ Not auto: return.
-        w← NoLB ⍵                             ⍝     Skip blanks
-    '.'≠ ⊃w:                 userLibNmP       ⍝ No initial '.':   return.
-        w← NoLB⊢ w← 1↓w                       ⍝     Skip some more blanks,
-        nm← w↑⍨ p← NmSpan w                   ⍝     Get the (apparent) name nm and length p.  
-    ⍺.acache∊⍨ ⊂nm:          userLibNmP       ⍝ Saw it before:    return.
-        ⍺.acache,← ⊂nm                        ⍝     Mark as seen in autocache global (even if invalid)
-    0≠ userLib.⎕NC nm:       userLibNmP       ⍝ In libuser (>1) or invalid name (-1):  return. 
-    '←'= ⊃'∘ '~⍨ p↓w:        userLibNmP       ⍝ Name to be set:   return.
-        _← userLib ⍺ parms LoadObj nm         ⍝ Try to load obj definition
-                             userLibNmP       ⍝ Return.                                       
+    ~⍺.auto:                 userLibNmP                ⍝ Not auto: return.
+        w← NoLB ⍵                                      ⍝     Skip blanks
+    '.'≠ ⊃w:                 userLibNmP                ⍝ No initial '.':   return.
+        w← NoLB⊢ w← 1↓w                                ⍝     Skip some more blanks,
+        nm← w↑⍨ p← NmSpan w                            ⍝     Get the (apparent) name nm and length p.  
+    ⍺.acache∊⍨ ⊂nm:          userLibNmP                ⍝ Saw it before:    return.
+        ⍺.acache,← ⊂nm                                 ⍝     Mark as seen in autocache global (even if invalid)
+    0≠ userLib.⎕NC nm:       userLibNmP                ⍝ In libuser (>1) or invalid name (-1):  return. 
+    '←'= ⊃'∘ '~⍨ p↓w:        userLibNmP                ⍝ Name to be set:   return.
+        _← userLib ⍺ parms LoadObj nm                  ⍝ Try to load obj definition
+                             userLibNmP                ⍝ Return.                                       
   }
   ⍝ Support Fns: NoLB, NmSpan
-    NoLB← {(∨\' '≠⍵)/⍵}                         ⍝ Fast Idiom. 
+    NoLB← {(∨\' '≠⍵)/⍵}                                ⍝ Fast Idiom. 
     nmSym← { ⍺← ⎕D ⋄ 0=≢⍵: ⍺~'⍺⍵∇' ⋄ ¯1=⎕NC f←⊃⍵: ⍺ ∇ 1↓⍵ ⋄ (⍺,f) ∇ 1↓⍵ } ⎕AV   ⍝ Valid syms in APL user names.
     NmSpan← 0⍳⍨∊∘nmSym
  
@@ -160,7 +160,7 @@
         ⍝ When done, having returned rcNF, recursively continue ScanPath.
         ⍝ Otherwise (rcOK or rcER), return from ScanPath.
         1< |≡cur: path SubScanWS cur                   ⍝ If VCV, => at least 1 workspace.    
-        ff← ,(⊂cur)∘.,(⊂êNm),¨parms.suffix              ⍝ cur is a CV. Generate ff, list of files.  
+        ff← ,(⊂cur)∘.,(⊂êNm),¨parms.suffix             ⍝ cur is a CV. Generate ff, list of files.  
         rcNF≠⊃ret← SubScanFiles ff: ret 
           ∇ 1↓path                       
       }
@@ -259,7 +259,7 @@
     :If ##.LIB_ACTIVE≥ 1 
         LoadDefaultParms ##.LIB_PARM_FI 
         :If ##.LIB_ACTIVE= 2
-        :AndIf rc← parms._readParms[0]     ⍝ Did we read the defaults? If so, continue...
+        :AndIf rc← parms._readParms[0]                 ⍝ Did we read the defaults? If so, continue...
           isR LoadUserParms  ##.LIB_USER_FI        
         :EndIf
       ⍝ If parms._fullPath is empty, then turn auto off, since there's nothing to search..
@@ -323,7 +323,7 @@
         ~⎕NEXISTS ⍵: ⍬ 
         0:: '∆F ReadUser Parms Failed, but error was not trapped' ⎕SIGNAL 911
         2 6 11/⍨ ~⍺:: _← 1 LoadErr 'User parameter file "', ⍵,'" has errors'
-          _← 'parms' ⎕NS ##.AN2Apl ⊃⎕NGET ⍵ 1      ⍝ Merge parm file into internal defaults
+          _← 'parms' ⎕NS ##.AN2Apl ⊃⎕NGET ⍵ 1          ⍝ Merge parm file into internal defaults
           0⊣ parms._readParms[1]← 1 
       } 
     ⍝ Handle special-case values for  verbose, prefix, auto, path, suffix
@@ -337,7 +337,7 @@
         pfx pth← ⍵.(prefix path)
         ⍬{
           0=≢⍵: ⍺ ⋄ p← ⊂⊃⍵ 
-        2<|≡p: (⍺, p) ∇ 1↓⍵                           ⍝ workspace
+        2<|≡p: (⍺, p) ∇ 1↓⍵                            ⍝ workspace
           (⍺, ,p∘., '/'∘., pfx) ∇ 1↓⍵                  ⍝ file 
         } pth  
       } 

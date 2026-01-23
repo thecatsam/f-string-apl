@@ -52,9 +52,9 @@
   LIB_ACTIVE←  2     
   LIB_PARM_FI←  '∆F/∆FParmDefs.apla' 
   LIB_USER_FI←  '.∆F' 
-  LIB_SRC_FI←   '∆F/∆FLibUtils.dyalog'          ⍝ Library shortcuts (£,  `L) utilities.
+  LIB_SRC_FI←   '∆F/∆FLibUtils.dyalog'                 ⍝ Library shortcuts (£,  `L) utilities.
 ⍝ HELP FILE          
-  HELP_HTML_FI← '∆F/∆FHelp.html'                ⍝ Called from 'help' option. Globally set here              
+  HELP_HTML_FI← '∆F/∆FHelp.html'                       ⍝ Called from 'help' option. Globally set here              
 ⍝ ==================================================================================
 ⍝ VARIABLES FOR ∆F OPTIONS: Positional and keyword 
 ⍝ =======================================================================
@@ -90,10 +90,10 @@
           :If  900⌶0                                          
             opts← ⎕NS OPTS_DEFns                     
           :ElseIf 9=__OUTER__.⎕NC 'opts'    
-            opts← ∆NS OPTS_DEFns __OUTER__.opts                ⍝ v19: Emulate v.20 ⎕NS
+            opts← ∆NS OPTS_DEFns __OUTER__.opts                  ⍝ v19: Emulate v.20 ⎕NS
         ⍝ Positional options-- integers/booleans         
           :ElseIf 11 83∊⍨ ⎕DR opts ⋄ :AndIf  OPTS_N≥ ≢opts 
-            opts← (⎕NS OPTS_DEFns) ∆VSET (OPTS_KW↑⍨≢opts)opts  ⍝ v19: Emulate ⎕VSET
+            opts← (⎕NS OPTS_DEFns) ∆VSET (OPTS_KW↑⍨≢opts)opts    ⍝ v19: Emulate ⎕VSET
         ⍝ Special options (like help and invalid options)
           :Else                                           
             result← Special opts ⋄ :Return                     
@@ -179,7 +179,7 @@
       c= dol:   (pfx, scF) ∇ w                         ⍝ $ => ⎕FMT 
       c= esc:   (pfx, a) ∇ w⊣ a w← ê CFEsc w           ⍝ `⍵, `⋄, `A, `B, etc.
       c= omUs:  (pfx, a) ∇ w⊣ a w← ê CFOm w            ⍝ ⍹, alias to `⍵ (see CFEsc).
-      c= libra: (pfx, ê libUtils.LibAuto w) ∇ w         ⍝ £ library.
+      c= libra: (pfx, ê libUtils.LibAuto w) ∇ w        ⍝ £ library.
       ~c∊sdcfCh: ⎕SIGNAL cfLogicÊ                      ⍝ CFBrk leaked unknown char.
     ⍝ '→', '↓' or '%'. See if a "regular" char/shortcut or self-defining code field      
       ê.brC>1:    (pfx, c scA⊃⍨ c= pct) ∇ w            ⍝ internal dfn => not SDCF
@@ -224,7 +224,7 @@
     ê fstr← ⍺ ⍵                                 
   ⍝ Validate options passed in ê (⍺). dfn in (¯1 0 1), others in (0 1).
   ê.((|dfn),verbose box auto inline)(0∊∊)0 1: ⎕SIGNAL optÊ                             ⍝  
-    VMsg← (⎕∘←)⍣(ê.(verbose∧¯1≠dfn))                      ⍝ Verbose option message 
+    VMsg← (⎕∘←)⍣(ê.(verbose∧¯1≠dfn))                   ⍝ Verbose option message 
   ⍝ Shortcuts: 
   ⍝    See ⍙Load_Shortcuts.
   ⍝ This must follow the ordering specified there EXACTLY.  
@@ -306,10 +306,10 @@
   TFBrk← ⌊/⍳∘tfBrkList
   CFBrk← ⌊/⍳∘cfBrkList
 ⍝ 
-  TrimR← ⊢↓⍨-∘(⊥⍨sp=⊢)                               ⍝ Trim spaces on right...            
+  TrimR← ⊢↓⍨-∘(⊥⍨sp=⊢)                                 ⍝ Trim spaces on right...            
 ⍝ SFCode: Generate a SF code string; ⍵ is a pos. integer. (Used in CF_SF above)
   SFCode← ('(',⊢ ⊢,∘'⍴'''')')⍕ 
-⍝ (CFDfn 'xxx') => '{xxx}⍵'                          ⍝ Create literal code field dfn call
+⍝ (CFDfn 'xxx') => '{xxx}⍵'                            ⍝ Create literal code field dfn call
   CFDfn← lb∘, ,∘(rb,om)        
 
 ⍝ AplQt:  Created an APL-style single-quoted string.
@@ -331,12 +331,12 @@
   CFEsc← {                                    
     0= ≢⍵: esc 
       c w← (0⌷⍵) (1↓⍵) ⋄ ⍺.cfL+← 1   
-    c∊ om_omUs: ⍺ CFOm w                             ⍝ Permissively allows `⍹ as equiv to `⍵ OR ⍹ 
-    c='L': (⍺ libUtils.LibAuto w) w                  ⍝ Library shortcut: special (niladic) case
-      p← MapSC c                                     ⍝ Look for other shortcuts
-    nSC> p: (⍺.inline p⊃ scCodeTbl) w                ⍝ Found? return code string.
-    c∊⍥⎕C ⎕A: ⎕SIGNAL scBadÊ c                       ⍝ Nope: Unknown shortcut!
-      ⎕SIGNAL EscÊ c                                 ⍝ Nope: An escape foll. by non-alphabetic.
+    c∊ om_omUs: ⍺ CFOm w                               ⍝ Permissively allows `⍹ as equiv to `⍵ OR ⍹ 
+    c='L': (⍺ libUtils.LibAuto w) w                    ⍝ Library shortcut: special (niladic) case
+      p← MapSC c                                       ⍝ Look for other shortcuts
+    nSC> p: (⍺.inline p⊃ scCodeTbl) w                  ⍝ Found? return code string.
+    c∊⍥⎕C ⎕A: ⎕SIGNAL scBadÊ c                         ⍝ Nope: Unknown shortcut!
+      ⎕SIGNAL EscÊ c                                   ⍝ Nope: An escape foll. by non-alphabetic.
   } ⍝ End CFEsc 
 
  ⍝ CFQS: CF Quoted String scan
@@ -371,11 +371,11 @@
       ⍝ c= qtR:  
       ⍝   ∘ Now see if the NEXT char, c2, such that c2= qtR.
       ⍝     If so, it's a string-internal qtR. Only qtR need be doubled (i.e. '»»' => '»').
-        c2= qtR:  (a, ⍵↑⍨ p+1) lW ∇ ⍵↓⍨ lW+← p+2      ⍝ Use APL rules for doubled ', ", or »
-          (AplQt a, p↑⍵) (lW+ p)                      ⍝ Done... Return
+        c2= qtR:  (a, ⍵↑⍨ p+1) lW ∇ ⍵↓⍨ lW+← p+2       ⍝ Use APL rules for doubled ', ", or »
+          (AplQt a, p↑⍵) (lW+ p)                       ⍝ Done... Return
       }
       qS lW← '' 1 Scan w          
-      qS (w↓⍨ ê.cfL+← lW)                             ⍝ w is returned sans CF quoted string 
+      qS (w↓⍨ ê.cfL+← lW)                              ⍝ w is returned sans CF quoted string 
   } ⍝ End CF Quoted-String Scan
 
 ⍝ CFQSEsc:  (map len)← nl ∇ c2 qtR, where 
@@ -482,7 +482,6 @@
 :Namespace userLibrary
   ⍝ Minimal contents, pending ⍙Load_LibAuto.
   ⍝ Inherit key sys vars from the # namespace.
-    libOk← 0 
     ⎕IO ⎕ML ⎕PW ⎕PP ⎕CT ⎕DCT ⎕FR← #.(⎕IO ⎕ML ⎕PW ⎕PP ⎕CT ⎕DCT ⎕FR)     
 :EndNamespace
 
@@ -497,8 +496,8 @@
     ⍝ external loaded from ∆FLibUtils.dyalog:
     ⍝   libUser, Auto, parms, ShowPath, LoadParms 
       ⎕THIS.libUser← libNs
-      libNs.⎕DF ⎕NULL                                     ⍝ Clear any prior ⎕DF.
-      libNs.⎕DF '£=[',(⍕libNs),' ⋄ auto:0]'               ⍝ Now, set ours.
+      libNs.⎕DF ⎕NULL                                  ⍝ Clear any prior ⎕DF.
+      libNs.⎕DF '£=[',(⍕libNs),' ⋄ auto:0]'            ⍝ Now, set ours.
       Auto← (⍕libNs)⍨  
       'parms' ⎕NS '_readParms' 'auto'⊣ _readParms auto← (0 0) 0 
       ShowPath← '⍬'⍨        
@@ -539,7 +538,7 @@
        ∆NS←   ⎕NS 
     :EndIf 
     AN2Apl← ⎕SE.Dyalog.Array.Deserialise   
-    Apl2AN← ⎕SE.Dyalog.Array.Serialise             ⍝ Apl2AN: Same for both versions
+    Apl2AN← ⎕SE.Dyalog.Array.Serialise                 ⍝ Apl2AN: Same for both versions
   ∇  
 
 ⍝ ⍙Export_∆F : rc← ∇ destNs keepCm lockFn 
@@ -568,9 +567,9 @@
     Apply2← { src snk← ↓⍉↑⍺ ⋄ src ⎕R snk⍠ 'UCP' 1 ⊢ ⍵} 
     Cm←     {⍺: ⍵ ⋄ '''[^'']*''' '(^\s*)?⍝.*$' ⎕R '\0' ''⊢ ⍵ }    
     CpyR←   ,∘(⊂'⍝ (C) 2025 Sam the Cat Foundation.  Version: ',VERSION)
-    NoEL←   {⍵/⍨ 0≠≢¨⍵}    ⍝ Delete empty lines.
+    NoEmpty←   {⍵/⍨ 0≠≢¨⍵}    ⍝ Delete empty lines.
 
-    nm← destNs.⎕FX CpyR NoEL s∘Apply2 keepCm∘Cm ⎕NR '∆FSrc' 
+    nm← destNs.⎕FX CpyR NoEmpty s∘Apply2 keepCm∘Cm ⎕NR '∆FSrc' 
     :If fixedOk← 0≠1↑0⍴ nm 
       (⎕∘←)⍣VERBOSE_LOADTIME⊢ '>>> Created function ',(⍕destNs),'.',nm 
     :Else 
@@ -721,7 +720,7 @@
 ⍝ ====================================================================================
   ⍝ ∆NS, ∆VGET, ∆VSET, AN2Apl, Apl2AN are version-aware.
     ⍙Gen_LegacyAplAN  ⊃⊃⌽'.'⎕VFI 1⊃'.' ⎕WG 'APLVersion'  
-    OPTS_DEFns← (⎕NS⍬)∆VSET OPTS_KW OPTS_DEFval   ⍝ Generate default opts NS
+    OPTS_DEFns← (⎕NS⍬)∆VSET OPTS_KW OPTS_DEFval        ⍝ Generate default opts NS
     ⍙Export_∆F ##  0 1  
     ⍙Load_Shortcuts
     ⍙Load_Help HELP_HTML_FI
