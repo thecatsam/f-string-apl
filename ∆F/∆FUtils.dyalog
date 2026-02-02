@@ -464,8 +464,8 @@
     'path'   ≡   val: _← libUtils.ShowPath ⍬ 
     'globals'≡   val: _← ⍙ShowGlobalsIf 1 
     'help'   ≢ 4↑val: ⎕SIGNAL optÊ 
-  ⍝ help, help-wide, or help-narrow?
-      LoadHtml← {  
+  ⍝ (Below) help, help-wide, or help-narrow?
+      CLoadHtml← {   ⍝ Conditionally load help html file, i.e. if not already loaded...
         22:: ⎕SIGNAL helpFiÊ 
         0= ⎕NC ⍵: ⊢⎕THIS.helpHtml← ⊃⎕NGET HELP_HTML_FI 
           ⎕THIS.helpHtml  
@@ -475,7 +475,7 @@
         0::  ⍬⊣ 3500⌶ ⍺ 
           ⍬⊣ 'htmlObj' ⎕WC 'HTMLRenderer',⍥⊆ ⍵ 
       }  
-      html← LoadHtml 'helpHtml' 
+      html← CLoadHtml 'helpHtml' 
     ⍝ Screen widths correspond to 'help-narrow' vs 'help-wide'/'help' parameters in ⍵.
       s← (900 1000) (900 1350)⊃⍨ ~'-n'(1∘∊⍷)⍵   ⍝ ⍵ is 'help[-wide]' or 'help-narrow'
       obj← ('HTML'  html) (s,⍨ ⊂'Size') (15 35,⍨ ⊂'Posn') ('Coord' 'ScaledPixel')   
@@ -597,18 +597,18 @@
 ⍝ A (etc): a dfn
 ⍝ scA (etc): [0] local absolute name of dfn (with spaces), [1] its code              
 ⍝ Abbrev  Descript.       Valence     User Shortcuts   Notes
-⍝ A       [⍺]above ⍵      ambi       `A, %             Center ⍺ above ⍵. ⍺←''.  Std is %
-⍝ B       box ⍵           ambi       `B                Put ⍵ in a box.
-⍝ C       commas          monadic    `C                Add commas to numbers every 3 digits R-to-L
-⍝ Ð       display ⍵       dyadic                       Var Ð only used internally...
-⍝ F       [⍺]format ⍵     ambi       `F, $             ⎕FMT.   Std is $
-⍝ J       [⍺] justify ⍵   ambi       `J                justify rows of ⍵. ⍺←'l'. ⍺∊'lcr' left/ctr/rght.
-⍝ -       [⍺] library ⍵   niladic     £, `L            *** handled in line (ad hoc) ***
-⍝ M       merge[⍺] ⍵      ambi                         Var M only used internally...
-⍝ Q       quote ⍵         ambi       `Q                Put only text in quotes. ⍺←''''
-⍝ S       [⍺]serialise ⍵  ambi       `S                Apl Array Notation Serialise
-⍝ T       ⍺ date-time ⍵   dyadic     `T, `D            Format ⍵, 1 or more timestamps, acc. to ⍺.
-⍝ W       [⍺1 ⍺2]wrap ⍵   ambi       `W                Wrap ⍵ in decorators, ⍺1 ⍺2.  ⍺←''''. See doc.
+⍝ A       [⍺]ABOVE ⍵      ambi       `A, %             Center ⍺ above ⍵. ⍺←''.  Std sc is %
+⍝ B       BOX ⍵           ambi       `B                Put ⍵ in a box.
+⍝ C       COMMAS          monadic    `C                Add commas to numbers every 3 digits R-to-L
+⍝ Ð       DISPLAY ⍵       dyadic                       Var Ð only used internally...
+⍝ F       [⍺]FORMAT ⍵     ambi       `F, $             ⎕FMT.   Std is $
+⍝ J       [⍺] JUSTIFY ⍵   ambi       `J                justify rows of ⍵. ⍺←'l'. ⍺∊'lcr' left/ctr/rght.
+⍝ -       [⍺] LIBRARY ⍵   niladic     £, `L            *** handled in line (ad hoc) ***
+⍝ M       MERGE[⍺] ⍵      ambi                         Var M only used internally...
+⍝ Q       QUOTE ⍵         ambi       `Q                Put only text in quotes. ⍺←''''
+⍝ S       [⍺]SERIALISE ⍵  ambi       `S                Apl Array Notation Serialise
+⍝ T       ⍺ DATE-TIME ⍵   dyadic     `T, `D            Format ⍵, 1 or more timestamps, acc. to ⍺.
+⍝ W       [⍺1 ⍺2]WRAP ⍵   ambi       `W                Wrap ⍵ in decorators, ⍺1 ⍺2.  ⍺←''''. See doc.
 ⍝
 ⍝ For A, B, C, D, F, J, M, Q, T, W; all like A example shown here:
 ⍝     A← an executable dfn in this namespace (⎕THIS).
@@ -616,16 +616,18 @@
 ⍝           name is ∆THIS,'.A'
 ⍝           codeString is the executable dfn in string form.
 ⍝ At runtime, we'll generate shortcut code "pointers" scA, scB etc. based on flag ¨inline¨.
-⍝ Warning: Be sure these can run in user env with any ⎕IO and ⎕ML.
-⍝ (Localize them where needed)
+⍝ Warning: Be sure these can run in user env with any ⎕IO and ⎕ML: Localize them where needed.
 ⍝ NOTE: We are creating multiline objects using the old method for compatibility with Dyalog 19 etc.
   ∇ {ok}← ⍙Load_Shortcuts 
     ; scUser; scA2; scB2; scC2; scD2; scÐ2; scF2; scJ2; scM2; scQ2; scS2; scT2; scW2 
     ; XR ;HT 
     XR← ⎕THIS.⍎⊃∘⌽                                   ⍝ XR: Execute the right-hand expression
-    HT← '⎕THIS' ⎕R ∆THIS                             ⍝ HT: "Hardwire" absolute ⎕THIS. 
+    HT← '⎕THIS' ⎕R ∆THIS                             ⍝ HT: "Hardwire" value of ⎕THIS. 
+  ⍝ Above
     A← XR scA2← HT   ' ⎕THIS.A ' '{⎕ML←1⋄⍺←⍬⋄⊃⍪/(⌈2÷⍨w-m)⌽¨f↑⍤1⍨¨m←⌈/w←⊃∘⌽⍤⍴¨f←⎕FMT¨⍺⍵}' 
+  ⍝ Box
     B← XR scB2← HT   ' ⎕THIS.B ' '{⎕ML←1⋄⍺←0⋄⍺⎕SE.Dyalog.Utils.disp⊂⍣(1≥≡⍵),⍣(0=≡⍵)⊢⍵}' 
+  ⍝ Commas (Numeric ~)
       ⎕SHADOW 'cCod'  
       cCod←  '{'
       cCod,←   '⎕IO ⎕ML←0 1⋄'
@@ -636,20 +638,27 @@
       cCod,←   '1=≢w←{src ⎕R snk⊢⍵}⍤1⍕⍵: ⊃w⋄w'
       cCod,← '}'
     C← XR scC2← HT   ' ⎕THIS.C ' cCod 
-    Ð← XR scÐ2← HT   ' ⎕THIS.Ð ' ' 0∘⎕SE.Dyalog.Utils.disp¯1∘↓'                           
+  ⍝ Date: See Time (below)
+  ⍝ Display
+    Ð← XR scÐ2← HT   ' ⎕THIS.Ð ' ' 0∘⎕SE.Dyalog.Utils.disp¯1∘↓'    
+  ⍝ Format                       
     F← XR scF2←      ' ⎕FMT '    ' ⎕FMT ' 
+  ⍝ Justify
       ⎕SHADOW 'jCod' 
       jCod← '{'
       jCod,←   '⎕PP←34⋄⍺←''L''⋄B←{+/∧\'' ''=⍵}⋄'
-      jCod,←   'w⌽⍨(1⎕C⍺){o←⊂⍺⋄'             ⍝ Treat ⍺ as a scalar.
+      jCod,←   'w⌽⍨(1⎕C⍺){o←⊂⍺⋄'                ⍝ Treat ⍺ as a scalar.
       jCod,←         'o∊''L''¯1:B ⍵⋄'
       jCod,←         'o∊''R'' 1:-B⌽⍵⋄'
-      jCod,←                   '⌈0.5×⍵-⍥B⌽⍵⋄' ⍝ If invalid ⍺, assume 'C'.
+      jCod,←                   '⌈0.5×⍵-⍥B⌽⍵⋄'   ⍝ If invalid ⍺, assume 'C'.
       jCod,←   '}w←⎕FMT⍵'
       jCod,← '}' 
     J← XR scJ2← HT   ' ⎕THIS.J '   jCod  
-  ⍝ £, `L: Not here-- handled ad hoc...     
-    M← XR scM2← HT   ' ⎕THIS.M '   '{⎕ML←1⋄⍺←⊢⋄⊃,/((⌈/≢¨)↑¨⊢)⎕FMT¨⍺⍵}'                     
+  ⍝ Library
+  ⍝ £, `L: Not here-- handled ad hoc in code (it's niladic)...   
+  ⍝ Merge  
+    M← XR scM2← HT   ' ⎕THIS.M '   '{⎕ML←1⋄⍺←⊢⋄⊃,/((⌈/≢¨)↑¨⊢)⎕FMT¨⍺⍵}'  
+  ⍝ Quote                   
       ⎕SHADOW 'qCod'
       qCod←  '{'
       qCod,←   '⍺←⎕UCS 39⋄'            
@@ -660,6 +669,7 @@
       qCod,←   '⍺{0=80|⎕DR⍵:⍺,⍺,⍨⍵/⍨ 1+⍺=⍵⋄⍵}⍤1⊢⍵'        
       qCod,← '}'
     Q← XR scQ2← HT   ' ⎕THIS.Q ' qCod 
+  ⍝ Serialise
       ⎕SHADOW 'sCod'
       sCod←  '{'
       sCod,←   '⎕ML←1⋄11 16 6::⍵⋄⍺←0⋄'     
@@ -667,9 +677,11 @@
       sCod,←   '⍪s'
       sCod,← '}'
     S← XR scS2← HT   ' ⎕THIS.S '  sCod 
+  ⍝ Time  
     T← XR scT2← HT   ' ⎕THIS.T ' '{⎕ML←1⋄⍺←''%ISO%''⋄∊⍣(1=≡⍵)⊢⍺(1200⌶)⊢1⎕DT⊆⍵}' 
-  ⍝ D is alias to T.
-          scD2← scT2  
+  ⍝ Date
+          scD2← scT2                            ⍝ D is alias to T.               
+  ⍝ Wrap 
     W← XR scW2← HT   ' ⎕THIS.W ' '{⎕ML←1⋄⍺←⎕UCS 39⋄ 1<|≡⍵: ⍺∘∇¨⍵⋄L R←2⍴⍺⋄{L,R,⍨⍕⍵}⍤1⊢⍵}'
 
   ⍝ User-callable functions:          A  B  C  D  F  J  Q  S  T  W 
