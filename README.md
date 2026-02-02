@@ -788,9 +788,8 @@ Parameter File</em> <big><strong>. ∆F</strong></big>
   ⍝ ∘  If possible, place most used suffixes first.
     suffix: ('.aplf' ◇ '.apla' ◇ '.aplo' ◇ '.apln' ◇ '.json'◇ '.txt' ◇'.dyalog')    
                   
-  ⍝  Internal Runtime (hidden) Parameters                                               
-    _readParms:  0 0                    ⍝ Have we read (default parms, user .∆F parms)
-    _fullPath:   ⍬                      ⍝ ⍬ Zilde: Generated from path and prefixes.
+  ⍝  Internal Runtime (hidden) Parameters (not shown). Do not modify or delete. 
+  ⍝     ⍙readParms,⍙fullPath                                          
 )    
 ```
 

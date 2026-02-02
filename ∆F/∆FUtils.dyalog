@@ -40,7 +40,12 @@
   ⍝ QS_JP1 QS_JP2← '「」' '『』' 
   ⍝ QS_DE1 QS_DE2 QS_DE3← '»«' '„“' '‚‘'
   ⍝ QS_CH1 QS_CH2← '《》' '「」'
-  QUOTES_SUPPLEMENTAL← QS_FR1     
+  QUOTES_SUPPLEMENTAL← QS_FR1  
+
+⍝ INLINE_UTILS. 
+⍝ If 1, puts full definitions of internal utilities (shortcuts etc.) into the result.
+⍝ If 0, refers to local copies of internal utilities in the result.
+  INLINE_UTILS← 0   
 ⍝            
 ⍝ =======================================================================
 ⍝ SESSION LIBRARY (£ or `L) VARIABLES
@@ -59,7 +64,7 @@
 ⍝ VARIABLES FOR ∆F OPTIONS: Positional and keyword 
 ⍝ =======================================================================
   OPTS_KW←      ↑'dfn' 'verbose'        'box' 'auto' 'inline'          ⍝ In order 
-  OPTS_DEFval←    0    VERBOSE_RUNTIME   0     1      0                ⍝ In order
+  OPTS_DEFval←    0    VERBOSE_RUNTIME   0     1      INLINE_UTILS   ⍝ In order
   OPTS_N←       ≢OPTS_DEFval 
 ⍝ OPTS_DEFns: The defaults in namespace form. Treat as a read-only object.
 ⍝ Requires ⍙Gen_LegacyAplAN to define ∆VSET, so is defined after it.
@@ -105,13 +110,13 @@
           :Select opts.dfn  
         ⍝ 0: Execute F-string    
           :Case  0        
-            result← opts ((⊃⎕RSI){ ⍺⍺⍎ ⍺ FmtScan ⊃⍵⊣ ⎕EX 'opts' 'args'}) args    
+            result← opts ((⊃⎕RSI){ ⍺⍺⍎ ⍺ ScanFStr ⊃⍵⊣ ⎕EX 'opts' 'args'}) args    
         ⍝ 1: Generate dfn code 
           :Case  1       
-            result← (⊃⎕RSI)⍎ opts FmtScan ⊃args
+            result← (⊃⎕RSI)⍎ opts ScanFStr ⊃args
         ⍝ ¯1: Generate source code for dfn
           :Case ¯1                                    
-            result← opts FmtScan ⊃args  
+            result← opts ScanFStr ⊃args  
         ⍝ Else: Run help or other special code           
           :Else          ⍝ 'help', etc. => Give help, etc.      
             result← Special opts 
@@ -124,131 +129,137 @@
    :EndSection   ∆F SOURCE
 ⍝ END ====================   ∆F (User Function)   ==============================  
 
-   :Section FmtScan ( Top-Level ∆F Service)
-⍝ ============================   FmtScan ( top-level routine )   ============================= ⍝
-⍝ FmtScan: 
+   :Section ScanFStr ( Top-Level ∆F Service)
+⍝ ============================   ScanFStr ( top-level routine )   ============================= ⍝
+⍝ ScanFStr: 
 ⍝    result← [options|⍬] ∇ f_string
 ⍝ "Main" function called by ∆F above. See the Executive section below.
 ⍝ Calls Major Field Recursive Scanners: 
-⍝ ∘ TF: text fields and space fields; 
-⍝ ∘ CF:  code fields; 
-⍝ ∘ CFQS: (code field) quoted strings
-  FmtScan← {  
+⍝ ∘ ScanAll:  text fields and space fields; 
+⍝ ∘ ScanCF:   code fields; 
+⍝ ∘ CFQS:     (code field) quoted strings
+  ScanFStr← {  
 
-  ⍝ TF_SF: Text Field and Space Field Scan 
+  ⍝ ScanAll: Initiates scan of the f-string, checking for all fields.
+  ⍝    Starts with a Text Field Scan.
+  ⍝    If it sees an unescaped "{",
+  ⍝       determines if Space Field (done internally) or Code Field (ScanCF).
+  ⍝    Otherwise,
+  ⍝       processes text field escapes and literals (if any).
   ⍝    ''←  accum ∇ str
-  ⍝ Processes all text fields and Space fields; and calls itself/CF recursively.
-  ⍝ R/W externs:
-  ⍝   ê.cfBeg: start of field; 
-  ⍝   ê.brC:   bracket count; 
-  ⍝   ê.cfL:   length of code field string.
-  ⍝   ê.flds:  the data fields.
+  ⍝ êxt: R/W externs:
+  ⍝   êxt.cfBeg: start of field; 
+  ⍝   êxt.brC:   bracket count; 
+  ⍝   êxt.cfL:   length of code field string.
+  ⍝   êxt.flds:  the data fields.
   ⍝ If it sees a non-escaped '{', it checks to see if it's followed by a Space Field: /\s*\}/.
-  ⍝ If not, it calls CF to handle Code fields.
-    TF_SF← {  
+  ⍝ If not, it calls ScanCF to handle Code fields.
+  ⍝ Returns (via TFProc) the "final" array of fields (processed and formatted)
+    ScanAll← {  
         p← TFBrk ⍵                                     ⍝ (esc or lb) only. 
-      p= ≢⍵: ê TFProc ⍺, ⍵                             ⍝ Nothing special. Process => return.
+      p= ≢⍵: êxt TFProc ⍺, ⍵                           ⍝ Nothing special. Process literals => return.
         pfx← p↑⍵ ⋄ c← p⌷⍵ ⋄ w← (p+1)↓⍵                 ⍝ Found something!
-      c= esc: (⍺, pfx, ê.nl TFEsc w) ∇ 1↓ w            ⍝ char is esc. Process. => Continue
+      c= esc: (⍺, pfx, êxt.nl TFEsc w) ∇ 1↓ w          ⍝ char is esc. Process. => Continue
   ⍝   c= lb: We may have a SF or a CF. We complete this TF, then check SF vs CF.
   ⍝          If we have a SF, complete it here; Else, we recurse to Code Field processing
-        _← ê TFProc ⍺, pfx                             ⍝ Update this text field and then...
-        ê.cfBeg← w                                     ⍝ Mark possible CF start (see SDCF in CF)
+        _← êxt TFProc ⍺, pfx                           ⍝ Update this text field and then...
+        êxt.cfBeg← w                                   ⍝ Mark possible CF start (see SDCF in ScanCF)
       rb= ⊃w: '' ∇ 1↓ w                                ⍝ SF 1. Null SF? Do nothing => Continue
         nSp← w↓⍨← +/∧\' '= w                           ⍝ Non-null SF?                         
-      rb= ⊃w: '' ∇ 1↓ w ⊣ ê.flds,← ⊂SFCode nSp         ⍝ SF 2. Yes. Proc SF => Continue
-        a w← '' CF w ⊣  ê.(cfL brC)← nSp 1             ⍝ No. Get CF.
-        ê.flds,← ⊂lp, a, rp                            ⍝     Process CF.
-        '' ∇ w                                         ⍝ ==? Continue
+      rb= ⊃w: '' ∇ 1↓ w ⊣ êxt.flds,← ⊂SFCode nSp       ⍝ SF 2. Yes. Proc SF => Continue
+        a w← '' ScanCF w ⊣  êxt.(cfL brC)← nSp 1       ⍝ No. Get CF.
+        êxt.flds,← ⊂lp, a, rp                          ⍝     Process CF.
+        '' ∇ w                                         ⍝ Continue scan.
     } ⍝ End Text Field Scan 
   
-  ⍝ CF - Handle Code Fields  
+  ⍝ ScanCF - Scans a Code Field  
   ⍝      outStr remStr ← accum ∇ str
-  ⍝ Modifies ê.cfL, ê.brC; calls CFQS and CFOm; modifies ê.omC and ê.cfL.  
+  ⍝ Modifies êxt.cfL, êxt.brC; calls CFQS and CFOm; modifies êxt.omC and êxt.cfL.  
   ⍝ Returns the output from the code field plus more string to scan (if any)
-  ⍝ CF will delete runs of leading and trailing blanks from output code; internal runs will remain.
-    CF← {     
-        ê.cfL+← 1+ p← CFBrk ⍵                          ⍝ ê.cfL is set in TF_SF above.  1: '{'
+  ⍝ ScanCF will delete runs of leading and trailing blanks from output code; internal runs will remain.
+    ScanCF← {     
+        êxt.cfL+← 1+ p← CFBrk ⍵                        ⍝ êxt.cfL is set in ScanAll above.  1: '{'
       p= ≢⍵:  ⎕SIGNAL brÊ                              ⍝ Missing "}" => Error. 
         pfx← ⍺, p↑⍵ 
         c←   p⌷⍵
         w←   (p+1)↓⍵ 
-     (c= rb)∧ ê.brC≤ 1: (CFDfn pfx) w                  ⍝ Closing brace? Opt'lly Trim (CFDTrimR pfx) ==> and RETURN!!!
-      c∊ lb_rb: (pfx, c) ∇ w⊣ ê.brC+← -/c= lb_rb       ⍝ Inc/dec ê.brC as appropriate
-      c∊ qtsL:  (pfx, a) ∇ w⊣ a w← ê CFQS c w          ⍝ Process quoted string.
+     (c= rb)∧ êxt.brC≤ 1: (CFDfn pfx) w                ⍝ Closing brace? Opt'lly Trim (CFDTrimR pfx) ==> and RETURN!!!
+      c∊ lb_rb: (pfx, c) ∇ w⊣ êxt.brC+← -/c= lb_rb     ⍝ Inc/dec êxt.brC as appropriate
+      c∊ qtsL:  (pfx, a) ∇ w⊣ a w← êxt CFQS c w        ⍝ Process quoted string.
       c= dol:   (pfx, scF) ∇ w                         ⍝ $ => ⎕FMT 
-      c= esc:   (pfx, a) ∇ w⊣ a w← ê CFEsc w           ⍝ `⍵, `⋄, `A, `B, etc.
-      c= omUs:  (pfx, a) ∇ w⊣ a w← ê CFOm w            ⍝ ⍹, alias to `⍵ (see CFEsc).
-      c= libra: (pfx, ê libUtils.LibAuto w) ∇ w        ⍝ £ library.
+      c= esc:   (pfx, a) ∇ w⊣ a w← êxt CFEsc w         ⍝ `⍵, `⋄, `A, `B, etc.
+      c= omUs:  (pfx, a) ∇ w⊣ a w← êxt CFOm w          ⍝ ⍹, alias to `⍵ (see CFEsc).
+      c= libra: (pfx, êxt libUtils.LibAuto w) ∇ w      ⍝ £ library.
       ~c∊sdcfCh: ⎕SIGNAL cfLogicÊ                      ⍝ CFBrk leaked unknown char.
     ⍝ '→', '↓' or '%'. See if a "regular" char/shortcut or self-defining code field      
-      ê.brC>1:    (pfx, c scA⊃⍨ c= pct) ∇ w            ⍝ internal dfn => not SDCF
+      êxt.brC>1:    (pfx, c scA⊃⍨ c= pct) ∇ w          ⍝ internal dfn => not SDCF
         p← +/∧\' '=w
       rb≠ ⊃p↓w:  (pfx, c scA⊃⍨ c= pct) ∇ w             ⍝ not CF-final '}' => not SDCF
     ⍝ SDCF: SELF-DEFINING CODE FIELD
-        cfLit← AplQt ê.cfBeg↑⍨ ê.cfL+ p                ⍝ Put CF-literal in quotes
+        cfLit← AplQt êxt.cfBeg↑⍨ êxt.cfL+ p            ⍝ Put CF-literal in quotes
         fmtr←  (scA scM⊃⍨ c='→')                       ⍝ vert or horiz. SDCF?
         (cfLit, fmtr, CFDfn pfx) ((p+1)↓w)             ⍝ ==> RETURN!
     }
 
 ⍝ ===========================================================================
-⍝ FmtScan main (executive) begins here
+⍝ ScanFStr main (executive) begins here
 ⍝    On entry: 
 ⍝        ⍺ is a namespace; 
 ⍝        ⍵ is the f-string, a possibly null char vector
-⍝    Returns either a matrix:   ê.dfn=0
-⍝    or a char. string:         ê.dfn∊ 1 ¯1
+⍝    Returns either a matrix:   êxt.dfn=0
+⍝    or a char. string:         êxt.dfn∊ 1 ¯1
 ⍝ =========================================================================== 
-⍝ ê: A set of external ("global") objects, including options and variables passed
-⍝    to utility functions that are outside the scope of FmtScan (above).
-⍝    The ê namespace is passed in with the options only (preceded by asterisks here).
+⍝ êxt: A set of external ("global") objects, including options and variables passed
+⍝    to utility functions that are outside the scope of ScanFStr (above).
+⍝    The êxt namespace is passed in with the options only (noted below)
 ⍝    The rest are initialized below.
-⍝ ↓¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ User Options (*)
+⍝ Note that there are two other (specialised) namespaces: 
+⍝    parms and uLibÑ (which refers to namespace ⎕THIS.userLibrary).
+⍝
+⍝ ↓¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ User Options (U)
 ⍝ ↓ Name    Init  Descr
 ⍝ ¯ ¯¯¯¯¯¯¯ ¯¯¯¯  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
-⍝ * dfn       0   Defines output format:
+⍝ U dfn       0   Defines output format:
 ⍝                 0 (return ∆F mx output), 1 (return dfn), ¯1 (return dfn code string)   
-⍝ * verbose   0*  runtime verbosity/debug flag. 
-⍝              *  1 if VERBOSE_RUNTIME global constant is 1.
-⍝ * box       0   Display a box around each field, if set.
-⍝ * auto      1   If 1, honors default/.∆F setting of parms.auto∊ 0 1.
-⍝ * inline    0   If 1, puts shortcut code defs right in output string; 
-⍝                 If 0, puts ref to ⍙Flib function.
+⍝ U verbose   0*  runtime verbosity/debug flag. 
+⍝             1*  1 if VERBOSE_RUNTIME global constant is 1.
+⍝ U box       0   Display a box around each field, if set.
+⍝ U auto      1   If 1, honors default/.∆F setting of parms.auto∊ 0 1.
+⍝ U inline    0   If 0, puts ref to ⍙Flib function.
+⍝             1*  If 1, puts shortcut code defs right in output string; 
+⍝                 1 if INLINE_UTILS is set to 1.
 ⍝   acache    ⍬   autoload cache char. vector of vectors  
 ⍝   nl        CR  newline: nl (CR) or nlVis (the visible newline '␤').  
 ⍝   fields    ⍬   global field list
 ⍝   omC       0   omega index counter: current index for omega shortcuts (`⍵, ⍹).
 ⍝                 Local to the current ∆F instance.
-⍝   brC       -   running count of braces '{' lb, '}' rb. Set in dfn TF_SF.
-⍝   cfL       -   code field running length (for SDCFs). Set in dfn TF_SF.
-    ê fstr← ⍺ ⍵                                 
-  ⍝ Validate options passed in ê (⍺). dfn in (¯1 0 1), others in (0 1).
-  ê.((|dfn),verbose box auto inline)(0∊∊)0 1: ⎕SIGNAL optÊ                             ⍝  
-    VMsg← (⎕∘←)⍣(ê.(verbose∧¯1≠dfn))                   ⍝ Verbose option message 
+⍝   brC       -   running count of braces '{' lb, '}' rb. Set in dfn ScanAll.
+⍝   cfL       -   code field running length (for SDCFs). Set in dfn ScanAll.
+    êxt fstr← ⍺ ⍵                                 
+  ⍝ Validate options passed in êxt (⍺). dfn in (¯1 0 1), others in (0 1).
+  êxt.((|dfn),verbose box auto inline)(0∊∊)0 1: ⎕SIGNAL optÊ                             ⍝  
+    VMsg← (⎕∘←)⍣(êxt.(verbose∧¯1≠dfn))                 ⍝ Verbose option message 
   ⍝ Shortcuts: 
   ⍝    See ⍙Load_Shortcuts.
   ⍝ This must follow the ordering specified there EXACTLY.  
-    (scA scB scC scD scF scJ scQ scS scT scW scÐ scM)← ê.inline⊃ scCodeTbl   
-    ê.acache← ⍬                                        ⍝ £ibrary shortcut "autoload" cache...
-    ê.nl← ê.verbose⊃ nl nlVis                          ⍝ A newline escape (`⋄) maps onto nlVis if verbose mode.
-    ê.flds← ⍬                                          ⍝ output fields: initialise to zilde.
-    ê.omC←  0                                          ⍝ initialise omega counter to 0.
-    ê.auto∧← libUtils.parms.auto                       ⍝ auto can usefully be 1 only if parms.auto is 1. 
-                                
-  ⍝ ê.(brC cfL) are initialised in TF_SF.  
-  ⍝ Start the scan                                     ⍝ We start with a text field, 
-    _← '' TF_SF fstr                                   ⍝ recursively calling TF_SF and CF, 
-                                                       ⍝ setting adding to ê.flds as we go.
-⍝ DONE with Scan. Now build result based on ê.dfn...                                                   
-  0= ≢ê.flds: VMsg '(1 0⍴⍬)', '⍨'/⍨ ê.dfn≠0            ⍝ If there are no flds, return 1 by 0 matrix
-    code← CFDfn (ê.box⊃ scM scÐ), OrderFlds ê.flds     ⍝ Order fields R-to-L so they will be evaluated L-to-R in ∆F.           
-  0=ê.dfn: VMsg code                                   ⍝ Emit code ready to execute
-    fstrQ← ',⍨⊂', AplQt fstr                           ⍝ Is ê.dfn (1,¯1): add quoted fmt string (`⍵0)
-    VMsg lb, code, fstrQ, rb                           ⍝ Emit ê.dfn-based str ready to cvt to ê.dfn in caller
-  } ⍝ FmtScan 
-⍝ === End of FmtScan ========================================================  
+    (scA scB scC scD scF scJ scQ scS scT scW scÐ scM)← êxt.inline⊃ scCodeTbl   
+    êxt.acache← ⍬                                      ⍝ £ibrary shortcut "autoload" cache...
+    êxt.nl← êxt.verbose⊃ nl nlVis                      ⍝ A newline escape (`⋄) maps onto nlVis if verbose mode.
+    êxt.flds← ⍬                                        ⍝ output fields, each a CV (Char Vec)
+    êxt.omC←  0                                        ⍝ initialise omega counter to 0 (see `⍵)
+    êxt.auto∧← libUtils.parms.auto                     ⍝ auto can usefully be 1 only if parms.auto is 1.     
+                                                       ⍝ Start the scan (recursive).                    
+    flds← '' ScanAll fstr                              ⍝ ...                          
+                                                       ⍝ Scan complete.                                        
+  0= ≢flds: VMsg '(1 0⍴⍬)', '⍨'/⍨ êxt.dfn≠0            ⍝ If there are no flds, return 1 by 0 matrix
+    code← CFDfn (êxt.box⊃ scM scÐ), OrderFlds flds     ⍝ Order fields R-to-L so they will be evaluated L-to-R in ∆F.           
+  0=êxt.dfn: VMsg code                                 ⍝ Emit code ready to execute
+    fstrQ← ',⍨⊂', AplQt fstr                           ⍝ Is êxt.dfn (1,¯1): add quoted fmt string (`⍵0)
+    VMsg lb, code, fstrQ, rb                           ⍝ Emit êxt.dfn-based str ready to cvt to êxt.dfn in caller
+  } ⍝ ScanFStr 
+⍝ === End of ScanFStr ========================================================  
 
-   :EndSection FmtScan ( Top-Level ∆F Service)
+   :EndSection ScanFStr ( Top-Level ∆F Service)
 
    :Section Constants
 ⍝ ===========================================================================  
@@ -299,15 +310,15 @@
 
    :Section Utilities (Zero Side Effects) 
 ⍝ ===================================================================================
-⍝ Utilities (fns/ops) for FmtScan above.
-⍝ ∘ These must have zero side effects, except those reflected in ê-namespace objects.
+⍝ Utilities (fns/ops) for ScanFStr above.
+⍝ ∘ These must have zero side effects, except those reflected in êxt-namespace objects.
 ⍝ ===================================================================================
 ⍝ See also CFSBrk.  
   TFBrk← ⌊/⍳∘tfBrkList
   CFBrk← ⌊/⍳∘cfBrkList
 ⍝ 
   TrimR← ⊢↓⍨-∘(⊥⍨sp=⊢)                                 ⍝ Trim spaces on right...            
-⍝ SFCode: Generate a SF code string; ⍵ is a pos. integer. (Used in CF_SF above)
+⍝ SFCode: Generate a SF code string; ⍵ is a pos. integer. (Used in ScanAll above)
   SFCode← ('(',⊢ ⊢,∘'⍴'''')')⍕ 
 ⍝ (CFDfn 'xxx') => '{xxx}⍵'                            ⍝ Create literal code field dfn call
   CFDfn← lb∘, ,∘(rb,om)        
@@ -320,12 +331,12 @@
 ⍝ Returns: the escape sequence.                        ⍝ *** No side effects ***
   TFEsc← { 0= ≢⍵: esc ⋄ c← 0⌷⍵ ⋄ c∊ dia2: ⍺ ⋄ c∊ esc_lb_rb: c ⋄ esc, c } 
 
-⍝ TFProc:  ⍬← ê ∇ str
-⍝ If a text field <str> is not 0-length, place in quotes and add it to ê.flds.
+⍝ TFProc:  flds@CVV← êxt ∇ str
+⍝ If a text field <str> is not 0-length, place in quotes and add it to êxt.flds.
 ⍝ Ensure adjacent fields are sep by ≥1 blank.
-  TFProc← {0≠ ≢⍵: ⍬⊣ ⍺.flds,← ⊂sp_sq, sq,⍨ ⍵/⍨ 1+ sq= ⍵ ⋄ ⍬}  
+  TFProc← {0=≢⍵: ⍺.flds ⋄ 0≠ ≢⍵: ⍺.flds,← ⊂sp_sq, sq,⍨ ⍵/⍨ 1+ sq= ⍵ ⋄ ⍺.flds }  
 
-⍝ CFEsc:  (code w)← ê ∇ fstr
+⍝ CFEsc:  (code w)← êxt ∇ fstr
 ⍝ Handle escapes  in Code Fields OUTSIDE of CF-Quotes.  
 ⍝ Returns code, the executable code, and w, the text of ⍵ remaining.                                 
   CFEsc← {                                    
@@ -340,17 +351,17 @@
   } ⍝ End CFEsc 
 
  ⍝ CFQS: CF Quoted String scan
-  ⍝        qS w←  ê ∇ qtL fstr 
+  ⍝        qS w←  êxt ∇ qtL fstr 
   ⍝ ∘ qtL is the specific left-hand quote we saw in the caller.
   ⍝   We determine qtR internally.
   ⍝ ∘ fstr is the current format string, w/ the qtL removed, but end not determined..
   ⍝ ∘ For quotes with different starting and ending chars, e.g. « » (⎕UCS 171 187).
   ⍝   If « is the left qt, then the right qt » can be doubled in the APL style, 
   ⍝   and a non-doubled » terminates as expected.
-  ⍝ ∘ Updates ê.cfL with length of actual quote string.
+  ⍝ ∘ Updates êxt.cfL with length of actual quote string.
   ⍝ Returns: qS w
   ⍝    qS: the string at the start of ⍵; w: the rest of ⍵ 
-  CFQS← { ê← ⍺ ⋄ qtL w← ⍵ 
+  CFQS← { êxt← ⍺ ⋄ qtL w← ⍵ 
       qtR← (qtsL⍳ qtL)⌷ qtsR               
       CFSBrk← ⌊/⍳∘(esc qtR)    
     ⍝ Recursive CF Quoted-String Scan. 
@@ -366,7 +377,7 @@
           c c2← 2↑ p↓ ⍵ 
       ⍝ See CFQSEsc, below, for handling of escapes in CF quoted strings.
       ⍝ <skip> is how many characters were consumed...
-        c= esc: (a, (p↑ ⍵), map) lW ∇ ⍵↓⍨ lW+← p+ skip⊣ map skip← ê.nl CFQSEsc c2 qtR             
+        c= esc: (a, (p↑ ⍵), map) lW ∇ ⍵↓⍨ lW+← p+ skip⊣ map skip← êxt.nl CFQSEsc c2 qtR             
       ⍝ Closing Quote: 
       ⍝ c= qtR:  
       ⍝   ∘ Now see if the NEXT char, c2, such that c2= qtR.
@@ -375,7 +386,7 @@
           (AplQt a, p↑⍵) (lW+ p)                       ⍝ Done... Return
       }
       qS lW← '' 1 Scan w          
-      qS (w↓⍨ ê.cfL+← lW)                              ⍝ w is returned sans CF quoted string 
+      qS (w↓⍨ êxt.cfL+← lW)                            ⍝ w is returned sans CF quoted string 
   } ⍝ End CF Quoted-String Scan
 
 ⍝ CFQSEsc:  (map len)← nl ∇ c2 qtR, where 
@@ -394,9 +405,9 @@
        (esc, c2) 2         ⍝ esc <any>      esc <any>   2   esc taken literally. 
   } 
 
-⍝ CFOm:   (omCode w)← ê ∇ ⍵ 
+⍝ CFOm:   (omCode w)← êxt ∇ ⍵ 
 ⍝ ⍵: /\d*/, i.e. optional digits starting right AFTER `⍵ or ⍹ symbols.
-⍝ Updates ê.cfL, ê.omC to reflect the # of digits consumed and their value.  
+⍝ Updates êxt.cfL, êxt.omC to reflect the # of digits consumed and their value.  
 ⍝ Returns omCode w:
 ⍝    omCode: the emitted code for selecting from the ∆F right arg (⍵);
 ⍝    w:      ⍵, just past the matched omega expression digits.
@@ -489,7 +500,7 @@
 ⍝ See ⍙Load_LibAuto 
 :Namespace libUtils
 ⍝⍝⍝⍝⍝ This is a local stub, pending (optional, but expected) load of ∆FLibUtils below.
-  ∇ {libNs}←  SetLibSimple libNs 
+  ∇ {libNs}←  LibSimple libNs 
     ; _readParmFi 
     ⍝ external in the stub... 
     ⍝   libUser, Auto, ShowPath, LoadParms
@@ -499,12 +510,12 @@
       libNs.⎕DF ⎕NULL                                  ⍝ Clear any prior ⎕DF.
       libNs.⎕DF '£=[',(⍕libNs),' ⋄ auto:0]'            ⍝ Now, set ours.
       Auto← (⍕libNs)⍨  
-      'parms' ⎕NS '_readParms' 'auto'⊣ _readParms auto← (0 0) 0 
+      'parms' ⎕NS '⍙readParms' 'auto'⊣ ⍙readParms auto← (0 0) 0 
       ShowPath← '⍬'⍨        
       LoadParms← ⍬⍨       
   ∇
 ⍝ Set name and ref for userLibrary here
-  SetLibSimple ##.userLibrary
+  LibSimple ##.userLibrary
 :EndNamespace
 :EndSection SKELETAL LIBRARY SERVICES 
 ⍝ ===================================================================================
@@ -521,8 +532,8 @@
     :IF aplVersion< 20                         ⍝ Are we on Dyalog version 20 or later?
       ∆VGET← { (↓⊃⍵) ⍺.{ 0≠⎕NC ⍺: ⎕OR ⍺ ⋄ ⍵ }¨ ⊃⌽⍵ }
       ∆VSET←{ 
-        ⍺←⊃⎕RSI ⋄ Ê← ⍺.{ ⍎⍺,'←⍵' } 
-        2=⍴⍴⊃⍵: ⍺⊣ Ê⍤1 0/ ⍵ ⋄ ⍺⊣ Ê/¨⍵
+        ⍺←⊃⎕RSI ⋄ êxt← ⍺.{ ⍎⍺,'←⍵' } 
+        2=⍴⍴⊃⍵: ⍺⊣ êxt⍤1 0/ ⍵ ⋄ ⍺⊣ êxt/¨⍵
       }
       ∆NS← { n1 n2← ⍵ ⋄ nl← n2.⎕NL ¯2    
         (⎕NS n1) ∆VSET (↑nl) (n2.⎕OR¨nl)
@@ -615,16 +626,14 @@
     HT← '⎕THIS' ⎕R ∆THIS                             ⍝ HT: "Hardwire" absolute ⎕THIS. 
     A← XR scA2← HT   ' ⎕THIS.A ' '{⎕ML←1⋄⍺←⍬⋄⊃⍪/(⌈2÷⍨w-m)⌽¨f↑⍤1⍨¨m←⌈/w←⊃∘⌽⍤⍴¨f←⎕FMT¨⍺⍵}' 
     B← XR scB2← HT   ' ⎕THIS.B ' '{⎕ML←1⋄⍺←0⋄⍺⎕SE.Dyalog.Utils.disp⊂⍣(1≥≡⍵),⍣(0=≡⍵)⊢⍵}' 
-      ⎕SHADOW 'cCod'    
+      ⎕SHADOW 'cCod'  
       cCod←  '{'
-      cCod,←   'def←3'',''⋄⍺←def⋄ n s←⍺,def↑⍨0⌊2-⍨≢⍺⋄'
-      cCod,←   'n←⍕n⋄s←{⍵≡⍥,''&'':''\&''⋄⍵/⍨1+''\''=⍵}s⋄' 
       cCod,←   '⎕IO ⎕ML←0 1⋄'
-      cCod,←   'w←{1<⍴⍴⍵: ∇⍤1⊢⍵⋄'
-      cCod,←      '1<|≡⍵: ∇¨⍵⋄3 5 7∊⍨80|⎕DR ⍵: ∇⍕¨⍵⋄'
-      cCod,←      '''[.Ee].*$'' (''(?<=\d)(?=(\d{'',n,''})+([-¯.Ee]|$))'')⎕R''&'' ('''',s,''&'')⊢⍵'
-      cCod,←   '}⍵⋄'
-      cCod,←   '1=≢w: ⊃w ⋄ w'
+      cCod,←   'd←3'',''⋄⍺←d⋄n s←⍺,d↑⍨0⌊2-⍨≢⍺⋄'   ⍝ d: defaults, n: ndigits, s: separator  
+      cCod,←   'n←⍕n⋄s←{⍵≡⍥,''&'':''\&''⋄⍵/⍨1+''\''=⍵}s⋄' 
+      cCod,←   'src←''[.Ee]\d+'' (''(?<=\d)(?=(\d{'',n,''})+([-¯.Ee]|(?=\s|$)))'')⋄'
+      cCod,←   'snk←''&'' ('''',s,''&'')⋄'
+      cCod,←   '1=≢w←{src ⎕R snk⊢⍵}⍤1⍕⍵: ⊃w⋄w'
       cCod,← '}'
     C← XR scC2← HT   ' ⎕THIS.C ' cCod 
     Ð← XR scÐ2← HT   ' ⎕THIS.Ð ' ' 0∘⎕SE.Dyalog.Utils.disp¯1∘↓'                           
@@ -708,7 +717,8 @@
   ∇
 ⍝ Show the following special globals in this namespace.
   ⍙ShowGlobalsIf←{
-     These←  'ESCAPE_CHAR'  'HELP_HTML_FI' 'LIB_ACTIVE' 'SHOW_LIB_ERRS' 'LIB_PARM_FI'  
+     These←  'ESCAPE_CHAR'  'HELP_HTML_FI' 'INLINE_UTILS' 
+     These,← 'LIB_ACTIVE' 'SHOW_LIB_ERRS' 'LIB_PARM_FI'  
      These,← 'LIB_USER_FI' 'LIB_SRC_FI' 'OPTS_KW' 'QUOTES_SUPPLEMENTAL' 'TRAP_ERRORS'  
      These,← 'VERBOSE_LOADTIME' 'VERBOSE_RUNTIME' 'VERSION'
     ~⍵: _←1 0⍴0  

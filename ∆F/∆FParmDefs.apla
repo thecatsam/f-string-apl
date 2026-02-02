@@ -1,20 +1,21 @@
-(
+﻿(
   ⍝ Default (Internal) Library Parameter File  (in APL Array Notation) 
   ⍝ Default file:           ∆F/∆FParmDefs.apla
   ⍝ User parameter file:   ./.∆F (no filetype)  
   ⍝ Global settings that impact the two parameter files:
-  ⍝    LIB_ACTIVE, VERBOSE 
+  ⍝    LIB_ACTIVE, VERBOSE_RUNTIME 
   ⍝ LIB_ACTIVE: 
-  ⍝           Setting  Do we want to use the SESSION LIBRARY autoload feature?
-  ⍝ LIB_ACTIVE:  2     Yes. Load default and user parameters
-  ⍝              1     Yes. Load default parameters ONLY.
-  ⍝              0     No.  No autoload features should be available.
-  ⍝ VERBOSE: Compile-time and run-time verbosity flag
+  ⍝      Setting  Do we want to use the SESSION LIBRARY autoload feature?
+  ⍝      2     Yes. Load default and user parameters
+  ⍝      1     Yes. Load default parameters ONLY.
+  ⍝      0     No.  No autoload features should be available.
+  ⍝ VERBOSE_RUNTIME: 
+  ⍝      Compile-time and run-time verbosity flag
+  ⍝      1     Yes. Be verbose at runtime
+  ⍝      0     No.  Don't.
+  
   ⍝                
-  ⍝ Items not to be (re)set by user may be omitted in user .∆F file.           
-  ⍝ If (verbose: ⎕NULL), then VERBOSE [note 1] is used for verbose.
-  ⍝ If (prefix: ⎕NULL) or (prefix: ⍬), then (prefix: '' ⋄)     
-  ⍝ [note 1] 
+  ⍝ Items with their default values may be omitted in user .∆F file.           
    
   ⍝ Parameter auto:
   ⍝   0: user must load own objects; nothing is automatic.                
@@ -59,7 +60,7 @@
   ⍝ ∘  If you wish, place the most likely suffixes first.
     suffix: ('.aplf' ⋄ '.apla' ⋄ '.aplo' ⋄ '.apln' ⋄ '.json' ⋄ '.txt' ⋄ '.dyalog')    
                   
-  ⍝  Internal Runtime (hidden) Parameters                                               
-    _readParms:  0 0                    ⍝ Have we read ([0] default parms, [1] user .∆F parms)
-    _fullPath:   ⍬                      ⍝ ⍬ Zilde: Generated from path and prefixes.
+  ⍝  Internal Runtime (hidden) Parameters. Do not modify or delete.                                               
+    ⍙readParms:  0 0                    ⍝ Have we read ([0] default parms, [1] user .∆F parms)
+    ⍙fullPath:   ⍬                      ⍝ ⍬ Zilde: Generated from path and prefixes.
 )  
