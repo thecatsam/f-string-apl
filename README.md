@@ -2,10 +2,6 @@
 
 <div class="right-margin-bar">
 
-<span class="margin-note">Short for “**format­ted string lit­er­als**,
-*f‑strings* were introduced in Python in 2016. **∆F** *f‑strings* and
-Python’s are **not** compatible.</span>
-
 <a id="intro" class="scroll-target"></a>
 
 <div class="marquee">
@@ -44,15 +40,10 @@ concise, yet powerful way to display multiline *APL* text, arbitrary
 
 1.  Via your browser, go to Github URL
     <mark><a id="displayText" href="javascript:linkAlert();"><span class="linkNote">https://github.com/thecatsam/f-string-apl.git</span></a></mark>.
-2.  Make a note of <span class="margin-note">Dyalog user command `]cd`
-    will show you your current working directory.</span>your current (or
-    desired) working directory.
-3.  <span class="margin-note">**Download:** E.g. via the Github **Code**
-    button, use download ZIP to place in the desired directory
-    .</span>Download and copy the file **∆F.dyalog** and directory
-    **∆F** (which contains several files) into the current working
-    directory, ensuring they are peers, *i.e.* at the same directory
-    level.
+2.  Make a note of your current (or desired) working directory.
+3.  Download and copy the file **∆F.dyalog** and directory **∆F** (which
+    contains several files) into the current working directory, ensuring
+    they are peers, *i.e.* at the same directory level.
 
 <big>👉</big> Now, **∆F** is available to load and use. Continue in the
 [next section](#loading-and-running-f).
@@ -60,11 +51,9 @@ concise, yet powerful way to display multiline *APL* text, arbitrary
 ## Loading and Running **∆F**
 
 1.  Confirm that your current directory remains as before.
-2.  From your Dyalog
-    session<span class="margin-note">*Or,* `⎕SE.⎕FIX'∆F.Dyalog'`<br>***⎕SE:***
-    Or any *target* namespace you desire.</span>, enter:
-    <br> `]load ∆F -target=⎕SE`<br> Now, the target directory (`⎕SE`)
-    will contain the function `∆F` and namespace `⍙FUtils`.
+2.  From your Dyalog session, enter: <br> `]load ∆F -target=⎕SE`<br>
+    Now, the target directory (`⎕SE`) will contain the function `∆F` and
+    namespace `⍙FUtils`.
 3.  By default, the ***help*** file, **∆F/∆FHelp.html** is available at
     `]load` time. If so, it will be copied into **⍙FUtils**. If not
     available, a message will note the absence of *help* information.
@@ -87,9 +76,7 @@ available in the file *readme.md* on Github.</small>
 
 ## Displaying ∆F **Help** in *APL*
 
-<span class="margin-note">If `∆F⍨'help'` seems exotic, try:
-`'help' ∆F ⍬`.</span> <big>👉</big> To display this **HELP**
-information, type: `∆F⍨ 'help'`.
+<big>👉</big> To display this **HELP** information, type: `∆F⍨ 'help'`.
 
 ------------------------------------------------------------------------
 
@@ -113,10 +100,8 @@ information, type: `∆F⍨ 'help'`.
 Inspired by [Python f‑strings](#appendix-ii-python-fstrings), **∆F**
 includes a variety of capabilities to make it easy to evaluate, format,
 annotate, and display related multi­dimensional information. A **∆F**
-*f-string* <span class="margin-note">For *f-string* formats, see [**∆F**
-Call Syn­tax Over­view](#f-call-syntax-overview).</span> is (typically) a
-character vector, which may reference objects in the environment,
-additional function arguments, or both.
+*f-string* is (typically) a character vector, which may reference
+objects in the environment, additional function arguments, or both.
 
 **∆F** *f‑strings* include:
 
@@ -124,40 +109,19 @@ additional function arguments, or both.
   one-by-one from the user’s specifications and data, then aligned and
   catenated into a single overall character matrix result;
 
-<span class="margin-note">`` `◇ ``: back­tick + state­ment sep­ar­ator
-(`⎕UCS 96 8900`). </span>
+  in **Code** fields, with several quote styles:
 
-- **Text** fields, each allowing [multiline Unicode
-  text](#text-fields-and-space-fields), with the sequence `` `◇ ``
-  generating a **new line**;
+  - **double-quotes**<br> `∆F '{"like this"}'` or
+    `` ∆F '{"on`◇""three""`◇lines"}' ``
 
-- **Code** fields, allowing users to evaluate and display *APL* arrays
-  of any dimensionality, depth, and type in the user environment, arrays
-  passed as **∆F** arguments, as well as arbitrary *APL* expressions
-  based on full multi-statement dfn logic. Each **Code** field must
-  return a value, simple or otherwise, which will be catenated with
-  other fields and returned from **∆F**;
+  - **double angle quotation marks**,<br>
+    `∆F '{«with internal quotes like "this" or ''this''»}'`,<br> *not to
+    mention:*
 
-  **Code** fields also provide a number of concise, convenient
-  extensions, such as:
+  - *APL*’s tried-and-true embedded **single-quotes**,<br>
+    `∆F '{''shown ''''right'''' here''}'`
 
-  - **Quoted strings** <span class="margin-note">Quoted strings, like
-    **Text** fields, allow easy entry of newlines via the sequence
-    `` `◇ ``.</span> in **Code** fields, with several quote styles:
-
-    - **double-quotes**<br> `∆F '{"like this"}'` or
-      `` ∆F '{"on`◇""three""`◇lines"}' ``
-    - **double angle quotation
-      marks**,<span class="margin-note"><big>**«**</big> and
-      <big>**»**</big>: Also known as *guillemets*.</span><br>
-      `∆F '{«with internal quotes like "this" or ''this''»}'`,<br> *not
-      to mention:*
-    - *APL*’s tried-and-true embedded **single-quotes**,<br>
-      `∆F '{''shown ''''right'''' here''}'`
-
-  - Simple shortcuts<span class="margin-note">Details on all the
-    [shortcuts](#code-field-shortcuts) are provided later in this
-    document.</span> for
+  - Simple shortcuts for
 
     - **format**ting numeric arrays, **\$** (short for
       **⎕FMT**):<br>`∆F '{"F7.5" $ ?0 0}'`
@@ -166,41 +130,23 @@ additional function arguments, or both.
     - placing the output of one expression **above** another,
       **%**:<br>`∆F '{"Pi"% ○1}'`
     - formatting **date** and **time** expressions from *APL* timestamps
-      (**⎕TS**) using **\`T**<span class="margin-note">`` `T ``
-      combines **1200⌶** and
-      **⎕DT**</span>:<br>`` ∆F '{"hh:mm:ss" `T ⎕TS}' ``
-    - calling <span class="margin-note">**£** stands for
-      *library*.</span>arbitrary functions on the fly from the **dfns**
-      workspace or a user
-      file:<br>`∆F '{41=£.pco 12}' ⍝ Is 41 the 12th prime?`
+      (**⎕TS**) using **\`T**:<br>`` ∆F '{"hh:mm:ss" `T ⎕TS}' ``
+    - calling arbitrary functions on the fly from the **dfns** workspace
+      or a user file:<br>`∆F '{41=£.pco 12}' ⍝ Is 41 the 12th prime?`
     - *and more*;
 
   - Simple mechanisms for concisely formatting and displaying data from
 
     - user arrays of any shape and
       dimensionality:<br>`tempC← 10 110 40 ◇ ∆F '{tempC}'` <br>
-    - arbitrary <span class="margin-note"><br>£ quietly finds `dec` and
-      `hex` in the **dfns** workspace.</span>*dfn*-style
+    - arbitrary *dfn*-style
       code:<br>`∆F '{ 223423 ≡⊃£.dec £.hex 223423: "Checks out" ◇ "Bad"}'`
       <br>
     - arguments to **∆F** that follow the format
-      string:<br>`` ∆F '{32+`⍵1×9÷5}' (10 110 40) ``<span class="margin-note">`` `⍵1 ``:
-      shortcut for `(⍵⊃⍨1+⎕IO)`
-    - *and more*;
-
-- **Space** fields, providing a simple mechanism both for separating
-  adjacent **Text** fields and inserting (rectangular) blocks of any
-  number of spaces between any two fields, where needed;
-
-  - one space: `{ }`; five spaces: `{     }`; or even, zero spaces:
-    `{}`;
-  - 1000 spaces? Use a **Code** field instead: `{1000⍴""}`.
-
-- Use of <span class="margin-note">These options are equi­valent:<br>∘
-  `0 1 1` <br>∘ `(verbose: 1 ◇ box: 1)`</span> *either*
-  [**positional**](#f-option-details) or
-  [**keyword**](#f-option-details) (namespace-based) options, based on
-  *APL* Array Notation (in­tro­duced in Dyalog 20);
+      string:<br>`` ∆F '{32+`⍵1×9÷5}' (10 110 40) `` *either*
+      [**positional**](#f-option-details) or
+      [**keyword**](#f-option-details) (namespace-based) options, based
+      on *APL* Array Notation (in­tro­duced in Dyalog 20);
 
 - Multiline (matrix) output built up field-by-field, left-to-right, from
   values and expressions in the calling environment or arguments to
@@ -208,10 +154,7 @@ additional function arguments, or both.
 
   - After all fields are generated, they are aligned vertically, then
     concatenated to form a single character matrix: ***the return value
-    from*** **∆F**. <span class="margin-note"><br>As a prototype, **∆F**
-    is relatively slow, using an *APL* recursive scan to analyze the
-    **f‑string**. For a way to speed up frequently used *f‑strings*, see
-    the [***dfn*** option](#f-option-details).</span>
+    from*** **∆F**.
 
 **∆F** is designed for ease of use, *ad hoc* debugging, fine-grained
 formatting and informal user interaction, built using Dyalog functions
@@ -258,7 +201,7 @@ and operators.
 
 <a id="inside-quick-start" class="scroll-target"></a>
 
-### <span class="blue"><strong>Here’s a quick start for the <small>**TL;DR**</small> <span class="margin-note">too long didn’t read</span>crowd. </strong></span>
+### <span class="blue"><strong>Here’s a quick start for the <small>**TL;DR**</small> crowd. </strong></span>
 
 **3.1: Embed variables**
 
@@ -413,10 +356,8 @@ a file)**
   simple integer vector (or a scalar), omitted (trailing) elements are
   replaced by the corresponding elements of the default,
   `0 0 0 1 0`.<br><big>👉</big> Extra elements will be ***ignored!***
-- **Keyword-style options:** If the left argument is a
-  <span class="margin-note">Dyalog 20 and later. See docu­ment­ation on
-  *APL* Ar­ray Not­ation.</span>namespace, it is assumed to contain option
-  names (in any order) with their non-default
+- **Keyword-style options:** If the left argument is a namespace, it is
+  assumed to contain option names (in any order) with their non-default
   values,<br>  e.g. `(verbose: 1 ◇ auto: 0)`;  
   Keyword options are new for Dyalog 20. They are sometimes clearer and
   more convenient than positional keywords.
@@ -507,30 +448,7 @@ in **Code** fields only *outside* **Quoted strings**.
 
 ## Escape Sequences: Text Fields & Quoted Strings
 
-<span class="margin-note">See [Quoted Strings in Code
-Fields](#quoted-strings-in-code-fields) below on displaying quote
-characters like `"` in a string. </span> **∆F** **Text** fields and
-**Quoted strings** in **Code** fields may include a small number of
-escape sequences, beginning with the backtick `` ` ``. Some sequences
-are valid in **Text** fields *only*, but not in Quoted strings:
-
-<span class="margin-note"><br><br><br><br><br>**Quoted Strings** appear
-***only*** in **Code** fields. </span>
-
-<a id="table-escapes" class="scroll-target"></a>
-
-| Escape Sequence | What It <br>Inserts | <br> Description | <br> Where |
-|:--:|:--:|:--:|:--:|
-| **\`◇** | *new line* | ⎕UCS 13 | Text fields and Quoted Strings |
-| **\`\`** | \` | backtick | Text fields and Quoted Strings |
-| **\`{** | { | left brace | Text fields only |
-| **\`}** | } | right brace | Text fields only |
-
-5e. <strong>Escape Sequences</strong>
-
-Other instances of the backtick character in **Text** fields or **Quoted
-strings** in **Code** fields will be <span class="margin-note">Sometimes
-a backtick is just a back­tick.</span> treated literally.
+treated literally.
 
 ## Quoted Strings in Code Fields
 
@@ -545,12 +463,10 @@ allow several delimiting quote styles:
 - *APL*’s tried-and-true embedded **single-quotes**,<br>
   `∆F '{''shown like ''''this'''', "this" or «this».''}'`.
 
-<span class="margin-note">Compare these
-examples:<br> **Invalid:** <span class="red"><strong>∆F ‘{“abc\`”def”}’</strong></span><br> **Valid:** `∆F '{"abc""def"}'`
-</span> If you wish to include a traditional delimiting quote (`'` or
-`"`) or the closing quote of a quote pair (`«` `»`) within the **Quoted
-string**, you must double it. You may *not* use an escape sequence
-(e.g. `` `" ``) for this purpose.
+<br> **Valid:** `∆F '{"abc""def"}'` </span> If you wish to include a
+traditional delimiting quote (`'` or `"`) or the closing quote of a
+quote pair (`«` `»`) within the **Quoted string**, you must double it.
+You may *not* use an escape sequence (e.g. `` `" ``) for this purpose.
 
 <a id="table-quote-characters" class="scroll-target"></a>
 
@@ -588,11 +504,10 @@ delimiter for the outermost (*APL*-level) string.
 
 ## **Serialise** Shortcut Expressions: Details
 
-Serialise ( `` `S ``) uses Dyalog *APL*’s Array Notation
-(APLAN)<span class="margin-note">**APLAN**:
-*⎕SE.Dyalog.Array.Serialise*.</span> to display the object to its right.
-It is intended to have roughly the same behaviour as displaying an
-object with `]APLAN.output on`. (See Dyalog documentation for details).
+Serialise ( `` `S ``) uses Dyalog *APL*’s Array Notation (APLAN) to
+display the object to its right. It is intended to have roughly the same
+behaviour as displaying an object with `]APLAN.output on`. (See Dyalog
+documentation for details).
 
 1.  Serialise displays objects of classes 2 and 9— data arrays and
     namespaces— in Array Notation, as long as they contain ***no***
@@ -618,20 +533,13 @@ object with `]APLAN.output on`. (See Dyalog documentation for details).
 
 ## Session Library Shortcut: Details
 
-1.  If <span class="margin-note">The search **path** depends on
-    settings. Here, we assume the default `auto` option and `]load`-time
-    par­a­meters. See [Lib­rary
-    Parameters](#session-library-shortcut-parameters) and [File­types of
-    Lib­rary Source
-    Files](#session-library-shortcut-filetypes-of-source-files)
-    below.</span> an object `£.name` is referenced, but not yet defined
-    in `£`, an attempt is made— during **∆F**’s left-to-right *scanning*
-    phase— to copy it to `£` from (in order) directory
-    **./MyDyalogLib**, workspace **dfns**, and the current directory
-    **./**, *unless* it is being assigned (via a simple `←`) or has
-    <span class="margin-note">Once a name is seen, no attempt will be
-    made to load it.</span>already been seen in this **∆F** call. It
-    will be available for the duration of the *APL* session.
+1.  If an object `£.name` is referenced, but not yet defined in `£`, an
+    attempt is made— during **∆F**’s left-to-right *scanning* phase— to
+    copy it to `£` from (in order) directory **./MyDyalogLib**,
+    workspace **dfns**, and the current directory **./**, *unless* it is
+    being assigned (via a simple `←`) or has already been seen in this
+    **∆F** call. It will be available for the duration of the *APL*
+    session.
 
 2.  If a name is a *qualified* name, i.e. if it is of the form
     `£.nm1.nm2`, `£.nm1.nm2.nm3`, etc., then **∆F** attempts to load the
@@ -656,10 +564,6 @@ object with `]APLAN.output on`. (See Dyalog documentation for details).
 
 ### Session Library Shortcut: Filetypes of Source Files
 
-<span class="margin-note"><br><br><br><br><br><br><br><br><br><br><br>**apla:**
-Encoded using *APL* Array Notation (Dyalog 20).<br><br><br>**txt:** Each
-line of file is converted to a Unicode char. vector.</span>
-
 <a id="table-library-filetypes" class="scroll-target"></a>
 
 | <br>Filetype | <br>Action | *APL* Class ⎕NC | Key APL<br>Service | Available<br>by Default? | Type <br>Enforced? |
@@ -677,166 +581,13 @@ line of file is converted to a Unicode char. vector.</span>
 
 ### Session Library Shortcut: Parameters
 
-The <span class="margin-note">If the automatic search feature is
-enabled— the default—, the *first* time each name is used there is the
-potential for substantial overhead in searching for, loading, and fixing
-it in the session library.</span> Session Library shortcut (`£` or
-`` `L ``) is deceptively simple, but the code to support it is a tad
-complex. The complex components run only when **∆F** is loaded. If the
-**auto** parameter is `1`, there is a modest performance impact at
-runtime. If `0`, the runtime impact of the feature is more modest still.
+The filetypes that indicate the types of objects in our “library,” along
+with any expected conversions.
 
-To support the Session Library auto-load process, there are parameters
-that may *optionally* be tailored:
-
-- **LIB_ACTIVE**: A global variable set in ∆FUtils.dyalog.
-  - 2: Load default and user parameters (default);
-  - 1: Load default parameters ONLY;
-  - 0: No autoload features should be available.
-
-In addition, there are user parameters settable in the file **.∆F** in
-the user’s home directory:
-
-- **auto:** allowing **∆F** to automatically load undefined objects of
-  the form `£.obj` or `` `L.obj `` into the Session Library from
-  workspaces or files on the search path;
-- **verbose:** providing limited information on parameters, object
-  loading, *etc.*;
-- **path:** listing what directories to search for the object
-  definitions;
-- **prefix:** literal character vectors to prefix to each file name
-  during the object search;
-- **suffix:** <span class="margin-note">More details appear
-  below.<br>Don’t forget the ‘.’ prefix!</span>filetypes that indicate
-  the types of objects in our “library,” along with any expected
-  conversions.
-
-The built-in *(default)* parameter file
-<span class="margin-note">Additional doc­ument­ation is need­ed, should
-this go forward.</span> is documented *below*.
-
-<details open>
-
-<summary class="summary">
-
- <em><span style="opacity:0.6;">Show/Hide</span> Default £ibrary
-Parameter File</em> <big><strong>. ∆F</strong></big>
-</summary>
-
-<a id="table-library-parameters" class="scroll-target"></a>
-
-``` skip
-(
-  ⍝ Default (Internal) Library Parameter File  (in APL Array Notation) 
-  ⍝ Default file:           ∆F/∆FParmDefs.apla
-  ⍝ User parameter file:   ./.∆F (no filetype)  
-  ⍝ Global settings that impact the two parameter files:
-  ⍝    LIB_ACTIVE, VERBOSE 
-  ⍝ LIB_ACTIVE: 
-  ⍝           Setting  Do we want to use the SESSION LIBRARY autoload feature?
-  ⍝ LIB_ACTIVE:  2     Yes. Load default and user parameters
-  ⍝              1     Yes. Load default parameters ONLY.
-  ⍝              0     No.  No autoload features should be available.
-  ⍝ VERBOSE: Compile-time and run-time verbosity flag
-  ⍝                
-  ⍝ Items not to be (re)set by user may be omitted in user .∆F file.           
-  ⍝ If (verbose: ⎕NULL), then VERBOSE [note 1] is used for verbose.
-  ⍝ If (prefix: ⎕NULL) or (prefix: ⍬), then (prefix: '' ◇)     
-  ⍝ [note 1] 
-   
-  ⍝ Parameter auto:
-  ⍝   0: user must load own objects; nothing is automatic.                
-  ⍝   1: dfns and files (if any) searched in sequence set by dfnsOrder.
-  ⍝      See path for directory search sequence. 
-  ⍝ If the user sets (auto: 0) as a ∆F option, then objects already loaded will
-  ⍝ be found and used normally, but no new objects will be autoloaded. New objects
-  ⍝ may be created explicitly (e.g. via 'obj' ⎕CY 'ws' or £.obj←val), as expected.
-  ⍝ Note: If (load: 0) or if there are no files or workspaces in the search path,
-  ⍝       auto is set to 0, since no objects will ever be found.                    
-    auto: 1
-      
-  ⍝ verbose: 
-  ⍝    If 0 (quiet), 
-  ⍝    If 1 (verbose).  
-  ⍝    If ⎕NULL, value is set from VERBOSE (see above).
-    verbose: ⎕NULL  
-                                                          
-  ⍝ path: The file dirs and/or workspaces to search IN ORDER left to right:
-  ⍝    e.g. path: [ 'fd1', 'fd2', ['ws1', 'wsdir/ws2'], 'fd3', ['ws3']]
-  ⍝    For a file directory, the item must be a simple char vector
-  ⍝        'MyDyalogLib'
-  ⍝    For workspaces, the item must be a vector of one or more char vectors
-  ⍝        (⊂'dfns') or (⊂'MyDyalogLib/mathfns') or ('dfns', 'myDfns')
-  ⍝  To indicate we don't want to search ANY files, 
-  ⍝     best: (load: 0)
-  ⍝     ok:   (path: ⎕NULL)
-  ⍝           directory      workspace    directory
-    path:  ( 'MyDyalogLib' ◇ ('dfns'◇)  ◇  '.'     ◇ )  
-                  
-  ⍝ prefix: literal string to prefix to each name, when searching directories.
-  ⍝     Ignored for workspaces.
-  ⍝     Default is ⍬ or (equivalently) ''
-  ⍝     Example given name 'mydfn' and (prefix: '∆F_' 'MyLib/' ◇ suffix: ⊂'.aplf')  
-  ⍝     ==> ('∆F_mydfn.aplf'  'MyLib/mydfn.aplf')   
-    prefix: ⍬ 
-                              
-  ⍝ suffix: at least one suffix is required for files to be checked.
-  ⍝ ∘  Note: Don't forget the '.'.
-  ⍝ ∘  Suffixes don't apply to workspaces. See documentation for definitions.
-  ⍝ ∘  By default, unknown filetypes are not enabled. 
-  ⍝    If they are enabled, they work the same as 'dyalog'.
-  ⍝ ∘  If possible, place most used suffixes first.
-    suffix: ('.aplf' ◇ '.apla' ◇ '.aplo' ◇ '.apln' ◇ '.json'◇ '.txt' ◇'.dyalog')    
-                  
-  ⍝  Internal Runtime (hidden) Parameters (not shown). Do not modify or delete. 
-  ⍝     ⍙readParms,⍙fullPath                                          
-)    
-```
-
-</details>
-
-------------------------------------------------------------------------
-
-</div>
-
-</details>
-
-<div class="page-break">
-
-</div>
-
-# Appendices
-
-<details open>
-
-<summary class="summary">
-
- <span style="opacity:0.6;">Show/Hide</span> <em>Appendices</em>
-</summary>
-
-<a id="inside-appendices" class="scroll-target"></a>
-
-## Appendix I: Un(der)documented Features
-
-### ∆F Option for Dfn Source Code
-
-If the [***dfn*** option](#f-option-details) is `¯1`, *equivalently*
-`(dfn: ¯1)`<span class="margin-note">In simple terms, this option
-returns the character representation of the *dfn* returned via the
-***dfn*** option. </span>, then **∆F** returns a character vector that
-contains the source code for the *dfn* returned via `(dfn: 1)`. If
-***verbose*** is also set, newlines from `` `◇ `` are shown as visible
-`␤`. However, since this option *returns* the code string, the
-***verbose*** option won’t also *display* the code string.
-
-### ∆F Help’s Secret Variant
-
-`∆F⍨'help'` has a secret variant: <span class="margin-note">*synonym:*
-`∆F⍨'help-n'`.</span>`∆F⍨'help-narrow'`. With this variant, the help
-session will start up in a narrower window *without* side notes. If the
-user widens the window, the side notes will appear, as in the default
-case: <span class="margin-note">*synonym:*
-`∆F⍨'help-wide'`.</span>`∆F⍨'help'`.
+The built-in *(default)* parameter file `∆F⍨'help-narrow'`. With this
+variant, the help session will start up in a narrower window *without*
+side notes. If the user widens the window, the side notes will appear,
+as in the default case: `∆F⍨'help'`.
 
 ### ∆F’s Library Parameter Option: ‘parms’
 
@@ -873,10 +624,8 @@ For more information on Python f-strings, *see*:
 
 <a id="inside-index" class="scroll-target"></a>
 
-<span class="margin-note"><big><big> <strong>KEY</strong></big><br><strong><big><span class="red"><strong><big>■</big>
-Major
-topic</strong></span></big><br><span class="green"><strong><big>■</big>
-Topic in table or figure</strong></span><br><big>■</big> Regular
+</big><br><span class="green"><strong><big>■</big> Topic in table or
+figure</strong></span><br><big>■</big> Regular
 entry</strong></big></span>
 
 <div class="multi-column-text" style="font-size:85%;">
@@ -1271,3 +1020,5 @@ style="font-weight: bold; font-size: 20px;font-family: Tahoma,  sans-serif;">
 </div>
 
 <!-- (C) 2026 Sam the Cat Foundation -->
+
+</div>
