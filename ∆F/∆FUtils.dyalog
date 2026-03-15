@@ -4,7 +4,8 @@
 ⍝ Sys vars for ∆F code. Remember, user code is executed in CALLER space (⊃⎕RSI) 
   ⎕IO ⎕ML ⎕PP← 0 1 34     
 ⍝ Load "global" vars shared temporarily via top-level loader ∆F.dyalog...
-  ⎕THIS ⎕NS ⎕SE.⍙FGlobals⊣ GLOBALS← ⎕SE.⍙FGlobals.⎕NL ¯2       
+  ⎕THIS ⎕NS ⎕SE.⍙FGlobals 
+  GLOBALS← ⎕SE.⍙FGlobals.⎕NL ¯2       
 ⍝ Set char. rendering of ⎕THIS. We can set ⎕THIS.⎕DF later, but ∆THIS will remain as is. 
   ∆THIS← ⍕⎕THIS                
 
@@ -12,8 +13,8 @@
 ⍝ =======================================================================
 ⍝ ∆F USER FUNCTION Source - See ⍙Export_∆F
 ⍝ =======================================================================
-⍝ ∆F_Template:  ==>  ##.∆F
-⍝    modified to become ##.∆F at ⍙Export_∆F.
+⍝ ∆F_Template:  ==>  ##.∆F (typically)
+⍝    Actual name and destination set at ⍙Export_∆F.
 ⍝ ∆F: 
 ⍝    result← {opts←⍬} ∇ f-string [args]
 ⍝ See notes elsewhere on ∆F itself.
@@ -483,7 +484,8 @@
 :Section FIX_TIME_ROUTINES 
 ⍝ ===================================================================================
 
-⍝ ⍙Export_∆F : rc← ∇ targNm destNs lockFn 
+⍝ ⍙Export_∆F : rc← ∇ (targNm: '∆F' ⋄ destNs: ## ⋄ lockFn: 0) 
+⍝   Args are optional (i.e. () is valid).
 ⍝ Used internally only at FIX-time:
 ⍝ On execution (default mode), ⍙Export_∆F creates ∆F in location specified as <destNs>.
 ⍝ If destNs is not namespace ⎕THIS, then we "promote the fn to target namespace,
@@ -492,9 +494,11 @@
 ⍝    ∘ sets __THIS__ to refer to this namespace (i.e. ...⍙FUtils)
 ⍝ If destNs is the namespace ⎕THIS, then we:
 ⍝    ∘ set '__UP__.'  to  ''
-  ∇ {targNm}← ⍙Export_∆F (targNm destNs lockFn) 
-    ; in; out; up 
+  ∇ {targNm}← ⍙Export_∆F args 
+    ; targNm; destNs; lockFn; in; out; up 
     ; Fix; Hardwire; QCom; NoEL; QLock; XR  
+  ⍝ ('targNm' '∆F') ('destNs' ##) ('lockFn' 0)
+    targNm destNs lockFn← args ⎕VGET  ('targNm' '∆F') ('destNs' ##) ('lockFn' 0) 
 
     up← '##.' ''⊃⍨ destNs=⎕THIS
     in←  '∆F_Template' '__UP__\.' '__THIS__'  '\b(args|opts|result)\b'
@@ -710,8 +714,8 @@
         :If APL_VERSION < 20
             ⎕←↑3⍴⊂'❌❌❌ This version of ∆F requires Dyalog 20 or later'
             ⎕SIGNAL 911 
-        :EndIf  
-        ⍙Export_∆F '∆F' ## 0          ⍝ Keep comments? (0→NO); lock? (0→NO).
+        :EndIf     
+        ⍙Export_∆F (targNm: '∆F' ⋄ destNs: ## ⋄ lockFn: 0)   
         ⍙Load_Shortcut_Calls
         ⍙Load_Help HELP_HTML_FI
         LIB_ACTIVE← ⍙Load_LibAuto LIB_SRC_FI LIB_ACTIVE KEEP_SRC_CM   
