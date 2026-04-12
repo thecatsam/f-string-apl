@@ -5,7 +5,7 @@
   ⎕IO ⎕ML ⎕PP← 0 1 34     
 ⍝ Load "global" vars shared temporarily via top-level loader ∆F.dyalog...
   ⎕THIS ⎕NS ⎕SE.⍙⍙FGlobals 
-⍝ Note the list of "globals"
+⍝ Note the names of all the "globals"
   GLOBALS← ⎕SE.⍙⍙FGlobals.⎕NL ¯2 ¯9       
 ⍝ Set char. rendering of ⎕THIS, so we can set ⎕THIS.⎕DF to something arbitrary.
   ∆THIS← ⍕⎕THIS                
@@ -239,7 +239,7 @@
   qtÊ←         Ê 'Unpaired quote in code field' 
   cfLogicÊ←    Ê 'A logic error has occurred processing a code field'
   optÊ←        Ê 'Invalid option(s) in left argument. For help: ∆F⍨''help'''
-  scBadÊ←      Ê {'Sequence "`',⍵,'" does not represent a valid shortcut.'}
+  ScBadÊ←      Ê {'Sequence "`',⍵,'" does not represent a valid shortcut.'}
                T1←{
                   t1← 'Sequence "`',⍵,'" not valid in code fields outside strings.'
                   t2← 'Did you mean "',⍵,'"?'
@@ -248,10 +248,11 @@
   EscÊ←        Ê T1 ⋄ ⎕EX 'T1'  
                t1← 'Help file "',HELP_HTML_FI,'" not found in current directory (CD)'
                t2← 'CD: "','"',⍨⊃1 ⎕NPARTS ''
-  helpFiÊ←  22 Ê t1,(⎕UCS 13),(17⍴''),t2 ⋄ ⎕EX 't1' 't2'
+  helpFiÊ←  22 Ê t1,(⎕UCS 13),(17⍴''),t2 
+               ⎕EX 't1' 't2'
    :EndSection Constants
 
-   :Section Utilities (Zero Side Effects) 
+   :Section Utilities (Must Have Zero Side Effects) 
 ⍝ ===================================================================================
 ⍝ Utilities (fns/ops) for ScanFStr above.
 ⍝ ∘ These must have zero side effects, except those reflected in ûsr-namespace objects.
@@ -289,7 +290,7 @@
     c='L': (⍺ libUtils.LibAuto w) w                    ⍝ Library shortcut: special (niladic) case
       p← MapSC c                                       ⍝ Look for other shortcuts
     nSC> p: (⍺.inline p⊃ scCodeTbl) w                  ⍝ Found? return code string.
-    c∊⍥⎕C ⎕A: ⎕SIGNAL scBadÊ c                         ⍝ Nope: Unknown shortcut!
+    c∊⍥⎕C ⎕A: ⎕SIGNAL ScBadÊ c                         ⍝ Nope: Unknown shortcut!
       ⎕SIGNAL EscÊ c                                   ⍝ Nope: An escape foll. by non-alphabetic.
   } ⍝ End CFEsc 
 

@@ -1,4 +1,4 @@
-⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-03-16') 
+⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-03-20') 
 :Namespace libUtils
 ⍝ ===================================================================================
 ⍝ This namespace handles Library (£ or `L) shortcut automatic loading
@@ -38,7 +38,7 @@
 ⍝ ∘ Does NOT affect the string ⍵ being scanned. 
 ⍝   - That's left to the scanner that called LibAuto.
 ⍝   - Is only used for its ⎕CY or ⎕FIX side effect via LoadObj. 
-⍝   - We add <name> to the cache, once we see it.  
+⍝   - We add <name> to the cache, once we see it, whether loaded, not found, or invalid!  
 ⍝ ∘ A name may be in the user library w/o having been loaded directly, e.g. 
 ⍝   - if a file in the domain of ⎕FIX contains multiple objects, all may be loaded,
 ⍝     as long as <name> is included.
@@ -114,10 +114,10 @@
         FixByType← { 
           sfx← ⊂⊃⌽⎕NPARTS fi← ⍵  
           ⍝ When ⎕FIX is applied to ¨fi¨, ¨êNm¨ must be among the names listed as ⎕FIXed.  
-          IfF sfx:  rcEN rcOK⊃⍨ êNm⊂⍛∊ êNms⊢← 2 ûLib.⎕FIX _FOpts êErrFi⊢←fi    ⍝ aplf/o/n, dyalog
-          IfA sfx:  rcOK⊣ ûLib ⎕VSET ⊂êNm (AN2Apl ⊃⎕NGET fi 1)                 ⍝ apla
-          IfJ sfx:  rcOK⊣ ûLib ⎕VSET ⊂êNm (⎕JSON _JOpts ⊃⎕NGET fi 0)           ⍝ json
-          IfT sfx:  rcOK⊣ ûLib ⎕VSET ⊂êNm ⊃⎕NGET fi (OptT sfx)                 ⍝ aplv, txt, aplvv, aplm
+          IfF sfx:  rcEN rcOK⊃⍨ êNm⊂⍛∊ êNms⊢← 2 ûLib.⎕FIX _FOpts êErrFi⊢←fi    ⍝ See below 
+          IfA sfx:  rcOK⊣ ûLib ⎕VSET ⊂êNm (AN2Apl ⊃⎕NGET fi 1)                 ⍝   ...
+          IfJ sfx:  rcOK⊣ ûLib ⎕VSET ⊂êNm (⎕JSON _JOpts ⊃⎕NGET fi 0)           ⍝   ...
+          IfT sfx:  rcOK⊣ ûLib ⎕VSET ⊂êNm ⊃⎕NGET fi (OptT sfx)                 ⍝   ...
                     rcEN rcOK⊃⍨ êNm⊂⍛∊ êNms⊢← êNm FixOrAssign fi               ⍝ Any other suffix                    
         }
         (FixByType fi) ('file:"',fi,'"')         
@@ -198,8 +198,8 @@
           }
         rc=rcNF: Ê 11 ('Object "',êNm,'" not found on search path')   
         rc=rcEN: Ê 11 ('Obj "',êNm,'" not present in ',srcFi) 
-      ⍝ rc=rcER: ↓↓↓.
-                 Ê êDMX.EN,⍥⊂ 'Error loading ',êNms,' into user library (',êDMX.Message,')'
+        rc=rcER: Ê êDMX.EN,⍥⊂ 'Error loading ',êNms,' into user library (',êDMX.Message,')'
+                 Ê 911 ('EndScan Logic Error: Unknown Return Code')
       }
     ⍝   ===========================================================================
     ⍝   Executive for LoadObj 
