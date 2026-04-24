@@ -1,4 +1,20 @@
-﻿⍝  MIT License
+﻿⍝ Depth from Dyalog's dfns workspace
+⍝ Recast as Ö. 
+⍝ Faster AFAIK than CircleDiaeresis below and not quite compatible.
+Ö←{                                     ⍝ Apply fn ⍺⍺ at depths ⍵⍵.
+    ⍺←⊣
+    depths←⌽3⍴⌽⍵⍵                       ⍝ expand right operand
+    m l r←depths-⍨(|≡¨⍵ ⍺ ⍵)×depths≥0   ⍝ ¨ digs top-down
+    max encl←'¨⊂'⍴¨⍨l(⌈,∘|-)r           ⍝ find number of ¨s and ⊂s
+    el er←(1 0=l≤r)/¨⊂encl              ⍝ where do the ⊂s go?
+    0::⎕SIGNAL ⎕EN                      ⍝ bubble errors up
+    ⍎'(',el,'⍺)⍺⍺',max,er,'⍵'           ⍝ do it!
+}
+
+⍝ ==================================================================================
+
+⍝ CircleDiaeresis from Adam B's https://github.com/abrudz/dyalog_vision github.
+⍝  MIT License
 ⍝ Copyright (c) 2018 Adám Brudzewsky
 
 ⍝ Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,34 +35,35 @@
 ⍝ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ⍝ SOFTWARE.
 
+
 ⍝ Original Op Name...
-⍝   CircleDiaeresis←{    
+⍝   CircleDiaeresis, replaced by Ö.   
 ⍝ Replaced by...
-Ö← {  
-    0::⎕SIGNAL⊂⎕DMX.(('EN'EN)('EM'EM)('Message'(OSError{⍵,2⌽(×≢⊃⍬⍴2⌽⍺,⊂'')/'") ("',⊃⍬⍴2⌽⍺}Message)))
-    ncs←⎕NC⊃⍤0⊢'⍺' '⍵⍵'
-    0 3≡ncs:⍺⍺ ⍵⍵ ⍵         ⍝   f⍥g Y
-    2 3≡ncs:⍺ ⍺⍺⍥⍵⍵ ⍵       ⍝ X f⍥g Y
-    1<≢⍴⍵⍵:⎕SIGNAL 4        ⍝ non-vec/scal: RANK
-    ⎕IO≠1 4⍸≢⍵⍵:⎕SIGNAL 5   ⍝ not 1…3 elements: LENGTH
-    (c←⎕NS ⍬).⎕CT←1E¯14     ⍝ tolerant space
-    c.≢∘⌊⍨⍵⍵:⎕SIGNAL 11     ⍝ not ints: DOMAIN
-    0∊⎕NC'⍺':0⊢∘⍺⍺ ∇∇ ⍵⍵⊢⍵  ⍝ monadic: placeholder left arg
-    ⍺←{⍵ ⋄ ⍺⍺}              ⍝ monadic: pass-thorugh
-    a←⍺                     ⍝ [17941]
-    k←⌽3⍴⌽⍵⍵                ⍝ r → r r r    q r → r q r    p q r → p q r
-    n←k c.<0
-    d←|≡¨3⍴⍵ ⍺ ⍵ ⍵
-    (n/k)+←n/d
-    k⌊←d
-    b←1↓k<d
-    b∧←0≠1↓d                ⍝ bottomed out
-    r←⍵⍵<0
-    ww←r+⍵⍵
-    ww+←(⌈/d)×r∧0=ww
-    S←⍺⍺ ∇∇ ww
-    c.⍱/b:⍺ ⍺⍺ ⍵  
-    c.</b:⍺∘S¨⍵   
-    c.>/b:S∘⍵¨⍺   
-    c.∧/b:⍺ S¨⍵   
-}
+⍝ Ö← {  
+⍝     0::⎕SIGNAL⊂⎕DMX.(('EN'EN)('EM'EM)('Message'(OSError{⍵,2⌽(×≢⊃⍬⍴2⌽⍺,⊂'')/'") ("',⊃⍬⍴2⌽⍺}Message)))
+⍝     ncs←⎕NC⊃⍤0⊢'⍺' '⍵⍵'
+⍝     0 3≡ncs:⍺⍺ ⍵⍵ ⍵         ⍝   f⍥g Y
+⍝     2 3≡ncs:⍺ ⍺⍺⍥⍵⍵ ⍵       ⍝ X f⍥g Y
+⍝     1<≢⍴⍵⍵:⎕SIGNAL 4        ⍝ non-vec/scal: RANK
+⍝     ⎕IO≠1 4⍸≢⍵⍵:⎕SIGNAL 5   ⍝ not 1…3 elements: LENGTH
+⍝     (c←⎕NS ⍬).⎕CT←1E¯14     ⍝ tolerant space
+⍝     c.≢∘⌊⍨⍵⍵:⎕SIGNAL 11     ⍝ not ints: DOMAIN
+⍝     0∊⎕NC'⍺':0⊢∘⍺⍺ ∇∇ ⍵⍵⊢⍵  ⍝ monadic: placeholder left arg
+⍝     ⍺←{⍵ ⋄ ⍺⍺}              ⍝ monadic: pass-thorugh
+⍝     a←⍺                     ⍝ [17941]
+⍝     k←⌽3⍴⌽⍵⍵                ⍝ r → r r r    q r → r q r    p q r → p q r
+⍝     n←k c.<0
+⍝     d←|≡¨3⍴⍵ ⍺ ⍵ ⍵
+⍝     (n/k)+←n/d
+⍝     k⌊←d
+⍝     b←1↓k<d
+⍝     b∧←0≠1↓d                ⍝ bottomed out
+⍝     r←⍵⍵<0
+⍝     ww←r+⍵⍵
+⍝     ww+←(⌈/d)×r∧0=ww
+⍝     S←⍺⍺ ∇∇ ww
+⍝     c.⍱/b:⍺ ⍺⍺ ⍵  
+⍝     c.</b:⍺∘S¨⍵   
+⍝     c.>/b:S∘⍵¨⍺   
+⍝     c.∧/b:⍺ S¨⍵   
+⍝ }

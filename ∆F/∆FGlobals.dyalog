@@ -16,7 +16,7 @@
  
   VERSION← 'v.0.2.2'          ⍝ Set/updated by ∆F_Publish.dyalog...
 ⍝ TRAP_ERRORS: If 0, turns off error trapping in ∆F.
-  TRAP_ERRORS← 0             
+  TRAP_ERRORS← 1             
 ⍝
 ⍝ VERBOSE_RUNTIME: Run-time verbosity flag
 ⍝ (verbose: 1) is ∆F-settable (user) run-time verbosity flag-- which

@@ -1,4 +1,4 @@
-⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-03-20') 
+⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-04-23') 
 :Namespace libUtils
 ⍝ ===================================================================================
 ⍝ This namespace handles Library (£ or `L) shortcut automatic loading
@@ -18,7 +18,7 @@
 
   :Section  Runtime Routines 
 ⍝ ===================================================================================
-⍝ RUNTIME ROUTINES
+⍝ RUNTIME ROUTINES: LibAuto (called in the code scanner)
 ⍝ ===================================================================================
 ⍝ LibAuto: libStr← ûsr ∇ str 
 ⍝    str: str starts 1 char after '£' or '`L'. 
@@ -32,7 +32,7 @@
 ⍝ 1. find the name nm in £.nm...[[∘]←] (first token in a qua.lif.ied name), and
 ⍝ 2. If valid and not seen before:
 ⍝   - If £. is followed by a dotted name nm1.nm2[...], then nm←nm1, the first one.
-⍝     That entire namespace is loaded, if found. In this case, that's 'nm1'; then
+⍝     That ENTIRE(!) namespace is loaded, if found. In this case, that's 'nm1'; then
 ⍝   - (via LoadObj) get source code for 'nm1' from a file or workspace in the 
 ⍝     path (pârms.⍙fullPath).
 ⍝ ∘ Does NOT affect the string ⍵ being scanned. 
@@ -43,6 +43,7 @@
 ⍝   - if a file in the domain of ⎕FIX contains multiple objects, all may be loaded,
 ⍝     as long as <name> is included.
 ⍝ ∘ No attempt is made to load (⎕CY/⎕FIX) invalid names or those already in ûLib.
+⍝   That awaits a fresh reload of ∆F (whether by ]load or ⎕FIX).
   LibNoAuto← {ûLibNmP} 
   LibAuto←{      
     ~⍺.auto:                 ûLibNmP                ⍝ Not auto? →Return.
@@ -60,7 +61,8 @@
   ⍝ Support Fns: NoLB, NmSpan
     NoLB← {(∨\' '≠⍵)/⍵}                             ⍝ Fast Idiom. 
     ⍝ NmSpan: Find longest left-anchored span of symbols valid in APL simple user names.
-    ⍝         We ensure the sequence is a valid name in a later step (see above).
+    ⍝         We ensure the sequence is an actual valid name in a later step (see above).
+    ⍝         For the fast span, it just needs to include (among other things) valid names.
       nmSym← { ⍺← ⎕D ⋄ 0=≢⍵: ⍺~'⍺⍵∇' ⋄ ¯1=⎕NC f←⊃⍵: ⍺ ∇ 1↓⍵ ⋄ (⍺,f) ∇ 1↓⍵ } ⎕AV   
     NmSpan← 0⍳⍨∊∘nmSym
  
@@ -301,25 +303,25 @@
           pârms.verbose← (⍬ ⎕NULL∊⍨ ⊂pârms.verbose)⊃ pârms.verbose ##.VERBOSE_RUNTIME 
       1: _← pârms⊣ pârms.⍙readParms← 1 0 
     }  
-    ⍝ Set baseline pârms in case we are directed NOT to read the default pârms or if it's corrupted...
-      SetBaseParms←{
-          ⍙readParms auto path prefix suffix verbose← (0 0) 0 ⍬ ⍬ ⍬ (##.VERBOSE_RUNTIME) 
-          'pârms' ⎕NS '⍙readParms' 'auto' 'path' 'prefix' 'suffix' 'verbose' 
-      }
-    ⍝ What to do if loading defaults or user pârms fails.
-    ⍝    ⍺ LoadErr warning
-    ⍝ Issues warning ⍵ if ⍵ is non-null  
-    ⍝ Sets LibAuto to a nop and sets auto and ⍙readParms to ¯1.
-    ⍝ isUsrP=1: error loading USER parameters (.∆F file); 
-    ⍝ isUsrP=0: error loading DEFAULT parameters
-      LoadErr← { isUsrP← ⍺        
-          warn← '❗❗❗ ∆F LIB. WARNING: ' 
-          amsg← (⊂'Library Autoload is '),¨ 'not available' 'available',¨'' ' with default parameters.'
-          _← { 0=≢⍵: ⍬ ⋄ ⊢⎕← warn, ⍵ }¨ ⍵ ⎕DMX.Message (isUsrP⊃ amsg)    
-          ⎕THIS.(LibAuto← LibNoAuto)                  ⍝ No Auto function!
-          pârms.(auto ⍙readParms← 0 (0 0))  
-        1: _← 0 
-      }
+  ⍝ Set baseline pârms in case we are directed NOT to read the default pârms or if it's corrupted...
+    SetBaseParms←{
+        ⍙readParms auto path prefix suffix verbose← (0 0) 0 ⍬ ⍬ ⍬ (##.VERBOSE_RUNTIME) 
+        'pârms' ⎕NS '⍙readParms' 'auto' 'path' 'prefix' 'suffix' 'verbose' 
+    }
+  ⍝ What to do if loading defaults or user pârms fails.
+  ⍝    ⍺ LoadErr warning
+  ⍝ Issues warning ⍵ if ⍵ is non-null  
+  ⍝ Sets LibAuto to a nop and sets auto and ⍙readParms to ¯1.
+  ⍝ isUsrP=1: error loading USER parameters (.∆F file); 
+  ⍝ isUsrP=0: error loading DEFAULT parameters
+    LoadErr← { isUsrP← ⍺        
+        warn← '❗❗❗ ∆F LIB. WARNING: ' 
+        amsg← (⊂'Library Autoload is '),¨ 'not available' 'available',¨'' ' with default parameters.'
+        _← { 0=≢⍵: ⍬ ⋄ ⊢⎕← warn, ⍵ }¨ ⍵ ⎕DMX.Message (isUsrP⊃ amsg)    
+        ⎕THIS.(LibAuto← LibNoAuto)                  ⍝ No Auto function!
+        pârms.(auto ⍙readParms← 0 (0 0))  
+      1: _← 0 
+    }
 
   ⍝ LoadUserParms: Loadtime routine
   ⍝ Loads parameter file ⍵ (if it exists) into namespace ⍺
@@ -353,7 +355,8 @@
       GenFullPath←{
         pfx pth← ⍵.(prefix path)
         ⍬{
-          0=≢⍵: ⍺ ⋄ p← ⊂⊃⍵ 
+        0=≢⍵: ⍺ 
+          p← ⊂⊃⍵ 
         2<|≡p: (⍺, p) ∇ 1↓⍵                            ⍝ workspace
           (⍺, ,p∘., '/'∘., pfx) ∇ 1↓⍵                  ⍝ file 
         } pth  
