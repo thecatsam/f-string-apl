@@ -15,7 +15,6 @@
 ⍝ VERBOSE_RUNTIME VERSION 
  
   SRC_FI←         '∆F/FString.dyalog'                 ⍝ Typically, rendered as namespace FString as well
-  PROMOTE_∆F←      0                                  ⍝ If 1, put ∆F itself in ⎕SE, not ⎕SE.FString
   ADD_∆F_TO_PATH←  1                                  ⍝ If 1, adds FString to Dyalog ⎕PATH.
   VERSION← 'v.0.4.2'                                  ⍝ Set/updated by ∆F_Publish.dyalog...
 
