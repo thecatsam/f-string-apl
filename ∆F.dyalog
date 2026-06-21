@@ -1,4 +1,4 @@
-:Namespace              ⍝ Unnamed NS. Won't clutter destination ns.                 
+:Namespace              ⍝ Unnamed NS.  Won't clutter destination ns.                 
 ⍝ ∆F Utility and Library Loader (Dyalog ≥20 Version!).
 ⍝ Does minimal loading; makes globals available to FString, which does rest of loading.
 ⍝ Load gFi

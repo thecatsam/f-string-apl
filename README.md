@@ -1,6 +1,6 @@
 ## 0 Introduction
 
-<div class="right-margin-bar"> 
+<div class="right-margin-bar">
 
 <a id="intro" class="scroll-target"></a>
 
