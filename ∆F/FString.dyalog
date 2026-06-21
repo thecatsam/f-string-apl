@@ -440,7 +440,7 @@
       html← CLoadHtml 'helpHtml' 
     ⍝ Screen widths correspond to 'help-narrow' vs 'help-wide'/'help' parameters in ⍵.
       s← (900 1000) (900 1350)⊃⍨ ~'-n'(1∘∊⍷)⍵   ⍝ ⍵ is 'help[-wide]' or 'help-narrow'
-      obj← ('HTML'  html) (s,⍨ ⊂'Size') (15 35,⍨ ⊂'Posn') ('Coord' 'ScaledPixel')   
+      obj← ('HTML' html) (s,⍨ ⊂'Size') (15 35,⍨ ⊂'Posn') ('Coord' 'ScaledPixel')   
       1 0⍴⍬⊣ html RenderHtml obj    
   }        
   
@@ -698,7 +698,7 @@
         :Return 
     :EndIf 
     :TRAP 22 
-        ⎕FIX⍠ 'FixWithErrors' 0⊣ ⎕SE.∆F⍙Share.libsrc
+        ⎕FIX⍠ 'FixWithErrors' 0⊣ ⎕SE.∆F⍙Share.library
         :If VERBOSE_LOADTIME 
             ⎕←'✅✅✅ Loaded services for Library shortcut (£)',how  
         :EndIf 
