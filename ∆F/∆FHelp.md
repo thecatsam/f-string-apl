@@ -1312,7 +1312,7 @@ reference `cv`.</span>
   T ⍬  → 1.1E¯5 | -93% ⎕⎕⎕
 ```
 
-The precomputed version is at least an <mark>order of magnitude</mark> faster.
+The precomputed version is <mark>much</mark> faster.
 
 Before we get to syntax and other information, we want to show you
 that <span class="margin-note">The _dfn_ returned includes the original _f‑string_ text used to generate it,
@@ -1344,7 +1344,7 @@ The temperature is 11°C or  51.8°F
   T ⊂cv   → 1.1E¯5 | -95% ⎕⎕⎕
 ```
 
-The precomputed version again shows a speedup of an <mark>order of magnitude</mark> or so compared to the default version.
+The precomputed version again shows a <mark>substantial</mark> speedup over the default version.
 
 ## Multiline _F-strings_ in Dyalog 20
 

@@ -60,14 +60,21 @@
 ⍝ Quote pairs, i.e. beyond double quotes and single quotes.
 ⍝ QUOTES_SUPPLEMENTAL must consist of 0 or more PAIRS of left AND right quotes.
 ⍝ You might consider any of these additions among others:
-  QS_FR1← '«»'                         ⍝ Help doc shows only these.
-  ⍝ QS_FR2 QS_FR3← '“”'  '‘’'       
-  ⍝ QS_JP1 QS_JP2← '「」' '『』' 
-  ⍝ QS_DE1 QS_DE2 QS_DE3← '»«' '„“' '‚‘'
-  ⍝ QS_CH1 QS_CH2← '《》' '「」'
-⍝ Note: The code can support all of these at the same time. 
-  QUOTES_SUPPLEMENTAL← QS_FR1  
-
+  QUOTE_STYLES←(
+      FR1: '«»'                         ⍝ Help doc shows only these.
+      FR2: '“”'  
+      FR3: '‘’'       
+      JP1: '「」' 
+      JP2: '『』' 
+      DE1: '»«'
+      DE2: '„“'
+      DE3: '‚‘'
+      CH1: '《》' 
+      CH2: '「」'
+⍝ Note: The code can support all of these at the same time.
+  ) 
+  QUOTES_SUPPLEMENTAL← QUOTE_STYLES.FR1 
+  
 ⍝ INLINE_UTILS. 
 ⍝ If 1, by default,
 ⍝     puts full definitions of internal utilities (shortcuts etc.) into the result.

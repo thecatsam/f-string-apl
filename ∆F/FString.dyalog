@@ -418,9 +418,9 @@
     2≠ ⎕NC 'val': ⎕SIGNAL êOpt  
   ⍝ LoadParms (isVerbose isCompact isRuntime)   
     'parms-c'≡ 7↑val: _← libUtils.LoadParms  (verbose: 1 ⋄ compact: 1 ⋄ runtime: 1)
-    'parms'  ≡   val: _← libUtils.LoadParms  (verbose: 1 ⋄ runtime: 1) 
+    'parms'  ≡   val: _← libUtils.LoadParms  (verbose: 1 ⋄ compact: 0 ⋄ runtime: 1) 
     'path'   ≡   val: _← libUtils.ShowPath ⍬ 
-    'globals'≡   val: _← ⍙ShowGlobalsIf 1                 ⍝ list all "globals"
+    'globals'≡   val: _← ShowGlobalsIf 1                 ⍝ list all "globals"
     'futures'≡   val: _← 'Futures: ',sq, sq,⍨ FUTURES     ⍝ What "futures" are enabled...
   ⍝ Undocumented: 'get' 'set'. Use at own risk.
     'get'    ≡   val: _← ⎕VGET ⊃⊆⍺                        ⍝ get one global ⍺ 
@@ -453,13 +453,13 @@
 ⍝ See libUtils.LinkUserLib
 ⍝ userLibrary is the user library.
 :Namespace userLibrary
-  ⍝ Minimal contents, pending ⍙Load_LibAuto.
+  ⍝ Minimal contents, pending LoadLibAuto.
   ⍝ Inherit key sys vars from the # namespace.
     ⎕IO ⎕ML ⎕PW ⎕PP ⎕CT ⎕DCT ⎕FR← #.(⎕IO ⎕ML ⎕PW ⎕PP ⎕CT ⎕DCT ⎕FR)     
 :EndNamespace
 
 ⍝ Utilities for "userLibrary" shortcut (£, `L) 
-⍝ See ⍙Load_LibAuto 
+⍝ See LoadLibAuto 
 :Namespace libUtils
 ⍝⍝⍝⍝⍝ This is a local stub, pending (optional, but expected) load of ∆FLibUtils below.
   ∇ {libNs}←  LibSimple libNs 
@@ -585,7 +585,7 @@
 
 :EndSection Shortcut functions 
 
-⍝ ⍙Load_Shortcut_Calls:   sc← ∇     (niladic) 
+⍝ LoadShortcutCalls:   sc← ∇     (niladic) 
 ⍝ At ⎕FIX time, load the run-time userLibrary names and code for user Shortcuts
 ⍝ and similar code (Ð, display, is used internally, so not a true user shortcut).
 ⍝ The userLibrary entries created in ∆Fapl are: 
@@ -615,7 +615,7 @@
 ⍝ At runtime, we'll generate shortcut code "pointers" scA, scB etc. based on flag ¨inline¨.
 ⍝ Warning: Be sure these can run in user env with any ⎕IO and ⎕ML: Localize them where needed.
 ⍝ NOTE: We are creating multiline objects using the old method for compatibility with Dyalog 19 etc.
-  ∇ {sc}← ⍙Load_Shortcut_Calls 
+  ∇ {sc}← LoadShortcutCalls 
   ; cdFut; elFut; rsuFut; g; grps; scEscCodes; _ 
   ; CPublish ; Fn2Inline; In  
   ⍝:Extern cd; cdNm; el; elNm; rsu; selCodeStr; VERBOSE_LOADTIME
@@ -675,7 +675,7 @@
   sc.Map← scEscCodes∘⍳
   ∇ 
 
-  ∇ {ok}← ⍙Load_Help hfi;e1; e2 
+  ∇ {ok}← LoadHelp hfi;e1; e2 
   ⍝ Loading the help html file...
     :Trap 22 
         ⎕THIS.helpHtml← ⊃⎕NGET hfi
@@ -688,7 +688,7 @@
         ok← 0 
     :EndTrap 
   ∇
-  ∇ {libActive}← ⍙Load_LibAuto (libFi libActive keepCm)
+  ∇ {libActive}← LoadLibAuto (libFi libActive keepCm)
     ;how 
     how← ' from "',libFi,'" into "','"',⍨∆THIS 
     :If libActive=0
@@ -709,9 +709,10 @@
     :EndTrap
   ∇
 ⍝ Show the following special globals in this namespace.
-  ⍙ShowGlobalsIf←{  
+  ShowGlobalsIf←{  S← 1∘⎕SE.Dyalog.Array.Serialise
     ~⍵: _←1 0⍴0  
-      vv← { 9= ⎕NC '⍵': ⊂⍕⍵ ⋄ 1∘⎕SE.Dyalog.Array.Serialise ⍵}¨ ⎕VGET gg← ⊂∘⍋⍛⌷⍨GLOBALS   
+      vv← { 9= ⎕NC '⍵': ⊂⍕⍵ ⋄ S ⍵ }¨ ⎕VGET gg← ⊂∘⍋⍛⌷⍨GLOBALS 
+      _← {((gg⍳⊂⍵)⊃vv)← ⊂ S ⎕VGET ⍵} 'QUOTE_STYLES'
     1: _← ↑'(', ')',⍨ vv {∊'  ',⍵ , ' ', ⍺}¨ (1+⌈/≢¨ gg)↑¨gg,¨ ':'  
   }
 ⍝ ====================================================================================
@@ -735,10 +736,10 @@
       ⍝ Only Export from FString namespace  is ∆F 
         0 1 ⎕EXPORT¨ (⎕NL ¯3 ¯4) (⊂'∆F')          
       ⍝ Sets sc: namespace with global shortcut table and related
-        sc← ⍙Load_Shortcut_Calls
-        ⍙Load_Help HELP_HTML_FI
-        LIB_ACTIVE← ⍙Load_LibAuto LIB_SRC_FI LIB_ACTIVE KEEP_SRC_CM   
-        ⍙ShowGlobalsIf VERBOSE_RUNTIME
+        sc← LoadShortcutCalls
+        LoadHelp HELP_HTML_FI
+        LIB_ACTIVE← LoadLibAuto LIB_SRC_FI LIB_ACTIVE KEEP_SRC_CM   
+        ShowGlobalsIf VERBOSE_RUNTIME
     :Else 
         ⎕← ↑⎕DMX.DM ⋄  ⎕←'Stack: ' ⋄ ⎕← 4{⍺≥≢⍵: '   ',⍵ ⋄ ⍺ ∇ ⍺↓⍵⊣ ⎕← '   ',⍺↑⍵} ⎕XSI  
         ⎕←↑1⍴⊂'❌❌❌ ∆F Initialisation has failed!'

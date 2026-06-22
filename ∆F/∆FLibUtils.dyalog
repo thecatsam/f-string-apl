@@ -245,7 +245,7 @@
 
 ⍝ LoadParms: Load default and user pârms for Library processing. (A .∆F LOAD TIME utility)
 ⍝   rc← ∇ opts
-⍝   opts:  (isV: 0 ⋄ isC: 0 ⋄ isR: 0)
+⍝   opts:  (verbose: 0 ⋄ compact: 0 ⋄ runtime: 0)
 ⍝ ∘ If called more than once, we reload everything so that any user pârms loaded
 ⍝   reflect changes to the initial, built-in state.
 ⍝     Load default pârms? If LIB_ACTIVE≥1
@@ -267,25 +267,26 @@
 ⍝   GenFullPath
 ⍝   LoadErr 
 ⍝   _CShow 
-  ∇ {rc}← LoadParms optsNs  
-    ; isV; isC; isR 
-    isV isC isR← optsNs ⎕VGET ('verbose' 0)('compact' 0)('runtime' 0)
+  ∇ {rc}← LoadParms parmNs  
+    ; v; c; r; parms
+    parms←  ↑'verbose' 'compact' 'runtime'
+    v c r← parmNs ⎕VGET parms 0
     rc← 1 0⍴⍬ 
     SetBaseParms ⍬
     :If ##.LIB_ACTIVE≥ 1 
         LoadDefaultParms ##.LIB_PARM_FI 
         :If ##.LIB_ACTIVE= 2
         :AndIf rc← pârms.⍙readParms[0]                 ⍝ Did we read the defaults? If so, continue...
-          isR LoadUserParms ##.LIB_USER_FI        
+          r LoadUserParms ##.LIB_USER_FI        
         :EndIf
       ⍝ If pârms.⍙fullPath is empty, then turn auto off, since there's nowhere to search..
         :If ~0∊ ≢¨pârms.(prefix path)
             pârms.⍙fullPath← GenFullPath pârms  
         :Else 
             pârms.⍙fullPath← ⍬
-            isV LoadErr 'The user parameter file generates an empty search path.'
+            v LoadErr 'The user parameter file generates an empty search path.'
         :EndIf 
-        rc← isV (isC _CShow) pârms 
+        rc← v (c _CShow) pârms 
     :EndIf 
   ∇
   ⍝ LoadDefaultParms: Load-time routine
@@ -367,14 +368,14 @@
     ⍝ _CShow: 
     ⍝ ∘ Cond'lly show all APLAN parameters in 'pârms' in alph order 
     ⍝   (⍺⍺=1) compactly, else (⍺⍺=0) multiline.
-    ⍝   EXCEPT internal ones starting with '_'
+    ⍝   EXCEPT internal ones starting with '⍙'
     ⍝ ∘ If ⍺=1, force a display, even if pârms.verbose=0.
     ⍝ ∘ Returns: a matrix of pârms or (1 0⍴'') 
       _CShow← { ⍺←0 
         0:: 1 0⍴⎕←'❌❌❌ ∆F Load: Error displaying runtime parameters'
         (~⍺)∧ ~⍵.verbose: _← 1 0⍴''  
         0= ≢nl← ⍵.⎕NL ¯2: _←1 0⍴'' 
-        1: _← ↑⍺⍺ Apl2AN ⍵.{⎕NS {⍵/⍨ '_'≠⊃¨⍵}⍵} nl
+        1: _← ↑⍺⍺ Apl2AN ⍵.{⎕NS {⍵/⍨ '⍙'≠⊃¨⍵}⍵} nl
       } 
     ⍝ ShowPath:  Called via 'path' call in ##.Special. 
       ShowPath← { ⊃1 Apl2AN pârms.⍙fullPath } 
