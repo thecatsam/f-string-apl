@@ -140,7 +140,7 @@ function arguments, or both.
       <br>
     - arbitrary <span class="margin-note"><br>£ quietly finds `dec` and `hex` in the **dfns** workspace.</span>_dfn_-style code:<br>`∆F '{ 223423 ≡⊃£.dec £.hex 223423: "Checks out" ◇ "Bad"}'`
       <br>
-    - arguments to **∆F** that follow the format string:<br>`` ∆F '{32+`⍵1×9÷5}' (10 110 40) ``<span class="margin-note">`` `⍵1 ``: shortcut for `(⍵⊃⍨1+⎕IO)`
+    - arguments to **∆F** that follow the format string:<br>`` ∆F '{32+`⍵1×9÷5}' (10 110 40) ``<span class="margin-note">`` `⍵1 ``: shortcut for `(⍵⊃⍨1+⎕IO)`</span>
     - _and more_;
 
 - **Space** fields, providing a simple mechanism both for separating adjacent **Text** fields and inserting (rectangular) blocks of any number of spaces between any two fields, where needed;

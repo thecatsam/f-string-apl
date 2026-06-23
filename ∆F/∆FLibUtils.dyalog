@@ -1,4 +1,4 @@
-⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-06-21') 
+⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-06-23') 
 :Namespace libUtils
 ⍝ ===================================================================================
 ⍝ This namespace handles Library (£ or `L) shortcut automatic loading.
@@ -56,7 +56,7 @@
     (⊂nm)∊ ⍺.acache:         ûLibNmP                ⍝ Saw it before? →Return.
         ⍺.acache,← ⊂nm                              ⍝     Mark as seen (even if invalid)
     0≠ ûLib.⎕NC nm:          ûLibNmP                ⍝ In libuser (>1) or invalid name (-1)? →Return. 
-    '←'= ⊃'∘ '~⍨ len↓w:      ûLibNmP                ⍝ Setting name? →Return.
+    '←'= ⊃'∘ '~⍨ len↓w:      ûLibNmP                ⍝ Setting name (simple ←)? →Return.
         _← ⍺ LoadObj nm                             ⍝ Try to load obj definition
                              ûLibNmP                ⍝ →Return.                                       
   }

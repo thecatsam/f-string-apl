@@ -154,10 +154,20 @@ objects in the environment, additional function arguments, or both.
       code:<br>`∆F '{ 223423 ≡⊃£.dec £.hex 223423: "Checks out" ◇ "Bad"}'`
       <br>
     - arguments to **∆F** that follow the format
-      string:<br>`` ∆F '{32+`⍵1×9÷5}' (10 110 40) `` *either*
-      [**positional**](#f-option-details) or
-      [**keyword**](#f-option-details) (namespace-based) options, based
-      on *APL* Array Notation (in­tro­duced in Dyalog 20);
+      string:<br>`` ∆F '{32+`⍵1×9÷5}' (10 110 40) ``
+    - *and more*;
+
+- **Space** fields, providing a simple mechanism both for separating
+  adjacent **Text** fields and inserting (rectangular) blocks of any
+  number of spaces between any two fields, where needed;
+
+  - one space: `{ }`; five spaces: `{     }`; or even, zero spaces:
+    `{}`;
+  - 1000 spaces? Use a **Code** field instead: `{1000⍴""}`.
+
+- Use of *either* [**positional**](#f-option-details) or
+  [**keyword**](#f-option-details) (namespace-based) options, based on
+  *APL* Array Notation (in­tro­duced in Dyalog 20);
 
 - Multiline (matrix) output built up field-by-field, left-to-right, from
   values and expressions in the calling environment or arguments to
