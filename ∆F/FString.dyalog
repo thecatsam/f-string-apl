@@ -421,7 +421,9 @@
     'parms'  ≡   val: _← libUtils.LoadParms  (verbose: 1 ⋄ compact: 0 ⋄ runtime: 1) 
     'path'   ≡   val: _← libUtils.ShowPath ⍬ 
     'globals'≡   val: _← ShowGlobalsIf 1                 ⍝ list all "globals"
+    'symbols'≡   val: _← ShowSymbols ⍬
     'futures'≡   val: _← 'Futures: ',sq, sq,⍨ FUTURES     ⍝ What "futures" are enabled...
+    '*'      ≡   val: _← ShowAll⍬
   ⍝ Undocumented: 'get' 'set'. Use at own risk.
     'get'    ≡   val: _← ⎕VGET ⊃⊆⍺                        ⍝ get one global ⍺ 
     'set'    ≡   val: _← (⎕VSET ⊂⍺)⊢ ⎕VGET ⊃⍺             ⍝ set one global, return old val
@@ -442,7 +444,24 @@
       s← (900 1000) (900 1350)⊃⍨ ~'-n'(1∘∊⍷)⍵   ⍝ ⍵ is 'help[-wide]' or 'help-narrow'
       obj← ('HTML' html) (s,⍨ ⊂'Size') (15 35,⍨ ⊂'Posn') ('Coord' 'ScaledPixel')   
       1 0⍴⍬⊣ html RenderHtml obj    
-  }        
+  }  
+  ShowSymbols← {
+    ↑(
+      ('  Special: "⍹£`"       ⍝ ⍹:omega-underscore, £:libra(ry), `:escape') 
+      ('  Futures: "', FUTURES,'"')
+    )
+  } 
+  ShowAll←{
+      ⎕← 'Parameters:'
+      ⎕← '  ',,libUtils.LoadParms  (verbose: 1 ⋄ compact: 1 ⋄ runtime: 1)
+      ⎕← 'Path:'
+      ⎕← '  ',libUtils.ShowPath ⍬
+      ⎕← 'Globals'
+      ⎕← ShowGlobalsIf 1
+      ⎕← 'Symbols'
+      ⎕← ShowSymbols⍬
+    1: _←⍬
+  }      
   
 :EndSection HELP AND ERROR SERVICES
 
