@@ -7,7 +7,7 @@
 ⍝ - global variables in globals
 ⍝ - source for the library (£,`L) code as libsrc
 ⍝ 
-⍝ [1] Save the names of all the globals passed here for later use.
+⍝ [1] Save (as a global) the names of all the globals passed here for later use.
   GLOBALS← ⎕SE.∆F⍙Share.globals.⎕NL ¯2 ¯9  
 ⍝ [2] Merge the globals into this ns.
   ⎕THIS ⎕NS ⎕SE.∆F⍙Share.globals
@@ -162,7 +162,7 @@
 ⍝ U auto      1   If 1, honors default/.∆F setting of pârms.auto∊ 0 1.
 ⍝ U inline    0   If 0, puts ref to ⍙Flib function.
 ⍝             1*  If 1, puts shortcut code defs right in output string; 
-⍝                 1 if INLINE_UTILS is set to 1.
+⍝                 1 if INLINE_DEF is set to 1.
 ⍝   acache    ⍬   autoload cache char. vector of vectors  
 ⍝   nl        CR  newline: nl (CR) or nlVis (the visible newline '␤').  
 ⍝   fields    ⍬   global field list
@@ -417,18 +417,18 @@
   ⍝        Returns display of default and user pârms (as mx) in alph order.
     2≠ ⎕NC 'val': ⎕SIGNAL êOpt  
   ⍝ LoadParms (isVerbose isCompact isRuntime)   
-    'parms-c'≡ 7↑val: _← libUtils.LoadParms  (verbose: 1 ⋄ compact: 1 ⋄ runtime: 1)
-    'parms'  ≡   val: _← libUtils.LoadParms  (verbose: 1 ⋄ compact: 0 ⋄ runtime: 1) 
+    'parms-c'≡   val: _← libUtils.LoadParms  (verbose: 1 ⋄ compact: 1 ⋄ runtime: 1)
+    'parms'  ≡ 5↑val: _← libUtils.LoadParms  (verbose: 1 ⋄ compact: 0 ⋄ runtime: 1) 
     'path'   ≡   val: _← libUtils.ShowPath ⍬ 
-    'globals'≡   val: _← ShowGlobalsIf 1                 ⍝ list all "globals"
-    'symbols'≡   val: _← ShowSymbols ⍬
-    'futures'≡   val: _← 'Futures: ',sq, sq,⍨ FUTURES     ⍝ What "futures" are enabled...
+  ⍝  globals
+    'glo'    ≡ 3↑val: _← ShowGlobalsIf 1                 ⍝ list all "globals"
+  ⍝  symbols 
+    'sym'    ≡ 3↑val: _← ShowSymbols ⍬                   ⍝ special symbols
+  ⍝  * = all of the above
     '*'      ≡   val: _← ShowAll⍬
-  ⍝ Undocumented: 'get' 'set'. Use at own risk.
-    'get'    ≡   val: _← ⎕VGET ⊃⊆⍺                        ⍝ get one global ⍺ 
-    'set'    ≡   val: _← (⎕VSET ⊂⍺)⊢ ⎕VGET ⊃⍺             ⍝ set one global, return old val
+  ⍝ If pfx of <val> not 'help', option error.
     'help'   ≢ 4↑val: ⎕SIGNAL êOpt 
-    ⍝ help | help-n[arrow] | help-w[ide] 
+  ⍝ help | help-n[arrow] | help-w[ide] 
       CLoadHtml← {   ⍝ Conditionally load help html file, i.e. if not already loaded...
         22:: ⎕SIGNAL êHelpFi 
         0= ⎕NC ⍵: ⊢⎕THIS.helpHtml← ⊃⎕NGET HELP_HTML_FI 
@@ -440,8 +440,9 @@
           ⍬⊣ 'htmlObj' ⎕WC 'HTMLRenderer',⍥⊆ ⍵ 
       }  
       html← CLoadHtml 'helpHtml' 
-    ⍝ Screen widths correspond to 'help-narrow' vs 'help-wide'/'help' parameters in ⍵.
-      s← (900 1000) (900 1350)⊃⍨ ~'-n'(1∘∊⍷)⍵   ⍝ ⍵ is 'help[-wide]' or 'help-narrow'
+    ⍝ Screen widths determined by help subtype (wide or narrow).
+    ⍝ Is val 'help-n[arrow]' or 'help[-wide]' (wide is default). 
+      s← (900 1000) (900 1350)⊃⍨ ~'-n'(1∘∊⍷)val   
       obj← ('HTML' html) (s,⍨ ⊂'Size') (15 35,⍨ ⊂'Posn') ('Coord' 'ScaledPixel')   
       1 0⍴⍬⊣ html RenderHtml obj    
   }  
@@ -452,14 +453,14 @@
     )
   } 
   ShowAll←{
-      ⎕← 'Parameters:'
-      ⎕← '  ',,libUtils.LoadParms  (verbose: 1 ⋄ compact: 1 ⋄ runtime: 1)
-      ⎕← 'Path:'
-      ⎕← '  ',libUtils.ShowPath ⍬
-      ⎕← 'Globals'
-      ⎕← ShowGlobalsIf 1
-      ⎕← 'Symbols'
+      ⎕← 'Symbols:'
       ⎕← ShowSymbols⍬
+      ⎕← 'Globals:'
+      ⎕← ShowGlobalsIf 1
+      ⎕← '(Library) Parms:'
+      ⎕← '  ',,libUtils.LoadParms  (verbose: 1 ⋄ compact: 1 ⋄ runtime: 1)
+      ⎕← '(Library) Path:'
+      ⎕← '  ',libUtils.ShowPath ⍬
     1: _←⍬
   }      
   

@@ -6,12 +6,12 @@
 ⍝ Exported via ∆F.dyalog "loader" to FString via temp ns ⎕SE.∆F⍙Share.  
 ⍝ See ∆F.dyalog for details.
 ⍝ ============   
-⍝ ADD_∆F_TO_PATH  APL_VERSION   ESCAPE_CHAR FUTURES
-⍝ HELP_HTML_FI    INLINE_UTILS  KEEP_SRC_CM  
-⍝ lIB_ACTIVE      LIB_PARM_FI   LIB_SRC_FI  LIB_USER_FI
-⍝ OPTS_DEFns      OPTS_DEFval   OPTS_KW     OPTS_N
-⍝ PROMOTE_∆F      QS_FR1        QUOTES_SUPPLEMENTAL  
-⍝ SIGNAL_LIB_ERRS SRC_FI        TRAP_ERRORS VERBOSE_LOADTIME  
+⍝ ADD_∆F_TO_PATH  APL_VERSION       ESCAPE_CHAR FUTURES
+⍝ HELP_HTML_FI    INLINE_DEF        KEEP_SRC_CM  
+⍝ lIB_ACTIVE      LIB_PARM_FI       LIB_SRC_FI  LIB_USER_FI
+⍝ OPTS_DEFns      OPTS_DEFval       OPTS_KW     OPTS_N
+⍝ PROMOTE_∆F      QS_FR1            QUOTES_SUPPLEMENTAL  
+⍝ SIGNAL_LIB_ERRS SRC_FI            TRAP_ERRORS VERBOSE_LOADTIME  
 ⍝ VERBOSE_RUNTIME VERSION 
  
   SRC_FI←         '∆F/FString.dyalog'                 ⍝ Typically, rendered as namespace FString as well
@@ -75,19 +75,15 @@
   ) 
   QUOTES_SUPPLEMENTAL← QUOTE_STYLES.FR1 
   
-⍝ INLINE_UTILS. 
+⍝ INLINE_DEF. 
 ⍝ If 1, by default,
 ⍝     puts full definitions of internal utilities (shortcuts etc.) into the result.
 ⍝ If 0, by default,
 ⍝     refers to local copies of internal utilities in FString in the result.
 ⍝ May be overridden by (inline: ⍵), where ⍵ is either 1 or 0.
-⍝ There are occasions where INLINE_UTILS mode results in marginally faster code, but
+⍝ There are occasions where INLINE_DEF mode results in marginally faster code, but
 ⍝ in general with (verbose: 1), the code is very long and rather unreadable.
-  INLINE_UTILS← 0 
-
-⍝ HELP FILE          
-⍝ File is loaded into FString at load-time for use by ∆F⍨'help'. 
-  HELP_HTML_FI← '∆F/∆FHelp.html'                       
+  INLINE_DEF← 0 
 
 ⍝ FUTURES
 ⍝ '⍥' ∊ FUTURES
@@ -116,12 +112,16 @@
   LIB_PARM_FI← '∆F/∆FParmDefs.apla' 
   LIB_USER_FI← '.∆F'                                   ⍝ User parameters, rel. to Apl ]CD
   LIB_SRC_FI←  '∆F/∆FLibUtils.dyalog'                  ⍝ Library shortcuts (£,  `L) utilities.
+⍝ HELP FILE          
+⍝ File is loaded into FString at load-time for use by ∆F⍨'help'. 
+  HELP_HTML_FI← '∆F/∆FHelp.html'                       
+
   
 ⍝ ==================================================================================
 ⍝ VARIABLES FOR ∆F OPTIONS: Positional and keyword 
 ⍝ =======================================================================
-  OPTS_KW←      ↑'dfn' 'verbose'        'box' 'auto' 'inline'          ⍝ In order 
-  OPTS_DEFval←    0    VERBOSE_RUNTIME   0     1      INLINE_UTILS     ⍝ In order
+  OPTS_KW←      ↑'dfn' 'verbose'        'box' 'auto' 'inline'              ⍝ In order 
+  OPTS_DEFval←    0    VERBOSE_RUNTIME   0     1      INLINE_DEF     ⍝ In order
   OPTS_N←       ≢OPTS_DEFval 
 
 ⍝ OPTS_DEFns: The defaults in namespace form. Treat as a read-only object.
