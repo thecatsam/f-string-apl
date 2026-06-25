@@ -373,7 +373,8 @@ a file)**
 - **Positional-style options:** If **∆F**’s left argument `⍺` is a
   simple integer vector (or a scalar), omitted (trailing) elements are
   replaced by the corresponding elements of the default,
-  `0 0 0 1 0`.<br><big>👉</big> Extra elements will be ***ignored!***
+  `0 0 0 1 0`.<br><big>👉</big> Extra elements will trigger a ***DOMAIN
+  ERROR.***
 - **Keyword-style options:** If the left argument is a namespace, it is
   assumed to contain option names (in any order) with their non-default
   values,<br>  e.g. `(verbose: 1 ◇ auto: 0)`;  
@@ -715,7 +716,7 @@ the call: `∆F⍨ 'globals'`. The parameters include:
 ``` skip
 
   TRAP_ERRORS      VERBOSE_RUNTIME      VERBOSE_LOADTIME  SIGNAL_LIB_ERRS
-  ESCAPE_CHAR      QUOTES_SUPPLEMENTAL  INLINE_UTILS      HELP_HTML_FI   
+  ESCAPE_CHAR      QUOTES_SUPPLEMENTAL  INLINE_DEF        HELP_HTML_FI   
   LIB_ACTIVE       LIB_PARM_FI          LIB_USER_FI       LIB_SRC_FI
   OPTS_KW          OPTS_DEFval          OPTS_N
   VERBOSE_RUNTIME  VERSION              FUTURES
