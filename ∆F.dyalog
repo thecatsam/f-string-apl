@@ -24,18 +24,10 @@
   :Trap 0
       g← 0 ⎕FIX  gFi                                    ⍝ Load globals from file into namespace <g>
     ⍝ Sanity check... 
-      SANITY_CHECK  (
-        'SRC_FI' 1        ⋄ 'LIB_SRC_FI'  0  ⋄  'LIB_PARM_FI' 0   
-        'HELP_HTML_FI' 0  ⋄ 'LIB_USER_FI' 0  
-      )                      
-      main lib← { ⊃⎕NGET ⍵ 1}¨ g.( SRC_FI LIB_SRC_FI ) 
+       main lib← { ~⎕NEXISTS ⍵: '' ⋄ ⊃⎕NGET ⍵ 1}¨ g.( SRC_FI LIB_SRC_FI ) 
       :If ~g.KEEP_SRC_CM                                ⍝ Remove comments?  (except ⍝!)
-          in out← ↓⍉↑( 
-            '''[^'']*'''    '&'
-            '\h*⍝(?!\!).*'  ''
-            '^\h*$'         '' 
-          )
-          main lib← { t/⍨ 0≠≢¨t← in ⎕R out⊢ ⍵ }¨ main lib 
+          in out← ↓⍉↑( '''[^'']*'''  '&' ⋄ '\h*⍝(?!\!).*'  '' ⋄ '^\h*$'  '' )
+          main lib← { 0=≢⍵: '' ⋄ t/⍨ 0≠≢¨t← in ⎕R out⊢ ⍵ }¨ main lib 
       :EndIf 
     ⍝ Share globals and lib with <main> as it is fixed...
       ⎕SE.∆F⍙Share← (globals: g ⋄ library: lib)         ⍝ lib ⎕FIXed in FString...
@@ -48,17 +40,6 @@
   :EndTrap 
 ⍝ Unshare globals (on success or failure)
   ok← ⎕EX '⎕SE.∆F⍙Share'                                
-∇
-∇ SANITY_CHECK vars 
-  ; var; fReq; undef; fNm; _  
-  :For var fReq :in vars 
-    :IF undef← ⍬≡ fNm← g ⎕VGET ⊂var ⍬ ⋄  :ORIF ~⎕NEXISTS fNm 
-        _←  'Global variable "', var, '" ' 
-        _,← ('specifies an valid file "',fNm,'".') 'is not defined.' ⊃⍨ undef 
-        _, ←  ' We will proceed without it.' ' It is required!'⊃⍨ fReq
-       '👎👎👎 ', _
-    :EndIf
-  :EndFor
 ∇
   Load '∆F/∆FGlobals.dyalog'
             
