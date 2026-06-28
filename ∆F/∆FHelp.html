@@ -2272,7 +2272,7 @@ style="text-align: center;"><code>(dfn: 0 ◇ verbose: 0 ◇ box: 0 ◇ auto: 1 
 left argument <code>⍺</code> is a simple integer vector (or a scalar),
 omitted (trailing) elements are replaced by the corresponding elements
 of the default, <code>0 0 0 1 0</code>.<br><big>👉</big> Extra elements
-will be <strong><em>ignored!</em></strong></li>
+will trigger a <strong><em>DOMAIN ERROR.</em></strong></li>
 <li><strong>Keyword-style options:</strong> If the left argument is a
 <span class="margin-note">Dyalog 20 and later. See docu­ment­ation on
 <em>APL</em> Ar­ray Not­ation.</span>namespace, it is assumed to contain
@@ -2849,7 +2849,31 @@ notation)</td>
 </tr>
 <tr>
 <td style="text-align: center;">.txt</td>
-<td style="text-align: center;">Assigns char. vectors</td>
+<td style="text-align: center;">Assigns a char. vector</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;"><em>assignment</em></td>
+<td style="text-align: center;">✔</td>
+<td style="text-align: center;">✔</td>
+</tr>
+<tr>
+<td style="text-align: center;">.aplv</td>
+<td style="text-align: center;">Assigns a char. vector</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;"><em>assignment</em></td>
+<td style="text-align: center;">✔</td>
+<td style="text-align: center;">✔</td>
+</tr>
+<tr>
+<td style="text-align: center;">.aplvv</td>
+<td style="text-align: center;">Assigns char. vector of vectors</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;"><em>assignment</em></td>
+<td style="text-align: center;">✔</td>
+<td style="text-align: center;">✔</td>
+</tr>
+<tr>
+<td style="text-align: center;">.aplm</td>
+<td style="text-align: center;">Assigns char. matrix</td>
 <td style="text-align: center;">2</td>
 <td style="text-align: center;"><em>assignment</em></td>
 <td style="text-align: center;">✔</td>
@@ -3107,7 +3131,7 @@ these parameters using the call: <code>∆F⍨ 'globals'</code>. The
 parameters include:</p>
 <pre class="skip"><code>
   TRAP_ERRORS      VERBOSE_RUNTIME      VERBOSE_LOADTIME  SIGNAL_LIB_ERRS
-  ESCAPE_CHAR      QUOTES_SUPPLEMENTAL  INLINE_UTILS      HELP_HTML_FI   
+  ESCAPE_CHAR      QUOTES_SUPPLEMENTAL  INLINE_DEF        HELP_HTML_FI   
   LIB_ACTIVE       LIB_PARM_FI          LIB_USER_FI       LIB_SRC_FI
   OPTS_KW          OPTS_DEFval          OPTS_N
   VERBOSE_RUNTIME  VERSION              FUTURES</code></pre>

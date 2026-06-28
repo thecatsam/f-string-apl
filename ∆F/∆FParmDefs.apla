@@ -12,7 +12,7 @@
     ⍝      1     Yes. Load default parameters ONLY.
     ⍝      0     No.  No autoload features should be available.
     ⍝ VERBOSE_RUNTIME: 
-    ⍝      Compile-time and run-time verbosity flag
+    ⍝      Run-time verbosity flag
     ⍝      1     Yes. Be verbose at runtime
     ⍝      0     No.  Don't.
   

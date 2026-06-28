@@ -5,13 +5,14 @@
 ⍝ These are treated as "installation-level" variables, not user-level variables.
 ⍝ Exported via ∆F.dyalog "loader" to FString via temp ns ⎕SE.∆F⍙Share.  
 ⍝ See ∆F.dyalog for details.
+⍝ NOTE: ALL PARAMETERS MUST BE SPECIFIED, whether "default" or otherwise.
 ⍝ ============   
-⍝ ADD_∆F_TO_PATH  APL_VERSION       ESCAPE_CHAR FUTURES
-⍝ HELP_HTML_FI    INLINE_DEF        KEEP_SRC_CM  
-⍝ lIB_ACTIVE      LIB_PARM_FI       LIB_SRC_FI  LIB_USER_FI
-⍝ OPTS_DEFns      OPTS_DEFval       OPTS_KW     OPTS_N
-⍝ PROMOTE_∆F      QS_FR1            QUOTES_SUPPLEMENTAL  
-⍝ SIGNAL_LIB_ERRS SRC_FI            TRAP_ERRORS VERBOSE_LOADTIME  
+⍝ ADD_∆F_TO_PATH  APL_VERSION    ESCAPE_CHAR  FUTURES
+⍝ HELP_HTML_FI    INLINE_DEF     KEEP_SRC_CM  LIB_ACTIVE 
+⍝ LIB_PARM_FI     LIB_SRC_FI     LIB_USER_FI  OPTS_DEFns   
+⍝ OPTS_DEFval     OPTS_KW        PROMOTE_∆F  
+⍝ QS_FR1          QUOTES_SUPPLEMENTAL         SIGNAL_LIB_ERRS  
+⍝ SRC_FI          TRAP_ERRORS    VERBOSE_LOADTIME  
 ⍝ VERBOSE_RUNTIME VERSION 
  
   SRC_FI←         '∆F/FString.dyalog'                 ⍝ Typically, rendered as namespace FString as well
@@ -61,15 +62,15 @@
 ⍝ QUOTES_SUPPLEMENTAL must consist of 0 or more PAIRS of left AND right quotes.
 ⍝ You might consider any of these additions among others:
   QUOTE_STYLES←(
-      FR1: '«»'                         ⍝ Help doc shows only these.
+      FR1: '«»'        ⍝ French           ⍝ Help doc shows only these.
       FR2: '“”'  
-      FR3: '‘’'       
-      JP1: '「」' 
+      FR3: '‘’'           
+      JP1: '「」'       ⍝ Japanese
       JP2: '『』' 
-      DE1: '»«'
+      DE1: '»«'        ⍝ German
       DE2: '„“'
       DE3: '‚‘'
-      CH1: '《》' 
+      CH1: '《》'       ⍝ Chinese
       CH2: '「」'
 ⍝ Note: The code can support all of these at the same time.
   ) 
@@ -116,13 +117,11 @@
 ⍝ File is loaded into FString at load-time for use by ∆F⍨'help'. 
   HELP_HTML_FI← '∆F/∆FHelp.html'                       
 
-  
 ⍝ ==================================================================================
 ⍝ VARIABLES FOR ∆F OPTIONS: Positional and keyword 
 ⍝ =======================================================================
   OPTS_KW←      ↑'dfn' 'verbose'        'box' 'auto' 'inline'              ⍝ In order 
   OPTS_DEFval←    0    VERBOSE_RUNTIME   0     1      INLINE_DEF     ⍝ In order
-  OPTS_N←       ≢OPTS_DEFval 
 
 ⍝ OPTS_DEFns: The defaults in namespace form. Treat as a read-only object.
   OPTS_DEFns← ()⎕VSET OPTS_KW OPTS_DEFval

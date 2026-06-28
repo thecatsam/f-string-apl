@@ -1,5 +1,5 @@
 :Namespace FString   
-⍝  VERSION: Dyalog 20 and later!
+⍝  Requires Dyalog 20 or later!
 :Section CORE  
 ⍝ Env for ∆F code. Remember, user code is executed in CALLER space (⊃⎕RSI) 
   ⎕IO ⎕ML ⎕PP← 0 1 34     
@@ -30,8 +30,8 @@
             opts← ⎕NS OPTS_DEFns                              ⍝ → Copy OPTS_DEFns                
         :ElseIf 9=⎕NC 'opts'                                  ⍝ opts references a namespace
             opts← ⎕NS OPTS_DEFns opts                         ⍝ → Copy OPTS_DEFns and kw user opts                        
-        :ElseIf 11 83∊⍨ ⎕DR opts ⋄ :AndIf  OPTS_N≥ ≢opts      ⍝ Ints / booleans, none trailing
-            opts← (⎕NS OPTS_DEFns) ⎕VSET (OPTS_KW↑⍨≢opts)opts ⍝ → Copy OPTS_DEFns and pos'l user opts
+        :ElseIf 11 83∊⍨ ⎕DR opts ⋄ :AndIf OPTS_KW ≥⍥≢ opts    ⍝ Ints / booleans, none trailing
+            opts← OPTS_DEFns ⎕NS⍛⎕VSET (OPTS_KW↑⍨≢opts) opts  ⍝ → Copy OPTS_DEFns and pos'l user opts
         :Else                                                 ⍝ Kitchen sink 
             result← args Special opts ⋄ :Return               ⍝ → Help / other special or error
         :EndIf 
@@ -44,7 +44,7 @@
             result← opts ((⊃⎕RSI){ ⍺⍺⍎ ⍺ ScanFStr ⊃⍵⊣ ⎕EX 'opts' 'args'}) args 
       ⍝  1: Generate dfn code 
         :Case  1       
-            result← (⊃⎕RSI)⍎ opts ScanFStr ⊃args
+            result← ⎕RSI ⊃⍛⍎ opts ScanFStr ⊃args
       ⍝  ¯1: Generate source code for dfn
         :Case ¯1                                    
             result← opts ScanFStr ⊃args  
@@ -682,7 +682,7 @@
   ⍝:Extern scA2 scB2; scC2; scCD2 cEl2 scJ2; scQ2; scS2; scF2; scM2; scT2; scW2; scÐ2; scSel2 
   scA2 scB2 scC2 scJ2 scM2 scQ2 scS2 scT2 scW2 ← CPublish¨ 'ABCJMQSTW' 
   scÐ2←   '0∘⎕SE.Dyalog.Utils.disp¯1∘↓' CPublish 'Ð'     
-  scF2←   2⍴⊂' ⎕FMT ' 
+  scF2←   2⍴⊂ ' ⎕FMT ' 
   scCD2 scEl2←  cdFut elFut CPublish¨ (cdNm cd) (elNm el) 
   scSel2← 2⍴ ⊂rsu selCodeStr⊃⍨ rsuFut 
     
