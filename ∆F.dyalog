@@ -2,7 +2,7 @@
 ⍝ ∆F Utility and Library Loader (Dyalog ≥20 Version!).
 ⍝ Does minimal loading; makes globals available to FString, which does rest of loading.
 ⍝ Load gFi
-⍝ - gFi: a file with global variables: '∆F/∆FGlobals.dyalog' ==> g (a local namespace)
+⍝ - gFi: a file with global variables: '∆F/∆FGlobals.aplns' ==> g (a local namespace)
 ⍝ - From g, gets name of the source for ∆F and its library,  g.SRC_FI (typically FString.dyalog) 
 ⍝   as FString  
 ⍝ - From g, gets name of the "library £" file libSrc
@@ -45,6 +45,6 @@
 ⍝ Unshare globals (on success or failure)
   ok← ⎕EX '⎕SE.∆F⍙Share'                                
 ∇
-  Load '∆F/∆FGlobals.dyalog'
+  Load '∆F/∆FGlobals.aplns'
             
 :EndNamespace ⍝ Unnamed

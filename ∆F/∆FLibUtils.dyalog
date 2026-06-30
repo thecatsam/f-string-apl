@@ -1,4 +1,4 @@
-⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-06-28') 
+⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-06-29') 
 :Namespace libUtils
 ⍝ ===================================================================================
 ⍝ This namespace handles Library (£ or `L) shortcut automatic loading.
@@ -148,7 +148,7 @@
       ⍝ 19: FILE ACCESS ERROR (⎕FIX/⎕NGET). 11: ERROR ⎕FIXING object contents.
       FixOrAssign← { 
         19 11:: ⍺⊂⍛⊣ ûLib ⎕VSET ⊂⍺ (AN2Apl ⊃⎕NGET ⍵ 1)         ⍝ Array Notation? Assign value to ⍺.
-          2 ûLib.⎕FIX _FOpts êErrFi⊢← ⍵                         ⍝ Fixable object? Return what ⎕FIX returns.
+          2 ûLib.⎕FIX _FOpts êErrFi⊢← ⍵                        ⍝ Fixable object? Return what ⎕FIX returns.
       }
       
     ⍝ SubScanWS:     
@@ -173,13 +173,12 @@
     ⍝ extern: êNm  
     ⍝ Recursively scan the path for name ⍵ in each file OR wsid 
     ⍝ spec in pârms.⍙fullPath   
-    ⍝ ∘ If we see a array (with a single string), it's a workspace: 
+    ⍝ ∘ If we see a vec of vectors (with a single string vector), it's a workspace: 
     ⍝   call and return result from SubScanWS
     ⍝ ∘ Otherwise, 
     ⍝   call and return result from SubScanFiles
-      ⍝ If cur is a vector of (0 or more) char vectors, each is assumed to be a workspace id.
-      ⍝ When done, having returned rcNF, recursively continue ScanPath.
-      ⍝ Otherwise (rcOK or rcER), return from ScanPath.
+    ⍝   - When done, having returned rcNF, recursively continue ScanPath.
+    ⍝   - Otherwise (rcOK or rcER), return from ScanPath.
       ScanPath← {  
         0= ≢⍵: rcNF ⍬ ⋄ path← ⍵ ⋄ cur← ⊃path
         1< |≡cur: path SubScanWS cur                   ⍝ If VCV, => at least 1 workspace.    
