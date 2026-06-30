@@ -18,19 +18,22 @@
 ⍝ ---------------------------------------------
 
 ∇ {ok}← Load gFi 
-  ;dest ;g ;in; lib; out; main  
+  ;dest ;g ; lib; main  
   ⎕IO ⎕ML← 0 1 
   dest← ⎕THIS.##                                        ⍝ The <main> ns goes to our parent, not us
   :Trap 0
       g← 0 ⎕FIX  gFi                                    ⍝ Load globals from file into namespace <g>
-    ⍝ Sanity check... 
-       main lib← { ~⎕NEXISTS ⍵: '' ⋄ ⊃⎕NGET ⍵ 1}¨ g.( SRC_FI LIB_SRC_FI ) 
+    ⍝ Make sure key source files exist (if not: set to '')
+       main lib← { 
+        ~⎕NEXISTS ⍵: ⎕SIGNAL ⊂('EN' 22)('Message',⍥⊂'No such file or directory: "',⍵,'"') 
+        ⊃⎕NGET ⍵ 1
+      }¨ g.( SRC_FI LIB_SRC_FI ) 
       :If ~g.KEEP_SRC_CM                                ⍝ Remove comments?  (except ⍝!)
-          in out← ↓⍉↑( 
-            '''[^'']*'''  '&' ⋄ '\h*⍝(?!\!).*'  '' ⋄ '^\h*$'  '' 
-          )
           main lib← { 
-            0=≢⍵: '' ⋄  t← in ⎕R out⊢ ⍵ ⋄ t/⍨ 0≠≢¨t 
+            in out← ↓⍉↑( 
+              '''[^'']*'''  '&' ⋄ '\h*⍝(?!\!).*'  '' ⋄ '^\h*$'  '' 
+            )
+            t/⍨ 0≠≢¨t← in ⎕R out⊢ ⍵  
           }¨ main lib 
       :EndIf 
     ⍝ Share globals and lib with <main> as it is fixed...
