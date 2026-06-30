@@ -45,6 +45,6 @@
 ⍝ Unshare globals (on success or failure)
   ok← ⎕EX '⎕SE.∆F⍙Share'                                
 ∇
-  Load '∆F/∆FGlobals.aplns'
+  Load '∆F/Globals.aplns'
             
 :EndNamespace ⍝ Unnamed
