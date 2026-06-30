@@ -922,7 +922,7 @@ session</strong> <big><span class="blue">4.21</span></big></a><br>
 <a href="#loading-and-running-f"                         >
 <strong>Loading
 ∆F</strong> <big><span class="blue">1.2</span></big></a><br>
-<a href="#multiline-F-strings-in-dyalog-20"              >
+<a href="#multiline-f-strings-in-dyalog-20"              >
 <strong>Multiline f-strings, Dyalog
 20</strong> <big><span class="blue">4.23</span></big></a><br>
 <a href="#null-space-fields"                             > <strong>Null

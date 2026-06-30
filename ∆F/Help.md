@@ -1350,7 +1350,7 @@ The precomputed version again shows a <mark>substantial</mark> speedup over the 
 
 Sometimes it's <span class="margin-note">Excuse the ob&shy;fusc&shy;atory sesqui&shy;pedal&shy;ianism!</span>programmatically pro&shy;pitious or pedagog&shy;ically per&shy;spicacious to construct, or display, an _f-string_ across
 multiple lines in the **∆F** call. You can do this using _APL_ Array Notation, for example, dividing
-the _f-string_ across multiple (parenthesized) character vectors, each on a separate line.
+the _f-string_ across multiple (parenthesized) character vectors, each on a separate line.<span class="margin-note"><br><br><br><br><br><br>Note that APL handles the comments in multi-line strings!</span>
 
 ```
    lastNm firstNm MI← 'Smith' 'Mary' 'J'
@@ -1922,7 +1922,7 @@ For more information on Python f-strings, _see_:
 <a href="#session-library-shortcut-details"              > <strong>Library shortcut, details</strong>&emsp;<big><span class="blue">5.11</span></big></a><br>
 <a href="#the-session-library-shortcut"                  > <strong>Library shortcut, session</strong>&emsp;<big><span class="blue">4.21</span></big></a><br>
 <a href="#loading-and-running-f"                         > <strong>Loading ∆F</strong>&emsp;<big><span class="blue">1.2</span></big></a><br>
-<a href="#multiline-F-strings-in-dyalog-20"              > <strong>Multiline f-strings, Dyalog 20</strong>&emsp;<big><span class="blue">4.23</span></big></a><br>
+<a href="#multiline-f-strings-in-dyalog-20"              > <strong>Multiline f-strings, Dyalog 20</strong>&emsp;<big><span class="blue">4.23</span></big></a><br>
 <a href="#null-space-fields"                             > <strong>Null space fields</strong>&emsp;<big><span class="blue">4.3</span></big></a><br>
 <a href="#the-shortcut-for-numeric-commas"               > <strong>Numeric commas shortcut</strong>&emsp;<big><span class="blue">4.10</span></big></a><br>
 <a href="#omega-shortcut-expressions-details"            > <strong>Omega shortcut expressions, details</strong>&emsp;<big><span class="blue">5.8</span></big></a><br>
