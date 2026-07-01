@@ -5,7 +5,7 @@
 ⍝ These are treated as "installation-level" variables, not user-level variables.
 ⍝ Exported via ∆F.dyalog "loader" to FString via temp ns ⎕SE.∆F⍙Share.  
 ⍝ See ∆F.dyalog for details.
-⍝ NOTE: ALL PARAMETERS MUST BE SPECIFIED, whether "default" or otherwise.
+⍝ NOTE: ALL PARAMETERS MUST BE SPECIFIED (in general), whether "default" or otherwise.
 ⍝ ============   
 ⍝ ADD_∆F_TO_PATH  APL_VERSION    ESCAPE_CHAR  FUTURES
 ⍝ HELP_HTML_FI    INLINE_DEF     KEEP_SRC_CM  LIB_ACTIVE 
@@ -74,12 +74,12 @@
       CH2: '「」'
 ⍝ Note: The code can support all of these at the same time.
   ) 
-  QUOTES_SUPPLEMENTAL← QUOTE_STYLES.(FR1 JP1 DE1)  
+  QUOTES_SUPPLEMENTAL← QUOTE_STYLES.(FR1 JP1 DE1)           ⍝ May be null '' or ⍬.
   
 ⍝ INLINE_DEF. 
-⍝ If 1, by default,
+⍝ If 1 by default,
 ⍝     puts full definitions of internal utilities (shortcuts etc.) into the result.
-⍝ If 0, by default,
+⍝ If 0 by default,
 ⍝     refers to local copies of internal utilities in FString in the result.
 ⍝ May be overridden by (inline: ⍵), where ⍵ is either 1 or 0.
 ⍝ There are occasions where INLINE_DEF mode results in marginally faster code, but

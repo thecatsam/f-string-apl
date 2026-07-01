@@ -214,8 +214,9 @@
 ⍝    See QUOTES_SUPPLEMENTAL
   qtsL qtsR← (dq,¨2⍴sq) { 0=⎕NC ⍵: ⍺ ⋄ 0=≢v← ⎕OR ⍵: ⍺ ⋄ ⍺,¨ ↓⍉↑,⊆v } 'QUOTES_SUPPLEMENTAL'
 ⍝ Other basic characters
+⍝ ' '{  }  (  )  $   ⍹    →  ↓  %   £     ⍥  …  ⊇
   sp lb rb lp rp dol omUs ra da pct libra cd el rsu← ' {}()$⍹→↓%£⍥…⊇'  ⍝ rsu: right shoe underbar
-⍝ Seq. `⋄ OR `◇ (see dia2[0, 1]) map onto ⎕UCS 13.
+⍝ Seq. `⋄ and `◇ (see dia2[0, 1]) map onto ⎕UCS 13.
 ⍝ dia2[0]: Dyalog stmt separator (⋄) 
 ⍝ dia2[1]: Alternative character (◇) that is easier to read in some web browsers. 
   dia2← ⎕UCS 8900 9671           ⍝ '⋄◇' <-- hope that clears things up ;-) 
@@ -227,7 +228,7 @@
   cfBrkList,← cd rsu el/⍨ cd rsu el ∊ FUTURES
   tfBrkList← esc lb                 
   lb_rb← lb rb ⋄ om_omUs← om omUs ⋄ sp_sq← sp sq ⋄   esc_lb_rb← esc lb rb  
-⍝ self-doc code field chars →↓%
+⍝ self-doc code field chars →↓% (only on rhs of cf, ignoring blanks)
   selfDoc← ra da pct                                    
 
 ⍝ Error constants and fns  
@@ -592,16 +593,16 @@
   ⍝ Select (Sane Indexing):  ⊇
     selCodeStr← '(⊂⍛⌷)'                      ⍝ '(⌷⍤0 99)' if APL_VERSION< 20 
 
-  ⍝ CircleDiaeresis
+  ⍝ Futures
+  ⍝ [1] CircleDiaeresis (op)
   ⍝ Adam B's "future" ⍥ with depth operator extension 
   ⍝ NOTE: This is the dfns version-- 
   ⍝    See the function below for details on variants.
-    cdNm← { 22:: '' ⋄ ⊃2 ⎕FIX ⍵} 'file://∆F/CircleDiaeresis.dyalog'
-
-  ⍝ Ellipsis 
+  ⍝ [2]Ellipsis (fn) 
   ⍝ Adam B's future … enhancement to dfns fn ¨to¨.
   ⍝   2 … 10, 'a' … 'z', etc. 
-    elNm← { 22:: '' ⋄ ⊃2 ⎕FIX ⍵} 'file://∆F/Ellipsis.dyalog'
+    cdNm elNm← { 22:: '' ⋄ ⊃2 ⎕FIX 'file://∆F/Futures/',⍵}¨ 'CircleDiaeresis.aplo' 'Ellipsis.aplf'
+
 
 :EndSection Shortcut functions 
 
