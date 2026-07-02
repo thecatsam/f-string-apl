@@ -7,13 +7,13 @@
 ⍝ See ∆F.dyalog for details.
 ⍝ NOTE: ALL PARAMETERS MUST BE SPECIFIED (in general), whether "default" or otherwise.
 ⍝ ============   
-⍝ ADD_∆F_TO_PATH  APL_VERSION    ESCAPE_CHAR  FUTURES
-⍝ HELP_HTML_FI    INLINE_DEF     KEEP_SRC_CM  LIB_ACTIVE 
+⍝ ADD_∆F_TO_PATH  APL_VERSION    ARG_CACHE_ENABLED        ESCAPE_CHAR 
+⍝  FUTURES        HELP_HTML_FI   INLINE_DEF   KEEP_SRC_CM LIB_ACTIVE 
 ⍝ LIB_PARM_FI     LIB_SRC_FI     LIB_USER_FI  OPTS_DEFns   
 ⍝ OPTS_DEFval     OPTS_KW        PROMOTE_∆F  
 ⍝ QS_FR1          QUOTES_SUPPLEMENTAL         SIGNAL_LIB_ERRS  
 ⍝ SRC_FI          TRAP_ERRORS    VERBOSE_LOADTIME  
-⍝ VERBOSE_RUNTIME VERSION 
+⍝ VERBOSE_RUNTIME VERSION    
  
   SRC_FI←         '∆F/FString.dyalog'                 ⍝ Typically, rendered as namespace FString as well
   ADD_∆F_TO_PATH←  1                                  ⍝ If 1, adds FString to Dyalog ⎕PATH.
@@ -29,7 +29,7 @@
   VERBOSE_RUNTIME← 0
 
 ⍝ VERBOSE_LOADTIME: Load (Fix)-Time verbosity flag
-  VERBOSE_LOADTIME← 0
+  VERBOSE_LOADTIME← 1
 ⍝              
 ⍝ SIGNAL_LIB_ERRS: Affects £.nm and `L.nm constructions. See ∆FLibUtils.dyalog.
 ⍝ - If SIGNAL_LIB_ERRS← 1
@@ -129,6 +129,12 @@
 
 ⍝ KEEP_SRC_CM: Are source comments maintained in runtime ns's FString and FString.libUtils?
   KEEP_SRC_CM← 0 
+
+⍝ Fstring argument cache MAX and KEEP. KEEP is how many to keep when max number of elements 
+⍝ in the f-string cache is exceeded.  Be sure FSTR_CACHE_KEEP << FSTR_CACHE_MAX. 
+  ARG_CACHE_MAX←  500  
+  ARG_CACHE_KEEP← 350
+  ARG_CACHE_ENABLED← 1
 
 ⍝ Returns 20 if Dyalog 20, 19 if 19. (This version requires Dyalog 20 or later)
   APL_VERSION← ⊃⊃⌽'.'⎕VFI 1⊃'.' ⎕WG 'APLVersion' 

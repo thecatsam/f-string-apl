@@ -44,7 +44,7 @@
             result← opts ((⊃⎕RSI){ ⍺⍺⍎ ⍺ ScanFStr ⊃⍵⊣ ⎕EX 'opts' 'args'}) args 
       ⍝  1: Generate dfn code 
         :Case  1       
-            result← ⎕RSI ⊃⍛⍎ opts ScanFStr ⊃args
+            result← (⊃⎕RSI) ⍎ opts ScanFStr ⊃args
       ⍝  ¯1: Generate source code for dfn
         :Case ¯1                                    
             result← opts ScanFStr ⊃args  
@@ -172,7 +172,11 @@
 ⍝   cfL       -   code field running length (for SDCFs). Set in dfn ScanAll.
     ûsr← ⍺                                
   ⍝ Validate all options passed in ûsr (⍺).  dfn∊ ¯1 0 1; others ∊ 0 1.
-  0∊ ûsr.(verbose box auto inline (|dfn))∊ 0 1: ⎕SIGNAL êOpt    
+  0∊ ûsr.(verbose box auto inline (|dfn))∊ 0 1: ⎕SIGNAL êOpt  
+  ⍝ See if we have the fstr code in the fstr cache-- only if dfn=0  
+  ⍝ If so, we are done!
+    argK← ⍵, ⊂ûsr.( verbose box inline )               ⍝::ARG_CACHE
+  0≠ ≢val← ûsr.dfn ArgCacheGet argK: val               ⍝::ARG_CACHE
   ⍝ Shortcuts used explicitly (not just via esc+alphabetic): 
   ⍝    See ⍙Load_Shortcuts 
     scA scCD scEl scÐ scF scM scSel← ûsr.inline⊃¨ (
@@ -189,6 +193,7 @@
     VMsg← (⎕∘←)⍣(ûsr.(verbose∧¯1≠dfn))                 ⍝ Verbose option message                                        
   0= ≢flds: VMsg '(1 0⍴⍬)', '⍨'/⍨ ûsr.dfn≠0            ⍝ If there are no flds, return 1 by 0 matrix
     code← CFDfn (ûsr.box⊃ scM scÐ), OrderFlds flds     ⍝ Order fields R-to-L so they will be evaluated L-to-R in ∆F.           
+    code← argK ArgCacheSet code                        ⍝::ARG_CACHE
   0=ûsr.dfn: VMsg code                                 ⍝ Emit code ready to execute
     fstrQ← ',⍨⊂', AplQt fstr                           ⍝ Is ûsr.dfn (1,¯1): add quoted fmt string (`⍵0)
     VMsg lb, code, fstrQ, rb                           ⍝ Emit ûsr.dfn-based str ready to cvt to ûsr.dfn in caller
@@ -249,6 +254,12 @@
   êHelpFi←  22 Ê t1,(⎕UCS 13),(17⍴''),t2 
                ⎕EX 't1' 't2'
    :EndSection Constants
+
+   :Section Argument Cache 
+    argCache← ( kk: ⍬ ⋄ vv: ⍬ ⋄ max: ARG_CACHE_MAX ⋄ keep: ARG_CACHE_KEEP ) ⍝::ARG_CACHE
+    ArgCacheSet← argCache. { (kk vv),← ⊂¨k v← ⍺ ⍵ ⋄ max≥ ≢kk: ⍵ ⋄ kk↑⍨← -keep ⋄ ⍵ }  ⍝::ARG_CACHE                         
+    ArgCacheGet← argCache. { ⍺≠0: ⍬ ⋄ p←kk⍳ ⊂⍵ ⋄ kk≢⍛> p: p⊃ vv ⋄ ⍬ } ⍝::ARG_CACHE
+   :EndSection Argument Cache 
 
    :Section Utilities (Must Have Zero Side Effects) 
 ⍝ ===================================================================================
@@ -661,7 +672,7 @@
         '{', 1↓ ¯1↓ ∊'⋄',⍨¨ ib             ⍝ multi-stmt ( add stmt sep "⋄", remove extra one.)
     } 
   ⍝ "Experimental" - future operators (from Adam B's github repository)
-    cdFut elFut rsuFut←  cd el rsu { (⍺∊ FUTURES) ∧ 0≠≢⍵ } cdNm elNm 'dummy'
+    cdFut elFut rsuFut←  cd el rsu { (⍺∊ FUTURES) ∧ 0≠≢⍵ } cdNm elNm 'rsu-dummy'
     grps← (
       cdFut 'CircleDiaeresis (⍥) Depth-Extension'  
       elFut  'Ellipsis (…) Extension of dfns ¨to¨'   
@@ -684,10 +695,10 @@
   scA2 scB2 scC2 scJ2 scM2 scQ2 scS2 scT2 scW2 ← CPublish¨ 'ABCJMQSTW' 
   scÐ2←   '0∘⎕SE.Dyalog.Utils.disp¯1∘↓' CPublish 'Ð'     
   scF2←   2⍴⊂ ' ⎕FMT ' 
-  scCD2 scEl2←  cdFut elFut CPublish¨ (cdNm cd) (elNm el) 
+  scCD2 scEl2←  cdFut elFut CPublish¨ (cdNm cd) (elNm el)    
   scSel2← 2⍴ ⊂rsu selCodeStr⊃⍨ rsuFut 
     
-⍝ Using sc namespace in ∆F routines. Members: tbl, nEsc, Map 
+⍝ Using sc (shortcut) namespace in ∆F routines. Members: tbl, nEsc, Map 
   sc← (
      tbl: ↓⍉↑scA2 scB2 scC2 scT2 scF2 scJ2 scQ2 scS2 scT2 scW2 scÐ2 scM2 scCD2 scEl2 scSel2 
    ⍝ nEsc: # of user-accessible shortcuts via <esc><let>, i.e. `A, `B, etc.
