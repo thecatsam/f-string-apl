@@ -30,10 +30,10 @@
       }¨ g.( SRC_FI LIB_SRC_FI ) 
     ⍝ If the argument cache is disabled, remove associated code lines from scanFStr in <main>
       :If g.ARG_CACHE_ENABLED
-          (⎕∘←)⍣(g.VERBOSE_LOADTIME)⊢ '✅✅✅ Arg cache: ENABLED'
+          {}(⎕∘←)⍣g.VERBOSE_LOADTIME⊢ '✅✅✅ Arg cache: ENABLED'
       :Else 
-          (⎕∘←)⍣(g.VERBOSE_LOADTIME)⊢ '✅✅✅ Arg cache: DISABLED'
-            main← '^.*⍝::ARG_CACHE.*$' ⎕R ''⊣ main
+          {}(⎕∘←)⍣g.VERBOSE_LOADTIME⊢ '✅✅✅ Arg cache: DISABLED'
+          main← '^.*⍝:{2,2}ARG_CACHE.*$' ⎕R ''⊣ main
       :EndIf
     ⍝ If ~g.KEEP_SRC_CM, remove comments, except ⍝! comments.
       :If ~g.KEEP_SRC_CM                                

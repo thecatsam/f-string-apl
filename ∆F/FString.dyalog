@@ -173,10 +173,10 @@
     ûsr← ⍺                                
   ⍝ Validate all options passed in ûsr (⍺).  dfn∊ ¯1 0 1; others ∊ 0 1.
   0∊ ûsr.(verbose box auto inline (|dfn))∊ 0 1: ⎕SIGNAL êOpt  
-  ⍝ See if we have the fstr code in the fstr cache-- only if dfn=0  
-  ⍝ If so, we are done!
-    argK← ⍵, ⊂ûsr.( verbose box inline )               ⍝::ARG_CACHE
-  0≠ ≢val← ûsr.dfn ArgCacheGet argK: val               ⍝::ARG_CACHE
+  ⍝ See if we have the fstr code in the fstr argument cache-- only if dfn=0  
+  ⍝ If so, we are done!               
+    argK val← ûsr ArgCacheGet ⍵    ⍝::ARG_CACHE
+  0≠ ≢val: val                                        ⍝::ARG_CACHE
   ⍝ Shortcuts used explicitly (not just via esc+alphabetic): 
   ⍝    See ⍙Load_Shortcuts 
     scA scCD scEl scÐ scF scM scSel← ûsr.inline⊃¨ (
@@ -190,10 +190,10 @@
 ⍝   *** START THE SCAN ***                             ⍝ Start the scan (recursive).                    
     flds← '' ScanAll⊢ fstr← ∊⍵                         ⍝    fstr: char vec of vecs => char vec                     
 ⍝   *** SCAN COMPLETE ***                              ⍝ Scan complete. 
-    VMsg← (⎕∘←)⍣(ûsr.(verbose∧¯1≠dfn))                 ⍝ Verbose option message                                        
+    VMsg← (⎕∘←)⍣(ûsr.(verbose∧¯1≠dfn))                 ⍝ Verbose option message (returns ⍵)                                        
   0= ≢flds: VMsg '(1 0⍴⍬)', '⍨'/⍨ ûsr.dfn≠0            ⍝ If there are no flds, return 1 by 0 matrix
     code← CFDfn (ûsr.box⊃ scM scÐ), OrderFlds flds     ⍝ Order fields R-to-L so they will be evaluated L-to-R in ∆F.           
-    code← argK ArgCacheSet code                        ⍝::ARG_CACHE
+    code← ArgCacheSet argK code                        ⍝::ARG_CACHE
   0=ûsr.dfn: VMsg code                                 ⍝ Emit code ready to execute
     fstrQ← ',⍨⊂', AplQt fstr                           ⍝ Is ûsr.dfn (1,¯1): add quoted fmt string (`⍵0)
     VMsg lb, code, fstrQ, rb                           ⍝ Emit ûsr.dfn-based str ready to cvt to ûsr.dfn in caller
@@ -256,9 +256,20 @@
    :EndSection Constants
 
    :Section Argument Cache 
-    argCache← ( kk: ⍬ ⋄ vv: ⍬ ⋄ max: ARG_CACHE_MAX ⋄ keep: ARG_CACHE_KEEP ) ⍝::ARG_CACHE
-    ArgCacheSet← argCache. { (kk vv),← ⊂¨k v← ⍺ ⍵ ⋄ max≥ ≢kk: ⍵ ⋄ kk↑⍨← -keep ⋄ ⍵ }  ⍝::ARG_CACHE                         
-    ArgCacheGet← argCache. { ⍺≠0: ⍬ ⋄ p←kk⍳ ⊂⍵ ⋄ kk≢⍛> p: p⊃ vv ⋄ ⍬ } ⍝::ARG_CACHE
+   ∇ {isTrue}← SetArgCache isTrue 
+    :IF isTrue
+        argCache← ( kk: ⍬ ⋄ vv: ⍬ ⋄ max: ARG_CACHE_MAX ⋄ keep: ARG_CACHE_KEEP ) 
+      ⍝ If the arg key is null, return the value. Else add the k v pair to the arg cache.
+        ArgCacheSet← argCache. { 
+          k v← ⍵ ⋄ 0= ≢k: v ⋄ (kk vv),← ⊂¨k v ⋄ max≥ ≢kk: v ⋄ kk↑⍨← -keep ⋄ v
+        }            
+      ⍝ If ⍺.dfn=0, returns ⍬ ⍬. Else returns the arg key and (if found) the value (or ⍬) .           
+        ArgCacheGet← argCache. { 
+          ⍺.dfn≠ 0: ⍬ ⍬ ⋄ p←kk⍳ ⊂k← ⍵ ⍺.( verbose box inline ) ⋄ p= ≢kk: k ⍬ ⋄ k (p⊃ vv) 
+        }  
+    :EndIF 
+   ∇
+   SetArgCache ARG_CACHE_ENABLED  
    :EndSection Argument Cache 
 
    :Section Utilities (Must Have Zero Side Effects) 
