@@ -1303,8 +1303,10 @@ The temperature is 11°C or  51.8°F
 
 </details>
 
-Now, let's compare the performance of the two formats. <span class="margin-note"><br><br><br>Both `t` and `T` will
-reference `cv`.</span>
+Now, let's compare the performance of the two formats, when caching of input fstrings 
+is ***not*** enabled; this simulates the relative performance the *first* time an fstring
+is encountered. <span class="margin-note"><br><br><br>Both `t` and `T` will
+reference `cv`. </span>
 
 ```
    cmpx '∆F t' 'T ⍬'
@@ -1312,7 +1314,8 @@ reference `cv`.</span>
   T ⍬  → 1.1E¯5 | -93% ⎕⎕⎕
 ```
 
-The precomputed version is <mark>much</mark> faster.
+The precomputed version is <mark>much</mark> faster than the first use of `∆F t`. At the same
+time it is only about *3 times faster* on average than a repeated use of `∆F t`.
 
 Before we get to syntax and other information, we want to show you
 that <span class="margin-note">The _dfn_ returned includes the original _f‑string_ text used to generate it,
@@ -1344,7 +1347,7 @@ The temperature is 11°C or  51.8°F
   T ⊂cv   → 1.1E¯5 | -95% ⎕⎕⎕
 ```
 
-The precomputed version again shows a <mark>substantial</mark> speedup over the default version.
+The precomputed version again shows a <mark>substantial</mark> speedup over the default *uncached* version.
 
 ## Multiline _F-strings_ in Dyalog 20
 

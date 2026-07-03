@@ -1960,13 +1960,17 @@ The temperature is 11°C or  51.8°F
                    30       86.0
                    60      140.0</code></pre>
 </details>
-<p>Now, let’s compare the performance of the two formats. <span
-class="margin-note"><br><br><br>Both <code>t</code> and <code>T</code>
-will reference <code>cv</code>.</span></p>
+<p>Now, let’s compare the performance of the two formats, when caching
+of input fstrings is <strong><em>not</em></strong> enabled; this
+simulates the relative performance the <em>first</em> time an fstring is
+encountered. <span class="margin-note"><br><br><br>Both <code>t</code>
+and <code>T</code> will reference <code>cv</code>. </span></p>
 <pre><code>   cmpx &#39;∆F t&#39; &#39;T ⍬&#39;
   ∆F t → 1.5E¯4 |   0% ⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕
   T ⍬  → 1.1E¯5 | -93% ⎕⎕⎕</code></pre>
-<p>The precomputed version is <mark>much</mark> faster.</p>
+<p>The precomputed version is <mark>much</mark> faster than the first
+use of <code>∆F t</code>. At the same time it is only about <em>3 times
+faster</em> on average than a repeated use of <code>∆F t</code>.</p>
 <p>Before we get to syntax and other information, we want to show you
 that <span class="margin-note">The <em>dfn</em> returned includes the
 original <em>f‑string</em> text used to generate it, available as
@@ -1996,7 +2000,7 @@ The temperature is 11°C or  51.8°F
   ∆F t cv → 1.8E¯4 |   0% ⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕⎕
   T ⊂cv   → 1.1E¯5 | -95% ⎕⎕⎕</code></pre>
 <p>The precomputed version again shows a <mark>substantial</mark>
-speedup over the default version.</p>
+speedup over the default <em>uncached</em> version.</p>
 <h2 data-number="4.23" id="multiline-f-strings-in-dyalog-20"><span
 class="header-section-number">4.23</span> Multiline <em>F-strings</em>
 in Dyalog 20</h2>

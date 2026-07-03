@@ -31,6 +31,7 @@
     ⍝ If the argument cache is disabled, remove associated code lines from scanFStr in <main>
       :If g.ARG_CACHE_ENABLED
           {}(⎕∘←)⍣g.VERBOSE_LOADTIME⊢ '✅✅✅ Arg cache: ENABLED'
+          main← '^.*⍝:{2,2}NO_ARG_CACHE.*$' ⎕R ''⊣ main
       :Else 
           {}(⎕∘←)⍣g.VERBOSE_LOADTIME⊢ '✅✅✅ Arg cache: DISABLED'
           main← '^.*⍝:{2,2}ARG_CACHE.*$' ⎕R ''⊣ main

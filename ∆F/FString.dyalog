@@ -174,9 +174,8 @@
   ⍝ Validate all options passed in ûsr (⍺).  dfn∊ ¯1 0 1; others ∊ 0 1.
   0∊ ûsr.(verbose box auto inline (|dfn))∊ 0 1: ⎕SIGNAL êOpt  
   ⍝ See if we have the fstr code in the fstr argument cache-- only if dfn=0  
-  ⍝ If so, we are done!               
-    argK val← ûsr ArgCacheGet ⍵    ⍝::ARG_CACHE
-  0≠ ≢val: val                                        ⍝::ARG_CACHE
+  ⍝ If so, we are done! Otherwise, set ûsr.key from ⍵ and ûsr options (above).             
+  ⍬≢ val← ûsr ArgCacheGet ⍵: val                       ⍝::ARG_CACHE
   ⍝ Shortcuts used explicitly (not just via esc+alphabetic): 
   ⍝    See ⍙Load_Shortcuts 
     scA scCD scEl scÐ scF scM scSel← ûsr.inline⊃¨ (
@@ -193,8 +192,8 @@
     VMsg← (⎕∘←)⍣(ûsr.(verbose∧¯1≠dfn))                 ⍝ Verbose option message (returns ⍵)                                        
   0= ≢flds: VMsg '(1 0⍴⍬)', '⍨'/⍨ ûsr.dfn≠0            ⍝ If there are no flds, return 1 by 0 matrix
     code← CFDfn (ûsr.box⊃ scM scÐ), OrderFlds flds     ⍝ Order fields R-to-L so they will be evaluated L-to-R in ∆F.           
-    code← ArgCacheSet argK code                        ⍝::ARG_CACHE
-  0=ûsr.dfn: VMsg code                                 ⍝ Emit code ready to execute
+  0=ûsr.dfn: VMsg ûsr.key ArgCacheSet code             ⍝::ARG_CACHE
+  0=ûsr.dfn: VMsg code                                 ⍝::NO_ARG_CACHE Emit code ready to execute
     fstrQ← ',⍨⊂', AplQt fstr                           ⍝ Is ûsr.dfn (1,¯1): add quoted fmt string (`⍵0)
     VMsg lb, code, fstrQ, rb                           ⍝ Emit ûsr.dfn-based str ready to cvt to ûsr.dfn in caller
   } ⍝ ScanFStr 
@@ -259,13 +258,13 @@
    ∇ {isTrue}← SetArgCache isTrue 
     :IF isTrue
         argCache← ( kk: ⍬ ⋄ vv: ⍬ ⋄ max: ARG_CACHE_MAX ⋄ keep: ARG_CACHE_KEEP ) 
-      ⍝ If the arg key is null, return the value. Else add the k v pair to the arg cache.
+      ⍝ Add the k v pair to the arg cache.
         ArgCacheSet← argCache. { 
-          k v← ⍵ ⋄ 0= ≢k: v ⋄ (kk vv),← ⊂¨k v ⋄ max≥ ≢kk: v ⋄ kk↑⍨← -keep ⋄ v
+          (kk vv),← ⊂¨⍺ ⍵ ⋄ max≥ ≢kk: ⍵ ⋄ kk↑⍨← -keep ⋄ ⍵
         }            
-      ⍝ If ⍺.dfn=0, returns ⍬ ⍬. Else returns the arg key and (if found) the value (or ⍬) .           
+      ⍝ If ⍺.dfn=0, returns ⍬. Else sets ûsr.key← the key and returns the value (or ⍬)         
         ArgCacheGet← argCache. { 
-          ⍺.dfn≠ 0: ⍬ ⍬ ⋄ p←kk⍳ ⊂k← ⍵ ⍺.( verbose box inline ) ⋄ p= ≢kk: k ⍬ ⋄ k (p⊃ vv) 
+          ⍺.dfn≠ 0: ⍺.key← ⍬ ⋄ p←kk⍳ ⊂⍺.key← ⍵ ⍺.( verbose box inline ) ⋄ p= ≢kk: ⍬ ⋄ p⊃ vv 
         }  
     :EndIF 
    ∇
