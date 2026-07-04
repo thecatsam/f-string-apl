@@ -28,13 +28,13 @@
         ~⎕NEXISTS ⍵: ⎕SIGNAL ⊂('EN' 22)('Message',⍥⊂'No such file or directory: "',⍵,'"') 
         ⊃⎕NGET ⍵ 1
       }¨ g.( SRC_FI LIB_SRC_FI ) 
-    ⍝ If the argument cache is disabled, remove associated code lines from scanFStr in <main>
+    ⍝ If the argument cache is enabled/disabled, add only associated code to scanFStr in <main>.
       :If g.ARG_CACHE_ENABLED
           {}(⎕∘←)⍣g.VERBOSE_LOADTIME⊢ '✅✅✅ Arg cache: ENABLED'
-          main← '^.*⍝:{2,2}NO_ARG_CACHE.*$' ⎕R ''⊣ main
+          main← '^.*⍝:{2,2}NO_ARG_CACHE.*$' ⎕R '⍝::DISABLED \0'⊣ main
       :Else 
           {}(⎕∘←)⍣g.VERBOSE_LOADTIME⊢ '✅✅✅ Arg cache: DISABLED'
-          main← '^.*⍝:{2,2}ARG_CACHE.*$' ⎕R ''⊣ main
+          main← '^.*⍝:{2,2}ARG_CACHE.*$' ⎕R '⍝::DISABLED \0'⊣ main
       :EndIf
     ⍝ If ~g.KEEP_SRC_CM, remove comments, except ⍝! comments.
       :If ~g.KEEP_SRC_CM                                

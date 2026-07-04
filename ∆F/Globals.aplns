@@ -7,15 +7,15 @@
 ⍝ See ∆F.dyalog for details.
 ⍝ NOTE: ALL PARAMETERS MUST BE SPECIFIED (in general), whether "default" or otherwise.
 ⍝ ============   
-⍝ ADD_∆F_TO_PATH  APL_VERSION    ARG_CACHE_ENABLED        ESCAPE_CHAR 
-⍝  FUTURES        HELP_HTML_FI   INLINE_DEF   KEEP_SRC_CM LIB_ACTIVE 
-⍝ LIB_PARM_FI     LIB_SRC_FI     LIB_USER_FI  OPTS_DEFns   
-⍝ OPTS_DEFval     OPTS_KW        PROMOTE_∆F  
-⍝ QS_FR1          QUOTES_SUPPLEMENTAL         SIGNAL_LIB_ERRS  
-⍝ SRC_FI          TRAP_ERRORS    VERBOSE_LOADTIME  
-⍝ VERBOSE_RUNTIME VERSION    
+⍝ ADD_∆F_TO_PATH   APL_VERSION    ARG_CACHE_ENABLED   ARG_CACHE_MAX 
+⍝ ARG_CACHE_KEEP   ESCAPE_CHAR    FUTURES             HELP_HTML_FI 
+⍝ INLINE_DEF       KEEP_SRC_CM    LIB_ACTIVE          LIB_PARM_FI     
+⍝ LIB_SRC_FI       LIB_USER_FI    OPTS_DEFns          OPTS_DEFval
+⍝ OPTS_KW          PROMOTE_∆F     QS_FR1              QUOTES_SUPPLEMENTAL 
+⍝ SIGNAL_LIB_ERRS  SRC_FI         TRAP_ERRORS         VERBOSE_LOADTIME  
+⍝ VERBOSE_RUNTIME  VERSION    
  
-  SRC_FI←         '∆F/FString.dyalog'                 ⍝ Typically, rendered as namespace FString as well
+  SRC_FI←         '∆F/FString.aplns'                 ⍝ Typically, rendered as namespace FString as well
   ADD_∆F_TO_PATH←  1                                  ⍝ If 1, adds FString to Dyalog ⎕PATH.
   VERSION← 'v.0.4.2'                                  ⍝ Set/updated by ∆F_Publish.dyalog...
 
@@ -24,14 +24,14 @@
 ⍝
 ⍝ VERBOSE_RUNTIME: Run-time verbosity flag
 ⍝ (verbose: 1) is ∆F-settable (user) run-time verbosity flag-- which
-⍝ also changes `⋄ to ␤ instead of an actual new line (⎕UCS 13, for us).
+⍝ also changes `⋄ to ␤ instead of an actual "new line" (⎕UCS 13, for us).
 ⍝ Determines the "default" for user parm ¨verbose¨.
   VERBOSE_RUNTIME← 0
 
 ⍝ VERBOSE_LOADTIME: Load (Fix)-Time verbosity flag
-  VERBOSE_LOADTIME← 1
+  VERBOSE_LOADTIME← 0
 ⍝              
-⍝ SIGNAL_LIB_ERRS: Affects £.nm and `L.nm constructions. See ∆FLibUtils.dyalog.
+⍝ SIGNAL_LIB_ERRS: Affects £.nm and `L.nm constructions. See LibUtils.aplns.
 ⍝ - If SIGNAL_LIB_ERRS← 1
 ⍝   always ⎕SIGNAL any actual internal library search error (e.g. OBJECT NOT FOUND ON SEARCH PATH),
 ⍝   even if the ∆F code containing any missing or invalid object is not executed! 
@@ -74,7 +74,7 @@
       CH2: '「」'
 ⍝ Note: The code can support all of these at the same time.
   ) 
-  QUOTES_SUPPLEMENTAL← QUOTE_STYLES.(FR1 JP1 DE1)           ⍝ May be null '' or ⍬.
+  QUOTES_SUPPLEMENTAL← QUOTE_STYLES.(FR1)  ⍝ May be null '' or ⍬.
   
 ⍝ INLINE_DEF. 
 ⍝ If 1 by default,
@@ -112,7 +112,7 @@
   LIB_ACTIVE←  2                                       ⍝ Full functionality
   LIB_PARM_FI← '∆F/ParmDefs.apla' 
   LIB_USER_FI← '.∆F'                                   ⍝ User parameters, rel. to Apl ]CD
-  LIB_SRC_FI←  '∆F/LibUtils.dyalog'                    ⍝ Library shortcuts (£,  `L) utilities.
+  LIB_SRC_FI←  '∆F/LibUtils.aplns'                     ⍝ Library shortcuts (£,  `L) utilities.
 ⍝ HELP FILE          
 ⍝ File is loaded into FString at load-time for use by ∆F⍨'help'. 
   HELP_HTML_FI← '∆F/Help.html'                       
@@ -132,8 +132,8 @@
 
 ⍝ Fstring argument cache MAX and KEEP. KEEP is how many to keep when max number of elements 
 ⍝ in the f-string cache is exceeded.  Be sure FSTR_CACHE_KEEP << FSTR_CACHE_MAX. 
-  ARG_CACHE_MAX←  500  
-  ARG_CACHE_KEEP← 350
+  ARG_CACHE_MAX←   100
+  ARG_CACHE_KEEP←   50
   ARG_CACHE_ENABLED← 1
 
 ⍝ Returns 20 if Dyalog 20, 19 if 19. (This version requires Dyalog 20 or later)
