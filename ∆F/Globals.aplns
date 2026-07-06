@@ -1,5 +1,5 @@
 :Namespace  
-⍝ ∆FGlobals.dyalog => nameless namespace  
+⍝ ∆FGlobals.aplns => nameless namespace  
 ⍝ =======================================================================
 ⍝ GENERAL GLOBAL VARIABLES:  
 ⍝ These are treated as "installation-level" variables, not user-level variables.
@@ -29,7 +29,7 @@
   VERBOSE_RUNTIME← 0
 
 ⍝ VERBOSE_LOADTIME: Load (Fix)-Time verbosity flag
-  VERBOSE_LOADTIME← 1
+  VERBOSE_LOADTIME← 0
 ⍝              
 ⍝ SIGNAL_LIB_ERRS: Affects £.nm and `L.nm constructions. See LibUtils.aplns.
 ⍝ - If SIGNAL_LIB_ERRS← 1
