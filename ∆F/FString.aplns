@@ -136,6 +136,8 @@
     }   
 
 ⍝ ===========================================================================
+⍝ Main --- ScanFStr Executive 
+⍝ ===========================================================================
 ⍝ ScanFStr executive begins here
 ⍝    On entry: 
 ⍝        ⍺ is a namespace; 
@@ -177,7 +179,7 @@
   ⍝ If (0=ûsr.verbose) and we've cached the code str for this key, return val.
   ⍝ The key is based on the arg ⍵ and a subset of options in ûsr.
   ⍝ See ArgCacheGet.
-  ⍬≢ ⊃⌽key val← ûsr ArgCacheGet ⍵: val                 ⍝::ARG_CACHE
+  ⍬≢ ⊃⌽key val← ûsr ArgCacheGet ⍵: val                 ⍝::ARG_CACHE_ENABLED
   ⍝ Shortcuts used explicitly (not just via esc+alphabetic): 
   ⍝    See ⍙Load_Shortcuts 
     scA scCD scEl scÐ scF scM scSel← ûsr.inline⊃¨ scA2  scCD2  scEl2  scÐ2  scF2  scM2  scSel2
@@ -191,8 +193,7 @@
 ⍝   *** SCAN COMPLETE ***                              ⍝ Scan complete. 
   0= ≢flds: VMsg '(1 0⍴⍬)', '⍨'/⍨ ûsr.dfn≠0            ⍝ If there are no flds, return 1 by 0 matrix
     code← CFDfn (ûsr.box⊃ scM scÐ), OrderFlds flds     ⍝ Order fields R-to-L so they will be evaluated L-to-R in ∆F.           
-  0=ûsr.dfn: VMsg key ArgCacheSet code                 ⍝::ARG_CACHE    Emit code ready to execute
-  0=ûsr.dfn: VMsg code                                 ⍝::NO_ARG_CACHE Emit code ready to execute
+  0=ûsr.dfn: VMsg key ArgCacheSet code                 ⍝ Emit code ready to execute
     fstrQ← ',⍨⊂', AplQt fstr                           ⍝ Is ûsr.dfn (1,¯1): add quoted fmt string (`⍵0)
     VMsg lb, code, fstrQ, rb                           ⍝ Emit ûsr.dfn-based str ready to cvt to ûsr.dfn in caller
   } ⍝ ScanFStr 
@@ -256,13 +257,7 @@
    :Section Argument Cache 
    ∇ {isTrue}← SetArgCache isTrue 
     :IF isTrue
-        argCache← ( kk: ⍬ ⋄ vv: ⍬ ⋄ max: ARG_CACHE_MAX ⋄ keep: ARG_CACHE_KEEP ) 
-      ⍝ ArgCacheSet:   val← key ∇ val
-      ⍝ Add the k v pair to the arg cache, but keep a finite amount of
-      ⍝ the most recent entries.
-        ArgCacheSet← argCache. { ⍬≡⍺: ⍬⊣ ⎕←'∆F Logic Error: Arg Cache key is empty.'
-          (kk vv),← ⊂¨⍺ ⍵ ⋄ max≥ ≢kk: ⍵ ⋄ kk↑⍨← -keep ⋄ ⍵
-        }  
+      argCache← ( kk: ⍬ ⋄ vv: ⍬ ⋄ max: ARG_CACHE_MAX ⋄ keep: ARG_CACHE_KEEP ) 
       ⍝ ArgCacheGet:   <key val>← ûsr ∇ arg      
       ⍝ If dfn=0, 
       ⍝    - generate a key <key> from arg and ûsr, then
@@ -274,11 +269,22 @@
       ⍝ The key depends on ⍵ and ûsr.(verbose box inline). 
       ⍝ Verbose impacts whether newlines are translated to visual newlines '␤'.
         ArgCacheGet← argCache. { 
-          ⍺.dfn≠ 0: ⍬ ⍬ ⋄ p←kk⍳ ⊂key← ⍵ ⍺.( verbose box inline ) ⋄ p= ≢kk: key ⍬ ⋄ key (p⊃ vv)  
+          ⍺.dfn≠ 0: ⍬ ⍬ ⋄ p←kk⍳ ⊂key← ⍵ ⍺.( verbose box inline ) 
+          p= ≢kk: key ⍬ ⋄ key (p⊃ vv)  
         }  
+      ⍝ ArgCacheSet:   val← key ∇ val
+      ⍝ Add the k v pair to the arg cache, but keep a finite amount of
+      ⍝ the most recent entries.
+        ArgCacheSet← argCache. { ⍬≡⍺: ⍬⊣ ⎕←'∆F Logic Error: Arg Cache key is empty.'
+            (kk vv),← ⊂¨⍺ ⍵ ⋄ kk← 1500⌶ kk         
+          max≥ ≢kk: ⍵ ⋄ kk← 1500⌶ kk↑⍨ -keep ⋄ ⍵
+        }  
+    :Else ⍝ Caching Disabled
+       ArgCacheGet← { 11 ⎕SIGNAL⍨ 'ArgCacheGet/Set LOGIC ERROR: ARGUMENT CACHING DISABLED' }
+       ArgCacheSet← ⊢ 
     :EndIF 
    ∇
-   SetArgCache ARG_CACHE_ENABLED  
+   SetArgCache ARG_CACHE_ENABLED 
    :EndSection Argument Cache 
 
    :Section Utilities (Must Have Zero Side Effects) 
@@ -517,16 +523,16 @@
   ∇ {libNs}←  LibSimple libNs 
     ; ⍙readParms; auto
     ⍝ external in the stub... 
-    ⍝   libUser, Auto, ShowPath, LoadParms
+    ⍝   libUser, LibAuto, ShowPath, LoadParms
     ⍝ external loaded from LibUtils.aplns:
-    ⍝   libUser, Auto, pârms, ShowPath, LoadParms 
+    ⍝   libUser, LibAuto, pârms, ShowPath, LoadParms 
       ⎕THIS.libUser← libNs
+      LibAuto← (⍕libNs)⍨                               ⍝ Must precede any ⎕DF of libNs 
+      ShowPath← '⍬'⍨        
+      LoadParms← ⍬⍨  
       libNs.⎕DF ⎕NULL                                  ⍝ Clear any prior ⎕DF.
       libNs.⎕DF '£=[',(⍕libNs),' ⋄ auto:0]'            ⍝ Now, set ours.
-      Auto← (⍕libNs)⍨  
-      'pârms' ⎕NS '⍙readParms' 'auto'⊣ ⍙readParms auto← (0 0) 0 
-      ShowPath← '⍬'⍨        
-      LoadParms← ⍬⍨       
+      'pârms' ⎕NS '⍙readParms' 'auto'⊣ ⍙readParms auto← (0 0) 0      
   ∇
 ⍝ Set name and ref for userLibrary here
   LibSimple ##.userLibrary
@@ -539,12 +545,16 @@
 ⍝ ===================================================================================
 
 :Section Shortcut functions `A, `B, `C, etc.
-⍝ Above
+⍝ Above    
+⍝        a ∇ b: "obj a above obj b"
+⍝          ∇ b: "blank line above obj b"
     A← {
       ⎕ML←1 ⋄ ⍺←⍬
       ⊃⍪/(⌈2÷⍨w-m)⌽¨f↑⍤1⍨¨m←⌈/w←⊃∘⌽⍤⍴¨f←⎕FMT¨⍺⍵
     } 
   ⍝ Box
+  ⍝     ∇ b: "box obj b"
+  ⍝   a ∇ b: "a box b, where a are the options to APL ¨disp¨."
     B← {
       ⎕ML←1 ⋄ d←|≡⍵ ⋄ ⍺←0
       ⍺ ⎕SE.Dyalog.Utils.disp⊂⍣(1≥d),⍣(0=d)⊢⍵
@@ -579,7 +589,8 @@
     F← ⎕FMT                 
   ⍝ Justify
     J← {
-        ⎕PP←34⋄⍺←'L'⋄B←{+/∧\' '=⍵}
+        ⎕PP←34 ⋄ 
+        ⍺←'L'⋄B←{+/∧\' '=⍵}
         w⌽⍨(1⎕C⍺) { o← ⊂⍺                               ⍝ Treat ⍺ as a scalar.
           o∊'L'¯1:B ⍵
           o∊'R' 1:-B⌽⍵ 
@@ -594,14 +605,17 @@
       ⎕ML←1
       ⍺←⊢⋄⊃,/((⌈/≢¨)↑¨⊢)⎕FMT¨⍺⍵
     } 
-  ⍝ Quote                   
+  ⍝ Quote
+  ⍝      ∇ b: "Put single quotes around char. vectors/scalars in b"
+  ⍝    a ∇ b: "Put our quotes around b as above, 
+  ⍝            with (⊃a) as the left quote char and (⊃⌽a) as the right."                  
     Q←  {
       ⍺← ''''               
       1<|≡⍵:⍺∘∇¨⍵                              
       (0=⍴⍴⍵)∧1=≡⍵:⍵                           
       (0≠≡⍵)∧326=⎕DR⍵:⍺∘∇¨⍵                 
       ⎕ML←1                                                                   
-      ⍺{0=80|⎕DR⍵:⍺,⍺,⍨⍵/⍨ 1+⍺=⍵⋄⍵}⍤1⊢⍵        
+      ⍺{l r← ⍺ ⋄ 0=80|⎕DR⍵:l, r,⍨ ⍵/⍨ 1+r= ⍵⋄⍵}⍤1⊢⍵        
     }
   ⍝ Serialise (display in APLAN)
     S← { 

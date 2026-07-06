@@ -1879,6 +1879,14 @@ class="header-section-number">4.22</span> Precomputed f‑strings with the
 <p>In this section, we talk about generating standalone <em>dfns</em>
 via the <strong>∆F</strong> <em>dfn</em> option; these present some
 advantages over repeated <strong>∆F</strong> calls.</p>
+<div class="marquee">
+<center>
+By default, <strong>∆F</strong> caches the output <em>code</em> for
+specific input <em>f-strings</em> and options; this leads to about
+3-fold performance improvements for <em>f-strings</em> that are used
+more than once.
+</center>
+</div>
 <p>As shown in Table 3a (below), with <em>(i)</em> the default
 <em>dfn</em> option set to <code>0</code>, the value returned from a
 successful call to <strong>∆F</strong> is always a character matrix.

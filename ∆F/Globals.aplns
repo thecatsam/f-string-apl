@@ -29,7 +29,7 @@
   VERBOSE_RUNTIME← 0
 
 ⍝ VERBOSE_LOADTIME: Load (Fix)-Time verbosity flag
-  VERBOSE_LOADTIME← 0
+  VERBOSE_LOADTIME← 1
 ⍝              
 ⍝ SIGNAL_LIB_ERRS: Affects £.nm and `L.nm constructions. See LibUtils.aplns.
 ⍝ - If SIGNAL_LIB_ERRS← 1
@@ -109,7 +109,7 @@
 ⍝                  Load default parameters ONLY, never user's. Good for a demo environment!
 ⍝              0   No.    No.
 ⍝                  No autoload features should be available.
-  LIB_ACTIVE←  2                                       ⍝ Full functionality
+  LIB_ACTIVE←  2                                       ⍝ 2= Full functionality
   LIB_PARM_FI← '∆F/ParmDefs.apla' 
   LIB_USER_FI← '.∆F'                                   ⍝ User parameters, rel. to Apl ]CD
   LIB_SRC_FI←  '∆F/LibUtils.aplns'                     ⍝ Library shortcuts (£,  `L) utilities.

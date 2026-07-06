@@ -1230,7 +1230,13 @@ call:
 ## Precomputed f‑strings with the **_dfn_** Option
 
 In this section, we talk about generating standalone _dfns_ via the **∆F** _dfn_ option;
-these present some advantages over repeated **∆F** calls.
+these present some advantages over repeated **∆F** calls. 
+
+<div class="marquee"><center>
+By default, **∆F** caches
+the output *code* for specific input *f-strings* and options; this leads to about 3-fold
+performance improvements for *f-strings* that are used more than once. 
+</center></div>
 
 As shown in Table 3a (below), with _(i)_ the default _dfn_ option set to `0`,
 the value returned from a successful call to **∆F** is always a character matrix.

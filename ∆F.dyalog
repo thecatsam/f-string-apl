@@ -18,7 +18,7 @@
 ⍝ ---------------------------------------------
 
 ∇ {ok}← Load gFi 
-  ;dest ;g ; lib; main  
+  ;dest ;g ; in; out; lib; main; Note  
   ⎕IO ⎕ML← 0 1 
   dest← ⎕THIS.##                                        ⍝ The <main> ns goes to our parent, not us
   :Trap 0
@@ -28,15 +28,22 @@
         ~⎕NEXISTS ⍵: ⎕SIGNAL ⊂('EN' 22)('Message',⍥⊂'No such file or directory: "',⍵,'"') 
         ⊃⎕NGET ⍵ 1
       }¨ g.( SRC_FI LIB_SRC_FI ) 
+      :If g.VERBOSE_LOADTIME
+          Note← { 1: ⎕← ⍵ }
+          Note '✅✅✅ Verbose at load time? Yes (VERBOSE_LOADTIME← 1)'
+      :Else 
+          Note← { 1: _← ⍵ }
+      :EndIf 
     ⍝ If the argument cache is enabled/disabled, add only associated code to scanFStr in <main>.
       :If g.ARG_CACHE_ENABLED
-          {}(⎕∘←)⍣g.VERBOSE_LOADTIME⊢ '✅✅✅ Arg cache: ENABLED'
-          main← '^.*⍝:{2,2}NO_ARG_CACHE.*$' ⎕R '⍝::DISABLED \0'⊣ main
+          Note  '✅✅✅ Arg cache: ENABLED'
       :Else 
-          {}(⎕∘←)⍣g.VERBOSE_LOADTIME⊢ '✅✅✅ Arg cache: DISABLED'
-          main← '^.*⍝:{2,2}ARG_CACHE.*$' ⎕R '⍝::DISABLED \0'⊣ main
+          Note '✅✅✅ Arg cache: DISABLED'
+          in←  '\w+\h+ArgCacheSet\h+(\w+)\h*⍝?(.*)$'       '^.*⍝:{2,2}ARG_CACHE_ENABLED.*$'         
+          out← ('\1','⍝:::ARG_CACHE_DISABLED \2',⍨ 33⍴'')  '  ⍝:::ARG_CACHE_DISABLED: \0 '     
+          main←  in ⎕R out ⊣ main
       :EndIf
-    ⍝ If ~g.KEEP_SRC_CM, remove comments, except ⍝! comments.
+    ⍝ If ~g.KEEP_SRC_CM, remove comments and blank lines, except ⍝! comments.
       :If ~g.KEEP_SRC_CM                                
           main lib← { 
             in out← ↓⍉↑( '''[^'']*'''  '&' ⋄ '\h*⍝(?!\!).*'  '' ⋄ '^\h*$'  '' )
