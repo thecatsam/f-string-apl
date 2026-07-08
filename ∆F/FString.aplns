@@ -186,8 +186,8 @@
   ⍬≢ code: VMsg code                                   ⍝ ... for this arg & core opts? 
 ⍝   Shortcuts used explicitly (not just via esc+alphabetic): 
 ⍝   See ⍙Load_Shortcuts 
-    scA scCD scEl scÐ scF scM scSel← ûsr.inline⊃¨ scA2  scCD2  scEl2  scÐ2  scF2  scM2  scSel2
-    ûsr.lîbObjs← ⍬                                   ⍝ £ibrary shortcut "autoload" cache...
+    scA scCD scEl scÐ scF scM scSel← ûsr.inline⊃ sc.byVar 
+    ûsr.lîbObjs← ⍬                                     ⍝ £ibrary shortcut "autoload" cache...
     ûsr.nl← ûsr.verbose⊃ nl nlVis                      ⍝ A newline escape (`⋄) maps onto nlVis if verbose mode.
     ûsr.flds← ⍬                                        ⍝ output fields, each a CV (Char Vec)
     ûsr.omC←  0                                        ⍝ initialise omega counter to 0 (see `⍵)
@@ -197,9 +197,9 @@
 ⍝   *** SCAN COMPLETE ***                              ⍝ ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
   0= ≢flds: VMsg '(1 0⍴⍬)', '⍨'/⍨ ûsr.dfn≠0            ⍝ If there are no flds, return 1 by 0 matrix
     code← CFDfn (ûsr.box⊃ scM scÐ), OrderFlds flds     ⍝ Order fields R-to-L so they will be evaluated L-to-R in ∆F.           
-  0=ûsr.dfn: VMsg key FSCSet code                       ⍝ Emit code ready to execute
+  0=ûsr.dfn: VMsg key FSCSet code                      ⍝ Emit code ready to execute
     fstrQ← ',⍨⊂', AplQt fstr                           ⍝ Is ûsr.dfn (1,¯1): add quoted fmt string (`⍵0)
-    VMsg key FSCSet lb, code, fstrQ, rb                 ⍝ Emit ûsr.dfn-based str ready to cvt to ûsr.dfn in caller
+    VMsg key FSCSet lb, code, fstrQ, rb                ⍝ Emit ûsr.dfn-based str ready to cvt to ûsr.dfn in caller
   } ⍝ ScanFStr 
 ⍝ === End of ScanFStr ========================================================  
 
@@ -272,7 +272,7 @@
       ⍝         If not, return <key ⍬>, i.e. we should do a FSCSet after processing the f-string. 
       ⍝ Else
       ⍝    - Return ⍬ ⍬, i.e. set key′← ⍬ (no key) and code to 0.
-        FSCGet← fscCache. { 0= ⍺: ⍬ ⍬ ⋄ p←kk⍳ ⊂⍵ ⋄ p= ≢kk: ⍵ ⍬ ⋄ ⍵ (p⊃ cc) }  
+        FSCGet← fscCache. { 0= ⍺:  ⋄ p←kk⍳ ⊂⍵ ⋄ p= ≢kk: ⍵ ⍬ ⋄ ⍵ (p⊃ cc) }  
       ⍝ FSCSet: code← key ∇ code
       ⍝ Add the k v pair to the arg cache, but keep a finite amount of
       ⍝ the most recent entries. Return code.
@@ -328,7 +328,7 @@
     c∊ om_omUs: ⍺ CFOm w                               ⍝ Permissively allows `⍹ as equiv to `⍵ OR ⍹ 
     c='L': (⍺ libUtils.LibAuto w) w                    ⍝ Library shortcut: special (niladic) case
       p← sc.Map c                                      ⍝ Look for other shortcuts
-    sc.nEsc> p: (⍺.inline p⊃ sc.tbl) w                 ⍝ Found? return code string.
+    sc.nShortcuts> p: (⍺.inline p⊃ sc.byMap) w         ⍝ Found? return code string.
     c∊⍥⎕C ⎕A: ⎕SIGNAL êScBad c                         ⍝ Nope: Unknown shortcut!
       ⎕SIGNAL êEsc c                                   ⍝ Nope: An escape foll. by non-alphabetic.
   } ⍝ End CFEsc 
@@ -687,6 +687,7 @@
   ∇ {sc}← LoadShortcutCalls 
   ; cdFut; elFut; rsuFut; g; grps; scEscCodes; _ 
   ; CPublish ; Fn2Inline; In  
+  ;scA2 ;scB2; scC2; scCD2; scÐ2; scEl2; scF2; scJ2; scM2; scS2; scSel2; scT2; scQ2; scW2
   ⍝:Extern cd; cdNm; el; elNm; rsu; selCodeStr; VERBOSE_LOADTIME
 
     CPublish← { 
@@ -728,18 +729,18 @@
   ⍝ Others: CircleDiaeresis, Select -- called only via symbol ⍥, ⊇ (if enabled)
 
   ⍝ These shortcuts are exported for use outside this function
-  ⍝:Extern scA2 scB2; scC2; scCD2 cEl2 scJ2; scQ2; scS2; scF2; scM2; scT2; scW2; scÐ2; scSel2 
   scA2 scB2 scC2 scJ2 scM2 scQ2 scS2 scT2 scW2 ← CPublish¨ 'ABCJMQSTW' 
   scÐ2←   '0∘⎕SE.Dyalog.Utils.disp¯1∘↓' CPublish 'Ð'     
   scF2←   2⍴⊂ ' ⎕FMT ' 
   scCD2 scEl2←  cdFut elFut CPublish¨ (cdNm cd) (elNm el)    
   scSel2← 2⍴ ⊂rsu selCodeStr⊃⍨ rsuFut 
     
-⍝ Using sc (shortcut) namespace in ∆F routines. Members: tbl, nEsc, Map 
+⍝ Using sc (shortcut) namespace in ∆F routines. Members: byMap, byVar, nShortcuts, Map.
   sc← (
-     tbl: ↓⍉↑scA2 scB2 scC2 scT2 scF2 scJ2 scQ2 scS2 scT2 scW2 scÐ2 scM2 scCD2 scEl2 scSel2 
-   ⍝ nEsc: # of user-accessible shortcuts via <esc><let>, i.e. `A, `B, etc.
-     nEsc: ≢scEscCodes← 'ABCDFJQSTW' 
+     byMap: ↓⍉↑scA2 scB2 scC2 scT2 scF2 scJ2 scQ2 scS2 scT2 scW2 scÐ2 scM2 scCD2 scEl2 scSel2 
+     byVar:  0 1⊃¨ ⊂↓⍉↑ scA2  scCD2  scEl2  scÐ2  scF2  scM2  scSel2
+   ⍝ nShortcuts: # of user-accessible shortcuts via <esc><let>, i.e. `A, `B, etc.
+     nShortcuts: ≢scEscCodes← 'ABCDFJQSTW' 
   )
   sc.Map← scEscCodes∘⍳
   ∇ 
