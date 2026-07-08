@@ -2233,12 +2233,11 @@ routines in the namespace <strong>FString</strong>, created during the
 may simply disappear one day.</td>
 </tr>
 <tr>
-<td style="text-align: center;"><strong>argCache</strong></td>
+<td style="text-align: center;"><strong>cache</strong></td>
 <td style="text-align: center;"><strong><em>[5]</em></strong></td>
-<td
-style="text-align: center;"><strong><em>argCache: 1</em></strong></td>
+<td style="text-align: center;"><strong><em>cache: 1</em></strong></td>
 <td style="text-align: justify;"><span class="red"><strong>If
-<strong><em>argCache: 1</em></strong>,</strong></span> will look for a
+<strong><em>cache: 1</em></strong>,</strong></span> will look for a
 prior call to <strong>∆F</strong> with this
 <strong><em>fstring</em></strong> and these
 <strong><em>options</em></strong> and use the
@@ -2291,7 +2290,7 @@ style="text-align: center;"><code>0         0         0         1         0     
 <tr>
 <td style="text-align: center;"><strong>Keyword</strong></td>
 <td
-style="text-align: center;"><code>(dfn: 0 ◇ verbose: 0 ◇ box: 0 ◇ auto: 1 ◇ inline: 0 ◇ argCache: 1)</code></td>
+style="text-align: center;"><code>(dfn: 0 ◇ verbose: 0 ◇ box: 0 ◇ auto: 1 ◇ inline: 0 ◇ cache: 1)</code></td>
 </tr>
 </tbody>
 </table>
@@ -2299,8 +2298,8 @@ style="text-align: center;"><code>(dfn: 0 ◇ verbose: 0 ◇ box: 0 ◇ auto: 1 
 <li><strong>Positional-style options:</strong> If <strong>∆F</strong>’s
 left argument <code>⍺</code> is a simple integer vector (or a scalar),
 omitted (trailing) elements are replaced by the corresponding elements
-of the default, <code>0 0 0 1 0</code>.<br><big>👉</big> Extra elements
-will trigger a <strong><em>DOMAIN ERROR.</em></strong></li>
+of the default, <code>0 0 0 1 0 1</code>.<br><big>👉</big> Extra
+elements will trigger a <strong><em>DOMAIN ERROR.</em></strong></li>
 <li><strong>Keyword-style options:</strong> If the left argument is a
 <span class="margin-note">Dyalog 20 and later. See docu­ment­ation on
 <em>APL</em> Ar­ray Not­ation.</span>namespace, it is assumed to contain

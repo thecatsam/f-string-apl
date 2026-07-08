@@ -33,11 +33,11 @@
       Note '∆F ✅✅✅ Verbose at load time: ENABLED'
       g.VERBOSE_RUNTIME Note '∆F ✅✅✅ Verbose at run time:  ENABLED'
       Note '∆F ✅✅✅ Note: Global variables in "',gFi,'" may be customised (for all users)' 
-    ⍝ If the argument cache is enabled/disabled, add only associated code to scanFStr in <main>.
-      :If g.ARG_CACHE_ENABLED
-          Note '∆F ✅✅✅ Arg cache: ENABLED'
+    ⍝ If the fstring cache is enabled/disabled, add only associated code to scanFStr in <main>.
+      :If g.FS_CACHE_ENABLED
+          Note '∆F ✅✅✅ fstring cache: ENABLED'
       :Else 
-          Note '∆F ✅✅✅ Arg cache: DISABLED'
+          Note '∆F ✅✅✅ fstring cache: DISABLED'
       :EndIf
     ⍝ If ~g.KEEP_SRC_CM, remove comments and blank lines, except ⍝! comments.
       Note '∆F ✅✅✅ Keep source comments and blank lines: ','NO' 'YES'⊃⍨ g.KEEP_SRC_CM 

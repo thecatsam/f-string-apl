@@ -136,7 +136,7 @@
     }   
 
 ⍝ ===========================================================================
-⍝ Main --- ScanFStr Executive 
+⍝ Main: ScanFStr Executive 
 ⍝ ===========================================================================
 ⍝ ScanFStr executive begins here
 ⍝    On entry: 
@@ -153,37 +153,41 @@
 ⍝    pârms -  the default parameters internally or from file ./.∆F.
 ⍝    ûLib -  contains variables stored in ⎕THIS.userLibrary.
 ⍝
-⍝ ↓¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ User Options (U)
+⍝ ↓¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
+⍝ ↓ ûsr namespace variables.
+⍝ ↓      Those marked U are User-specified Options on the ∆F command line.
+⍝ ↓      All the names below are defined in ûsr.
 ⍝ ↓ Name    Init  Descr
 ⍝ ¯ ¯¯¯¯¯¯¯ ¯¯¯¯  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
 ⍝ U dfn       0   Defines output format:
 ⍝                 0 (return ∆F mx output), 1 (return dfn), ¯1 (return dfn code string)   
 ⍝ U verbose   0*  runtime verbosity/debug flag. 
-⍝             1*  1 if VERBOSE_RUNTIME global constant is 1.
+⍝             1*  1 if VERBOSE_RUNTIME global is 1.
 ⍝ U box       0   Display a box around each field, if set.
 ⍝ U auto      1   If 1, honors default/.∆F setting of pârms.auto∊ 0 1.
-⍝ U inline    0   If 0, puts ref to ⍙Flib function.
+⍝ U inline    0   If 0, puts ref to FString function.
 ⍝             1*  If 1, puts shortcut code defs right in output string; 
 ⍝                 1 if INLINE_DEF is set to 1.
-⍝ U argCache  1   Is the code cached for a specific command-line fstring and options?  (1)
-⍝   libcache  ⍬   autoload cache char. vector of vectors  
+⍝ U cache  1   Is the code cached for a specific command-line fstring and options?  
+⍝             0*  0 for all users, if FS_CACHE_ENABLED global is set to 0.
+⍝   libActive ⍬   library autoload cache character vector of vectors (CVV)
 ⍝   nl        CR  newline: nl (CR) or nlVis (the visible newline '␤').  
-⍝   fields    ⍬   global field list
+⍝   fields    ⍬   global field list (CVV)
 ⍝   omC       0   omega index counter: current index for omega shortcuts (`⍵, ⍹).
 ⍝                 Local to the current ∆F instance.
 ⍝   brC       -   running count of braces '{' lb, '}' rb. Set in dfn ScanAll.
 ⍝   cfL       -   code field running length (for SDCFs). Set in dfn ScanAll.
     ûsr← ⍺                                
   ⍝ Validate all options passed in ûsr (⍺).  dfn∊ ¯1 0 1; others ∊ 0 1.
-    opts← ûsr.( |dfn verbose box auto inline )         ⍝ For argCache, see ACGet.
-  11≠ ⎕DR opts: ⎕SIGNAL êOpt                           ⍝ (|opts) bool?
+    core← |ûsr.( dfn verbose box auto inline )         ⍝ For cache, see FSGet.
+  11≠ ⎕DR core: ⎕SIGNAL êOpt                           ⍝ Are core opts bool?
     VMsg← (⎕∘←)⍣(ûsr.(verbose∧¯1≠dfn))                 ⍝ Verbose option message (returns ⍵) 
-    key code← ûsr.argCache ACGet ⍵ opts                ⍝ Have we cached code ...  
-  ⍬≢ code: code                                        ⍝ ... for this arg & opts? 
+    key code← ûsr.cache FSGet ⍵ core                   ⍝ Have we cached code ...  
+  ⍬≢ code: VMsg code                                   ⍝ ... for this arg & core opts? 
 ⍝   Shortcuts used explicitly (not just via esc+alphabetic): 
 ⍝   See ⍙Load_Shortcuts 
     scA scCD scEl scÐ scF scM scSel← ûsr.inline⊃¨ scA2  scCD2  scEl2  scÐ2  scF2  scM2  scSel2
-    ûsr.libcache← ⍬                                    ⍝ £ibrary shortcut "autoload" cache...
+    ûsr.libActive← ⍬                                   ⍝ £ibrary shortcut "autoload" cache...
     ûsr.nl← ûsr.verbose⊃ nl nlVis                      ⍝ A newline escape (`⋄) maps onto nlVis if verbose mode.
     ûsr.flds← ⍬                                        ⍝ output fields, each a CV (Char Vec)
     ûsr.omC←  0                                        ⍝ initialise omega counter to 0 (see `⍵)
@@ -193,9 +197,9 @@
 ⍝   *** SCAN COMPLETE ***                              ⍝ ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
   0= ≢flds: VMsg '(1 0⍴⍬)', '⍨'/⍨ ûsr.dfn≠0            ⍝ If there are no flds, return 1 by 0 matrix
     code← CFDfn (ûsr.box⊃ scM scÐ), OrderFlds flds     ⍝ Order fields R-to-L so they will be evaluated L-to-R in ∆F.           
-  0=ûsr.dfn: VMsg key ACSet code                       ⍝ Emit code ready to execute
+  0=ûsr.dfn: VMsg key FSSet code                       ⍝ Emit code ready to execute
     fstrQ← ',⍨⊂', AplQt fstr                           ⍝ Is ûsr.dfn (1,¯1): add quoted fmt string (`⍵0)
-    VMsg key ACSet lb, code, fstrQ, rb                 ⍝ Emit ûsr.dfn-based str ready to cvt to ûsr.dfn in caller
+    VMsg key FSSet lb, code, fstrQ, rb                 ⍝ Emit ûsr.dfn-based str ready to cvt to ûsr.dfn in caller
   } ⍝ ScanFStr 
 ⍝ === End of ScanFStr ========================================================  
 
@@ -257,31 +261,33 @@
    :Section Argument Cache (No Side Effects) 
    ∇ {isTrue}← ACInitialise isTrue 
     :IF isTrue
-        argCache← ( kk: ⍬ ⋄ cc: ⍬ ⋄ max: ARG_CACHE_MAX ⋄ keep: ARG_CACHE_KEEP ) 
-      ⍝ ACGet:   (key′ code)← ûsr.argCache ∇ key← (arg opts)  
+      ⍝             kk: key list; cc: code-string list;
+      ⍝             max: max # of keys to maintain; keep: min to maintain as kk fills.
+        fsCache← ( kk: ⍬ ⋄ cc: ⍬ ⋄ max: FS_CACHE_MAX ⋄ keep: FS_CACHE_KEEP ) 
+      ⍝ FSGet:   (key′ code)← ûsr.cache ∇ key← (arg core)  
       ⍝   key′ returned may be the <key> passed in OR ⍬.   
       ⍝ If ⍺≠0
-      ⍝    - For key <key>, see if we have cached <code>, the fstr code equiv. of the key.
+      ⍝    - For key <key>, see if we have cached <code>, the fstr code equiv of the key.
       ⍝         If so, we are done: return <key code>. 
-      ⍝         If not, return <key ⍬>, i.e. we should do a ACSet after processing the f-string. 
+      ⍝         If not, return <key ⍬>, i.e. we should do a FSSet after processing the f-string. 
       ⍝ Else
       ⍝    - Return ⍬ ⍬, i.e. set key′← ⍬ (no key) and code to 0.
-        ACGet← argCache. { 0= ⍺: ⍬ ⍬ ⋄ p←kk⍳ ⊂k← ⍵ ⋄ p= ≢kk: k ⍬ ⋄ k (p⊃ cc) }  
-      ⍝ ACSet:   code← key ∇ code
+        FSGet← fsCache. { 0= ⍺: ⍬ ⍬ ⋄ p←kk⍳ ⊂⍵ ⋄ p= ≢kk: ⍵ ⍬ ⋄ ⍵ (p⊃ cc) }  
+      ⍝ FSSet: code← key ∇ code
       ⍝ Add the k v pair to the arg cache, but keep a finite amount of
       ⍝ the most recent entries. Return code.
       ⍝ If key is ⍬, immediately return code.
-        ACSet← argCache. { 
+        FSSet← fsCache. { 
           ⍬≡⍺: ⍵ ⋄ (kk cc),← ⊂¨⍺ ⍵                     ⍝ Append ⍺, ⍵ to kk, cc.
           max≥ ≢kk: ⍵⊣ kk∘← 1500⌶ kk                   ⍝ Hash keys <kk>
            ⍵⊣ kk∘← 1500⌶ kk↑⍨ -keep                    ⍝ Too many keys? Trunc and rehash.
         }  
     :Else ⍝ Caching Disabled
-        ACGet← (⍬ ⍬)⍨                                  ⍝ Return constant (key and code value null)
-        ACSet← ⊢                                       ⍝ Return right arg, code.
+        FSGet← (⍬ ⍬)⍨                                  ⍝ Return constant (key and code value null)
+        FSSet← ⊢                                       ⍝ Return right arg, code.
     :EndIF 
    ∇
-   ACInitialise ARG_CACHE_ENABLED=1 
+   ACInitialise FS_CACHE_ENABLED=1 
    :EndSection Argument Cache (No Side Effects) 
 
    :Section Utilities (Must Have Zero Side Effects) 
@@ -711,7 +717,7 @@
     )
     :For g :In grps
        :IF VERBOSE_LOADTIME 
-          _← '❌❌❌' '✅✅✅'⊃⍨ ⊃g
+          _← '∆F ❌❌❌' '∆F ✅✅✅'⊃⍨ ⊃g
           ⎕← _, ' Future feature', (' not ' ' '⊃⍨ ⊃g), 'available: ',⊃⌽g
        :ENDIF 
     :EndFor 
@@ -742,11 +748,11 @@
   ⍝ Loading the help html file...
     :Trap 22 
         ⎕THIS.helpHtml← ⊃⎕NGET hfi
-        :IF VERBOSE_LOADTIME ⋄ ⎕← '✅✅✅ Loaded Help Html File "',hfi,'"' ⋄ :EndIf  
+        :IF VERBOSE_LOADTIME ⋄ ⎕← '∆F ✅✅✅ Loaded Help Html File "',hfi,'"' ⋄ :EndIf  
         ok← 1 
     :Else 
-        e1← '❗❗❗ WARNING: When loading ∆Fapl, the help file "',hfi,'" was not found in current directory.'
-        e2← '❗❗❗ WARNING: ∆F help will not be available without user intervention.'
+        e1← '∆F ❗❗❗ WARNING: When loading ∆Fapl, the help file "',hfi,'" was not found in current directory.'
+        e2← '∆F ❗❗❗ WARNING: ∆F help will not be available without user intervention.'
         e1,(⎕UCS 13),e2
         ok← 0 
     :EndTrap 
@@ -755,20 +761,20 @@
     ;how 
     how← ' from "',libFi,'" into "','"',⍨∆THIS 
     :If libActive=0
-        ⎕←↑1⍴⊂'❗❗❗ WARNING: Library autoload services were not loaded',how
-        ⎕←'✅✅✅ LIB_ACTIVE is set to ',(⍕libActive),' in ∆F/FString.aplns'
-        ⎕←'✅✅✅ £ and `L shortcuts are available without them, as if (auto: 0) is set.'
+        ⎕←↑1⍴⊂'∆F ❗❗❗ WARNING: Library autoload services were not loaded',how
+        ⎕←'∆F ✅✅✅ LIB_ACTIVE is set to ',(⍕libActive),' in ∆F/FString.aplns'
+        ⎕←'∆F ✅✅✅ £ and `L shortcuts are available without them, as if (auto: 0) is set.'
         :Return 
     :EndIf 
     :TRAP 22 
         ⎕FIX⍠ 'FixWithErrors' 0⊣ ⎕SE.∆F⍙Share.library
         :If VERBOSE_LOADTIME 
-            ⎕←'✅✅✅ Loaded services for Library shortcut (£)',how  
+            ⎕←'∆F ✅✅✅ Loaded services for Library shortcut (£)',how  
         :EndIf 
     :Else
         libActive← 0 
-        ⎕←↑1⍴⊂'❗❗❗ WARNING: Unable to load Library autoload services',how 
-        ⎕←'✅✅✅ £ and `L shortcuts are available without autoload (auto: 0).'
+        ⎕←↑1⍴⊂'∆F ❗❗❗ WARNING: Unable to load Library autoload services',how 
+        ⎕←'∆F ✅✅✅ £ and `L shortcuts are available without autoload (auto: 0).'
     :EndTrap
   ∇
 ⍝ Show the following special globals in this namespace.

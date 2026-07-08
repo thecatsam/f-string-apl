@@ -1,4 +1,4 @@
-⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-07-07') 
+⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-07-08') 
 :Namespace libUtils
 ⍝ ===================================================================================
 ⍝ This namespace handles Library (£ or `L) shortcut automatic loading.
@@ -24,7 +24,7 @@
 ⍝ ===================================================================================
 ⍝ LibAuto: libStr← ûsr ∇ str 
 ⍝    str: str starts 1 char after '£' or '`L'. 
-⍝    ûsr: namespace with (r/w:) ûsr.libcache; (r/o:) êauto; (read in LoadObj:) êverbose 
+⍝    ûsr: namespace with (r/w:) ûsr.libActive; (r/o:) êauto; (read in LoadObj:) êverbose 
 ⍝ Returns: ûLibTok, the library name surrounded by parens, no matter what.
 ⍝ ∘ Used by ∆F's scan process when it sees £ or `L. 
 ⍝   ∘ Called from the main scan routines CF_SF and CFEsc. 
@@ -54,8 +54,8 @@
         w← NoLB 1↓w                                 ⍝     Skip more blanks,
         len← NmSpan w                               ⍝     Grab the apparent name and length.
         nm← len↑ w                                  ⍝      
-    nm⊂⍛∊ ⍺.libcache:          ûLibTok              ⍝ Saw it before? →Return.
-        ⍺.libcache,← ⊂nm                            ⍝     Mark as seen (even if invalid)
+    nm⊂⍛∊ ⍺.libActive:        ûLibTok               ⍝ Saw it before? →Return.
+        ⍺.libActive,← ⊂nm                           ⍝     Mark as seen (even if invalid)
     0≠ ûLib.⎕NC nm:          ûLibTok                ⍝ In libuser (>1) or invalid name (-1)? →Return.
         w← len↓w                                    ⍝     Skip the name.
     '←'= ⊃w~ '∘ ':           ûLibTok                ⍝ If assignment, →Return.
