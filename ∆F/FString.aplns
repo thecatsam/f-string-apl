@@ -129,10 +129,10 @@
       ûsr.brC>1: w ∇⍨ pfx, c scA⊃⍨ c= pct              ⍝ internal dfn => not SDCF
         p← +/∧\' '=w
       rb≠ ⊃p↓w:  w ∇⍨ pfx, c scA⊃⍨ c= pct              ⍝ not CF-final '}' => not SDCF
-    ⍝ SDCF: SELF-DEFINING CODE FIELD
+    ⍝ SDCF: SELF-DEFINING CODE FIELD-- 
         cfLit← AplQt ûsr.cfBeg↑⍨ ûsr.cfL+ p            ⍝ Put CF-literal in quotes
-        fmtr← scA scM⊃⍨ c='→'                          ⍝ vert or horiz. SDCF?
-        (cfLit, fmtr, CFDfn pfx) ((p+1)↓w)             ⍝ ==> RETURN!
+        fmtr← scA scM⊃⍨ c='→'                          ⍝ vert (↓ or %) or horiz. (→) SDCF?
+        (cfLit, fmtr, CFDfn pfx) (w↓⍨ p+1)             ⍝ ==> RETURN!
     }   
 
 ⍝ ===========================================================================
@@ -165,7 +165,8 @@
 ⍝ U inline    0   If 0, puts ref to ⍙Flib function.
 ⍝             1*  If 1, puts shortcut code defs right in output string; 
 ⍝                 1 if INLINE_DEF is set to 1.
-⍝   acache    ⍬   autoload cache char. vector of vectors  
+⍝ U caching   1   Is the code cached for a specific command-line fstring and options?  (1)
+⍝   libcache    ⍬   autoload cache char. vector of vectors  
 ⍝   nl        CR  newline: nl (CR) or nlVis (the visible newline '␤').  
 ⍝   fields    ⍬   global field list
 ⍝   omC       0   omega index counter: current index for omega shortcuts (`⍵, ⍹).
@@ -174,28 +175,27 @@
 ⍝   cfL       -   code field running length (for SDCFs). Set in dfn ScanAll.
     ûsr← ⍺                                
   ⍝ Validate all options passed in ûsr (⍺).  dfn∊ ¯1 0 1; others ∊ 0 1.
-  0∊ ûsr.(verbose box auto inline (|dfn))∊ 0 1: ⎕SIGNAL êOpt  
+    opts← ûsr.( |dfn verbose box auto inline )         ⍝ For argcache, see ACGet.
+  11≠ ⎕DR opts: ⎕SIGNAL êOpt                           ⍝ (|opts) bool?
     VMsg← (⎕∘←)⍣(ûsr.(verbose∧¯1≠dfn))                 ⍝ Verbose option message (returns ⍵) 
-  ⍝ If (0=ûsr.verbose) and we've cached the code str for this key, return val.
-  ⍝ The key is based on the arg ⍵ and a subset of options in ûsr.
-  ⍝ See ArgCacheGet.
-  ⍬≢ ⊃⌽key val← ûsr ArgCacheGet ⍵: val                 ⍝::ARG_CACHE_ENABLED
-  ⍝ Shortcuts used explicitly (not just via esc+alphabetic): 
-  ⍝    See ⍙Load_Shortcuts 
+    key code← ûsr.argcache ACGet ⍵ opts                ⍝ Have we cached code ...  
+  ⍬≢ code: code                                        ⍝ ... for this arg & opts? 
+⍝   Shortcuts used explicitly (not just via esc+alphabetic): 
+⍝   See ⍙Load_Shortcuts 
     scA scCD scEl scÐ scF scM scSel← ûsr.inline⊃¨ scA2  scCD2  scEl2  scÐ2  scF2  scM2  scSel2
-    ûsr.acache← ⍬                                      ⍝ £ibrary shortcut "autoload" cache...
+    ûsr.libcache← ⍬                                    ⍝ £ibrary shortcut "autoload" cache...
     ûsr.nl← ûsr.verbose⊃ nl nlVis                      ⍝ A newline escape (`⋄) maps onto nlVis if verbose mode.
     ûsr.flds← ⍬                                        ⍝ output fields, each a CV (Char Vec)
     ûsr.omC←  0                                        ⍝ initialise omega counter to 0 (see `⍵)
     ûsr.auto∧← libUtils.pârms.auto                     ⍝ auto can usefully be 1 only if pârms.auto is 1.     
-⍝   *** START THE SCAN ***                             ⍝ Start the scan (recursive).                    
+⍝   *** START THE SCAN ***                             ⍝ ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑            
     flds← '' ScanAll⊢ fstr← ∊⍵                         ⍝    fstr: char vec of vecs => char vec                     
-⍝   *** SCAN COMPLETE ***                              ⍝ Scan complete. 
+⍝   *** SCAN COMPLETE ***                              ⍝ ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
   0= ≢flds: VMsg '(1 0⍴⍬)', '⍨'/⍨ ûsr.dfn≠0            ⍝ If there are no flds, return 1 by 0 matrix
     code← CFDfn (ûsr.box⊃ scM scÐ), OrderFlds flds     ⍝ Order fields R-to-L so they will be evaluated L-to-R in ∆F.           
-  0=ûsr.dfn: VMsg key ArgCacheSet code                 ⍝ Emit code ready to execute
+  0=ûsr.dfn: VMsg key ACSet code                       ⍝ Emit code ready to execute
     fstrQ← ',⍨⊂', AplQt fstr                           ⍝ Is ûsr.dfn (1,¯1): add quoted fmt string (`⍵0)
-    VMsg lb, code, fstrQ, rb                           ⍝ Emit ûsr.dfn-based str ready to cvt to ûsr.dfn in caller
+    VMsg key ACSet lb, code, fstrQ, rb                 ⍝ Emit ûsr.dfn-based str ready to cvt to ûsr.dfn in caller
   } ⍝ ScanFStr 
 ⍝ === End of ScanFStr ========================================================  
 
@@ -254,38 +254,35 @@
                ⎕EX 't1' 't2'
    :EndSection Constants
 
-   :Section Argument Cache 
-   ∇ {isTrue}← SetArgCache isTrue 
+   :Section Argument Cache (No Side Effects) 
+   ∇ {isTrue}← ACInitialise isTrue 
     :IF isTrue
-      argCache← ( kk: ⍬ ⋄ vv: ⍬ ⋄ max: ARG_CACHE_MAX ⋄ keep: ARG_CACHE_KEEP ) 
-      ⍝ ArgCacheGet:   <key val>← ûsr ∇ arg      
-      ⍝ If dfn=0, 
-      ⍝    - generate a key <key> from arg and ûsr, then
-      ⍝    - see if we have <val>, the fstr code in the fstr argument cache.
-      ⍝         If so, we are done: return <key val>. 
-      ⍝         If not, return <key ⍬>.
-      ⍝ Else, 
-      ⍝    - return ⍬ ⍬.     
-      ⍝ The key depends on ⍵ and ûsr.(verbose box inline). 
-      ⍝ Verbose impacts whether newlines are translated to visual newlines '␤'.
-        ArgCacheGet← argCache. { 
-          ⍺.dfn≠ 0: ⍬ ⍬ ⋄ p←kk⍳ ⊂key← ⍵ ⍺.( verbose box inline ) 
-          p= ≢kk: key ⍬ ⋄ key (p⊃ vv)  
-        }  
-      ⍝ ArgCacheSet:   val← key ∇ val
+        argCache← ( kk: ⍬ ⋄ cc: ⍬ ⋄ max: ARG_CACHE_MAX ⋄ keep: ARG_CACHE_KEEP ) 
+      ⍝ ACGet:   (key′ code)← ûsr.argcache ∇ key← (arg opts)  
+      ⍝   key′ returned may be the <key> passed in OR ⍬.   
+      ⍝ If ⍺≠0
+      ⍝    - For key <key>, see if we have cached <code>, the fstr code equiv. of the key.
+      ⍝         If so, we are done: return <key code>. 
+      ⍝         If not, return <key ⍬>, i.e. we should do a ACSet after processing the f-string. 
+      ⍝ Else
+      ⍝    - Return ⍬ ⍬, i.e. set key′← ⍬ (no key) and code to 0.
+        ACGet← argCache. { 0= ⍺: ⍬ ⍬ ⋄ p←kk⍳ ⊂k← ⍵ ⋄ p= ≢kk: k ⍬ ⋄ k (p⊃ cc) }  
+      ⍝ ACSet:   code← key ∇ code
       ⍝ Add the k v pair to the arg cache, but keep a finite amount of
-      ⍝ the most recent entries.
-        ArgCacheSet← argCache. { ⍬≡⍺: ⍬⊣ ⎕←'∆F Logic Error: Arg Cache key is empty.'
-            (kk vv),← ⊂¨⍺ ⍵ ⋄ kk← 1500⌶ kk         
-          max≥ ≢kk: ⍵ ⋄ kk← 1500⌶ kk↑⍨ -keep ⋄ ⍵
+      ⍝ the most recent entries. Return code.
+      ⍝ If key is ⍬, immediately return code.
+        ACSet← argCache. { 
+          ⍬≡⍺: ⍵ ⋄ (kk cc),← ⊂¨⍺ ⍵                     ⍝ Append ⍺, ⍵ to kk, cc.
+          max≥ ≢kk: ⍵⊣ kk∘← 1500⌶ kk                   ⍝ Hash keys <kk>
+           ⍵⊣ kk∘← 1500⌶ kk↑⍨ -keep                    ⍝ Too many keys? Trunc and rehash.
         }  
     :Else ⍝ Caching Disabled
-       ArgCacheGet← { 11 ⎕SIGNAL⍨ 'ArgCacheGet/Set LOGIC ERROR: ARGUMENT CACHING DISABLED' }
-       ArgCacheSet← ⊢ 
+        ACGet← (⍬ ⍬)⍨                                  ⍝ Return constant (key and code value null)
+        ACSet← ⊢                                       ⍝ Return right arg, code.
     :EndIF 
    ∇
-   SetArgCache ARG_CACHE_ENABLED 
-   :EndSection Argument Cache 
+   ACInitialise ARG_CACHE_ENABLED=1 
+   :EndSection Argument Cache (No Side Effects) 
 
    :Section Utilities (Must Have Zero Side Effects) 
 ⍝ ===================================================================================
@@ -584,7 +581,7 @@
     } 
   ⍝ Date: See Time (below)
   ⍝ Display
-    Ð← 0∘⎕SE.Dyalog.Utils.disp¯1∘↓
+    Ð← {0∘⎕SE.Dyalog.Utils.disp¯1∘↓⍵}
   ⍝ Format        
     F← ⎕FMT                 
   ⍝ Justify

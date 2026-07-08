@@ -30,20 +30,17 @@
         ~⎕NEXISTS ⍵: ⎕SIGNAL ⊂('EN' 22)('Message',⍥⊂'No such file or directory: "',⍵,'"') 
         ⊃⎕NGET ⍵ 1
       }¨ g.( SRC_FI LIB_SRC_FI ) 
-      Note '✅✅✅ Verbose at load time: ENABLED'
-      g.VERBOSE_RUNTIME Note '✅✅✅ Verbose at run time:  ENABLED'
-      Note '✅✅✅ Note: Global variables in "',gFi,'" may be customised (for all users)' 
+      Note '∆F ✅✅✅ Verbose at load time: ENABLED'
+      g.VERBOSE_RUNTIME Note '∆F ✅✅✅ Verbose at run time:  ENABLED'
+      Note '∆F ✅✅✅ Note: Global variables in "',gFi,'" may be customised (for all users)' 
     ⍝ If the argument cache is enabled/disabled, add only associated code to scanFStr in <main>.
       :If g.ARG_CACHE_ENABLED
-          Note '✅✅✅ Arg cache: ENABLED'
+          Note '∆F ✅✅✅ Arg cache: ENABLED'
       :Else 
-          Note '✅✅✅ Arg cache: DISABLED'
-          in←  '\w+\h+ArgCacheSet\h+(\w+)\h*⍝?(.*)$'       '^.*⍝:{2,2}ARG_CACHE_ENABLED.*$'         
-          out← ('\1','⍝:::ARG_CACHE_DISABLED \2',⍨ 33⍴'')  '  ⍝:::ARG_CACHE_DISABLED: \0 '     
-          main←  in ⎕R out ⊣ main
+          Note '∆F ✅✅✅ Arg cache: DISABLED'
       :EndIf
     ⍝ If ~g.KEEP_SRC_CM, remove comments and blank lines, except ⍝! comments.
-      Note '✅✅✅ Keep source comments and blank lines: ','NO' 'YES'⊃⍨ g.KEEP_SRC_CM 
+      Note '∆F ✅✅✅ Keep source comments and blank lines: ','NO' 'YES'⊃⍨ g.KEEP_SRC_CM 
       :If ~g.KEEP_SRC_CM                                
           main lib← { 
             in out← ↓⍉↑( '''[^'']*'''  '&' ⋄ '\h*⍝(?!\!).*'  '' ⋄ '^\h*$'  '' )
