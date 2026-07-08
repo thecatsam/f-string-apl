@@ -121,7 +121,7 @@
 ⍝ VARIABLES FOR ∆F OPTIONS: Positional and keyword 
 ⍝ See also globals: VERBOSE_RUNTIME, INLINE_DEF 
 ⍝ =======================================================================
-  OPTS_KW←      ↑'dfn' 'verbose'        'box' 'auto' 'inline'      'argcache'        ⍝ In order 
+  OPTS_KW←      ↑'dfn' 'verbose'        'box' 'auto' 'inline'      'argCache'        ⍝ In order 
   OPTS_DEFval←    0    VERBOSE_RUNTIME   0     1      INLINE_DEF    1                ⍝ In order
 
 ⍝ OPTS_DEFns: The defaults in namespace form. Treat as a read-only object.
@@ -130,7 +130,7 @@
 ⍝ KEEP_SRC_CM: Are source comments maintained in runtime ns's FString and FString.libUtils?
   KEEP_SRC_CM← 0 
 
-  ARG_CACHE_ENABLED← 1          ⍝ Can also be turned off for a particular ∆F call: (argcache: 0)
+  ARG_CACHE_ENABLED← 1          ⍝ Can also be turned off for a particular ∆F call: (argCache: 0)
 ⍝ Fstring argument cache MAX and KEEP. KEEP is how many to keep when max number of elements 
 ⍝ in the f-string cache is exceeded.  Be sure FSTR_CACHE_KEEP << FSTR_CACHE_MAX. 
   ARG_CACHE_MAX←   100

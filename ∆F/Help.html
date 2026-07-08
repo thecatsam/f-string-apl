@@ -2233,6 +2233,20 @@ routines in the namespace <strong>FString</strong>, created during the
 may simply disappear one day.</td>
 </tr>
 <tr>
+<td style="text-align: center;"><strong>argCache</strong></td>
+<td style="text-align: center;"><strong><em>[5]</em></strong></td>
+<td
+style="text-align: center;"><strong><em>argCache: 1</em></strong></td>
+<td style="text-align: justify;"><span class="red"><strong>If
+<strong><em>argCache: 1</em></strong>,</strong></span> will look for a
+prior call to <strong>∆F</strong> with this
+<strong><em>fstring</em></strong> and these
+<strong><em>options</em></strong> and use the
+<strong><em>code</em></strong> generated previously. <span
+class="red"><strong>Otherwise, </strong></span> generates the required
+code on each call.</td>
+</tr>
+<tr>
 <td style="text-align: center;"><strong>special</strong></td>
 <td style="text-align: center;"><strong><em>‘help’</em></strong></td>
 <td style="text-align: center;">—</td>
@@ -2256,11 +2270,11 @@ pa­ram­eters.</td>
 <code>⍺</code> is omitted, the options default as shown here.</li>
 </ul>
 <p><a id="table-default-options" class="scroll-target"></a></p>
-<table style="width:92%;">
+<table style="width:98%;">
 <caption>5c. <strong>∆F Default Options</strong></caption>
 <colgroup>
-<col style="width: 26%" />
-<col style="width: 65%" />
+<col style="width: 20%" />
+<col style="width: 77%" />
 </colgroup>
 <thead>
 <tr>
@@ -2271,12 +2285,13 @@ pa­ram­eters.</td>
 <tbody>
 <tr>
 <td style="text-align: center;"><strong>Positional</strong></td>
-<td style="text-align: center;"><code>0 0 0 1 0</code></td>
+<td
+style="text-align: center;"><code>0         0         0         1         0         1</code></td>
 </tr>
 <tr>
 <td style="text-align: center;"><strong>Keyword</strong></td>
 <td
-style="text-align: center;"><code>(dfn: 0 ◇ verbose: 0 ◇ box: 0 ◇ auto: 1 ◇ inline: 0)</code></td>
+style="text-align: center;"><code>(dfn: 0 ◇ verbose: 0 ◇ box: 0 ◇ auto: 1 ◇ inline: 0 ◇ argCache: 1)</code></td>
 </tr>
 </tbody>
 </table>

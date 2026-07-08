@@ -165,8 +165,8 @@
 ⍝ U inline    0   If 0, puts ref to ⍙Flib function.
 ⍝             1*  If 1, puts shortcut code defs right in output string; 
 ⍝                 1 if INLINE_DEF is set to 1.
-⍝ U caching   1   Is the code cached for a specific command-line fstring and options?  (1)
-⍝   libcache    ⍬   autoload cache char. vector of vectors  
+⍝ U argCache  1   Is the code cached for a specific command-line fstring and options?  (1)
+⍝   libcache  ⍬   autoload cache char. vector of vectors  
 ⍝   nl        CR  newline: nl (CR) or nlVis (the visible newline '␤').  
 ⍝   fields    ⍬   global field list
 ⍝   omC       0   omega index counter: current index for omega shortcuts (`⍵, ⍹).
@@ -175,10 +175,10 @@
 ⍝   cfL       -   code field running length (for SDCFs). Set in dfn ScanAll.
     ûsr← ⍺                                
   ⍝ Validate all options passed in ûsr (⍺).  dfn∊ ¯1 0 1; others ∊ 0 1.
-    opts← ûsr.( |dfn verbose box auto inline )         ⍝ For argcache, see ACGet.
+    opts← ûsr.( |dfn verbose box auto inline )         ⍝ For argCache, see ACGet.
   11≠ ⎕DR opts: ⎕SIGNAL êOpt                           ⍝ (|opts) bool?
     VMsg← (⎕∘←)⍣(ûsr.(verbose∧¯1≠dfn))                 ⍝ Verbose option message (returns ⍵) 
-    key code← ûsr.argcache ACGet ⍵ opts                ⍝ Have we cached code ...  
+    key code← ûsr.argCache ACGet ⍵ opts                ⍝ Have we cached code ...  
   ⍬≢ code: code                                        ⍝ ... for this arg & opts? 
 ⍝   Shortcuts used explicitly (not just via esc+alphabetic): 
 ⍝   See ⍙Load_Shortcuts 
@@ -258,7 +258,7 @@
    ∇ {isTrue}← ACInitialise isTrue 
     :IF isTrue
         argCache← ( kk: ⍬ ⋄ cc: ⍬ ⋄ max: ARG_CACHE_MAX ⋄ keep: ARG_CACHE_KEEP ) 
-      ⍝ ACGet:   (key′ code)← ûsr.argcache ∇ key← (arg opts)  
+      ⍝ ACGet:   (key′ code)← ûsr.argCache ∇ key← (arg opts)  
       ⍝   key′ returned may be the <key> passed in OR ⍬.   
       ⍝ If ⍺≠0
       ⍝    - For key <key>, see if we have cached <code>, the fstr code equiv. of the key.
