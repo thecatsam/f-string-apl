@@ -24,7 +24,7 @@
 ⍝ ===================================================================================
 ⍝ LibAuto: libStr← ûsr ∇ str 
 ⍝    str: str starts 1 char after '£' or '`L'. 
-⍝    ûsr: namespace with (r/w:) ûsr.libActive; (r/o:) êauto; (read in LoadObj:) êverbose 
+⍝    ûsr: namespace with (r/w:) ûsr.lîbObjs; (r/o:) êauto; (read in LoadObj:) êverbose 
 ⍝ Returns: ûLibTok, the library name surrounded by parens, no matter what.
 ⍝ ∘ Used by ∆F's scan process when it sees £ or `L. 
 ⍝   ∘ Called from the main scan routines CF_SF and CFEsc. 
@@ -54,8 +54,8 @@
         w← NoLB 1↓w                                 ⍝     Skip more blanks,
         len← NmSpan w                               ⍝     Grab the apparent name and length.
         nm← len↑ w                                  ⍝      
-    nm⊂⍛∊ ⍺.libActive:        ûLibTok               ⍝ Saw it before? →Return.
-        ⍺.libActive,← ⊂nm                           ⍝     Mark as seen (even if invalid)
+    nm⊂⍛∊ ⍺.lîbObjs:         ûLibTok                ⍝ Saw it before? →Return.
+        ⍺.lîbObjs,← ⊂nm                             ⍝     Mark as seen (even if invalid)
     0≠ ûLib.⎕NC nm:          ûLibTok                ⍝ In libuser (>1) or invalid name (-1)? →Return.
         w← len↓w                                    ⍝     Skip the name.
     '←'= ⊃w~ '∘ ':           ûLibTok                ⍝ If assignment, →Return.
@@ -254,8 +254,8 @@
 ⍝   opts:  (verbose: 0 ⋄ compact: 0 ⋄ runtime: 0)
 ⍝ ∘ If called more than once, we reload everything so that any user pârms loaded
 ⍝   reflect changes to the initial, built-in state.
-⍝     Load default pârms? If LIB_ACTIVE≥1
-⍝     Load user pârms?    If LIB_ACTIVE=2
+⍝     Load default pârms? If LIB_AUTO≥1
+⍝     Load user pârms?    If LIB_AUTO=2
 ⍝     Show pârms?         If '-v' in opts or pârms.verbose
 ⍝     Show compactly?     If '-c' in opts 
 ⍝     Is this runtime?    If '-r' in opts
@@ -279,9 +279,9 @@
     v c r← parmNs ⎕VGET parms 0
     rc← 1 0⍴⍬ 
     SetBaseParms ⍬
-    :If ##.LIB_ACTIVE≥ 1 
+    :If ##.LIB_AUTO≥ 1 
         LoadDefaultParms ##.LIB_PARM_FI 
-        :If ##.LIB_ACTIVE= 2
+        :If ##.LIB_AUTO= 2
         :AndIf rc← pârms.⍙readParms[0]                 ⍝ Did we read the defaults? If so, continue...
           r LoadUserParms ##.LIB_USER_FI        
         :EndIf

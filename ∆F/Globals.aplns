@@ -9,7 +9,7 @@
 ⍝ ============   
 ⍝ ADD_∆F_TO_PATH   APL_VERSION    FS_CACHE_ENABLED    FS_CACHE_MAX 
 ⍝ FS_CACHE_KEEP    ESCAPE_CHAR    FUTURES             HELP_HTML_FI 
-⍝ INLINE_DEF       KEEP_SRC_CM    LIB_ACTIVE          LIB_PARM_FI     
+⍝ INLINE_DEF       KEEP_SRC_CM    LIB_AUTO            LIB_PARM_FI     
 ⍝ LIB_SRC_FI       LIB_USER_FI    OPTS_DEFns          OPTS_DEFval
 ⍝ OPTS_KW          PROMOTE_∆F     QS_FR1              QUOTES_SUPPLEMENTAL 
 ⍝ SIGNAL_LIB_ERRS  SRC_FI         TRAP_ERRORS         VERBOSE_LOADTIME  
@@ -29,7 +29,7 @@
   VERBOSE_RUNTIME← 0
 
 ⍝ VERBOSE_LOADTIME: Load (Fix)-Time verbosity flag
-  VERBOSE_LOADTIME← 1
+  VERBOSE_LOADTIME← 0
 ⍝              
 ⍝ SIGNAL_LIB_ERRS: Affects £.nm and `L.nm constructions. See LibUtils.aplns.
 ⍝ - If SIGNAL_LIB_ERRS← 1
@@ -103,13 +103,13 @@
 ⍝ =======================================================================
 ⍝ Var     Setting  Do we want to use the SESSION LIBRARY (£, `L) autoload feature and
 ⍝                         allow the user to change user parameters (see LIB_USER_FI).
-⍝ LIB_ACTIVE:  2   Yes.   Yes.  
+⍝ LIB_AUTO:  2   Yes.   Yes.  
 ⍝                  Load default (see LIB_PARM_FI below) AND user parameters (see LIB_USER_FI)
 ⍝              1   Yes.   No. 
 ⍝                  Load default parameters ONLY, never user's. Good for a demo environment!
 ⍝              0   No.    No.
 ⍝                  No autoload features should be available.
-  LIB_ACTIVE←  2                                       ⍝ 2= Full functionality
+  LIB_AUTO←  2                                       ⍝ 2= Full functionality
   LIB_PARM_FI← '∆F/ParmDefs.apla' 
   LIB_USER_FI← '.∆F'                                   ⍝ User parameters, rel. to Apl ]CD
   LIB_SRC_FI←  '∆F/LibUtils.aplns'                     ⍝ Library shortcuts (£,  `L) utilities.
