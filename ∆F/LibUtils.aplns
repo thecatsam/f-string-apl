@@ -1,4 +1,4 @@
-⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-07-08') 
+⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-07-09') 
 :Namespace libUtils
 ⍝ ===================================================================================
 ⍝ This namespace handles Library (£ or `L) shortcut automatic loading.
@@ -241,13 +241,15 @@
 
 ⍝   LibComplete: Point to (empty, but named) user library at load-time.
 ⍝      actual ref is typically ##.userLibrary, local ref (alias): ûLib, local name: ûLibNm.
-⍝ external: 
-⍝      ûLib, ûLibNm, ûLibTok
-  ∇ {libRef}← LibComplete libRef
-    libRef.⎕DF ⎕NULL                      ⍝ Clear, if set...
-    ûLibTok← ' ',⍨ ûLibNm← ⍕ûLib← libRef 
-    ûLib.⎕DF '£=[',ûLibNm,']'
-  ∇
+⍝ Returns: ûLib, ûLibNm, ûLibTok← libRef libTok libNm
+  LibComplete← {
+    libRef← ⍵                                  ⍝ Get library reference
+    _← libRef.⎕DF ⎕NULL                        ⍝ Be sure default display form
+    libNm← ⍕libRef                             ⍝ Save default ⎕DF as name
+    libTok← libNm, ' '                         ⍝ ... and as a special token
+    _← libRef.⎕DF '£=[',libNm,']'              ⍝ Set user-friendly display form
+    libRef libTok libNm                        ⍝ Return ref, token, name
+  }
 
 ⍝ LoadParms: Load default and user pârms for Library processing. (A .∆F LOAD TIME utility)
 ⍝   rc← ∇ opts
@@ -263,7 +265,6 @@
 ⍝ *** All LoadParms routines reference the external (global) namespace 'pârms', set in SetBaseParms 
 ⍝
 ⍝ LoadParms
-⍝   SetBaseParms
 ⍝   LoadDefaultParms
 ⍝      LoadErr
 ⍝   LoadUserParms
@@ -273,12 +274,21 @@
 ⍝   GenFullPath
 ⍝   LoadErr 
 ⍝   _CShow 
-  ∇ {rc}← LoadParms parmNs  
-    ; v; c; r; parms
-    parms←  ↑'verbose' 'compact' 'runtime'
-    v c r← parmNs ⎕VGET parms 0
+  ∇ {rc}← LoadParms âttr
+    ; v; c; r; kw
+    kw←  ↑'verbose' 'compact' 'runtime'
+    v c r← âttr ⎕VGET kw 0
     rc← 1 0⍴⍬ 
-    SetBaseParms ⍬
+  ⍝ Set baseline pârms in case we are directed NOT to read 
+  ⍝ the default pârms or if it's corrupted...
+    pârms← (
+          ⍙readParms: 0 0
+          auto:       0
+          path:       ⍬
+          prefix:     ⍬
+          suffix:     ⍬
+          verbose:    ##.VERBOSE_RUNTIME
+    )
     :If ##.LIB_AUTO≥ 1 
         LoadDefaultParms ##.LIB_PARM_FI 
         :If ##.LIB_AUTO= 2
@@ -312,11 +322,6 @@
           pârms.verbose← (⍬ ⎕NULL∊⍨ ⊂pârms.verbose)⊃ pârms.verbose ##.VERBOSE_RUNTIME 
       1: _← pârms⊣ pârms.⍙readParms← 1 0 
     }  
-  ⍝ Set baseline pârms in case we are directed NOT to read the default pârms or if it's corrupted...
-    SetBaseParms←{
-        ⍙readParms auto path prefix suffix verbose← (0 0) 0 ⍬ ⍬ ⍬ (##.VERBOSE_RUNTIME) 
-        'pârms' ⎕NS '⍙readParms' 'auto' 'path' 'prefix' 'suffix' 'verbose' 
-    }
   ⍝ What to do if loading defaults or user pârms fails.
   ⍝    ⍺ LoadErr warning
   ⍝ Issues warning ⍵ if ⍵ is non-null  
@@ -324,7 +329,7 @@
   ⍝ isUsrP=1: error loading USER parameters (.∆F file); 
   ⍝ isUsrP=0: error loading DEFAULT parameters
     LoadErr← { isUsrP← ⍺        
-        warn← '❗❗❗ ∆F LIB. WARNING: ' 
+        warn← '∆F ❗❗❗ ∆F LIB. WARNING: ' 
         amsg← (⊂'Library Autoload is '),¨ 'not available' 'available',¨'' ' with default parameters.'
         _← { 0=≢⍵: ⍬ ⋄ ⊢⎕← warn, ⍵ }¨ ⍵ ⎕DMX.Message (isUsrP⊃ amsg)    
         ⎕THIS.(LibAuto← LibNoAuto)                  ⍝ No Auto function!
@@ -357,7 +362,13 @@
     ⍝ ∘ If any parm in namespace ⍵ found in (⊃¨⍺) has value ⎕NULL or ⍬, 
     ⍝   it is replaced in ⍵ by its corresponding default in (⊃∘⌽¨⍺)
       ParmsSpecial←{ 
-        ⍺← ('verbose' ##.VERBOSE_RUNTIME) ('prefix'(,⊂'')) ('auto' 0) ('path' ⍬) ('suffix' ⍬) 
+        ⍺← (
+          'verbose' ##.VERBOSE_RUNTIME
+          'prefix'  (,⊂'') 
+          'auto'    0 
+          'path'    ⍬
+          'suffix'  ⍬
+        )
         ⍵ ⎕VSET ⍺/⍨ (⍬∘≡∨⎕NULL∘≡)∘⍵.⎕OR∘⊃¨ ⍺
       }
     ⍝ GenFullPath:   pârms.⍙fullPath← ∇ pârms 
@@ -378,20 +389,20 @@
     ⍝ ∘ If ⍺=1, force a display, even if pârms.verbose=0.
     ⍝ ∘ Returns: a matrix of pârms or (1 0⍴'') 
       _CShow← { ⍺←0 
-        0:: 1 0⍴⎕←'❌❌❌ ∆F Load: Error displaying runtime parameters'
+        0:: 1 0⍴⎕←'∆F ❌❌❌ ∆F Load: Error displaying runtime parameters'
         (~⍺)∧ ~⍵.verbose: _← 1 0⍴''  
         0= ≢nl← ⍵.⎕NL ¯2: _←1 0⍴'' 
         1: _← ↑⍺⍺ Apl2AN ⍵.{⎕NS {⍵/⍨ '⍙'≠⊃¨⍵}⍵} nl
       } 
     ⍝ ShowPath:  Called via 'path' call in ##.Special. 
-      ShowPath← { ⊃1 Apl2AN pârms.⍙fullPath } 
+      ShowPath← { ⍺← 1 ⋄ r← ⍺ Apl2AN pârms.⍙fullPath ⋄  ⍺=1: ⊃r ⋄ r } 
 
       AN2Apl← {⍺←⊢ ⋄ ⍺ ⎕SE.Dyalog.Array.Deserialise ⍵}   
       Apl2AN← {⍺←⊢ ⋄ ⍺ ⎕SE.Dyalog.Array.Serialise ⍵}   
 
 ⍝ =========================================================================
 ⍝ EXECUTIVE
-  LibComplete ##.userLibrary
-  LoadParms ()                    
+  ûLib ûLibTok ûLibNm← LibComplete ##.userLibrary   ⍝ Get "globals": ûLib ûLibTok ûLibNm
+  LoadParms ()                                      ⍝ Load the library parameters...
 :EndSection Loadtime Routines
 :EndNamespace   ⍝ libUtils
