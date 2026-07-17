@@ -7,7 +7,7 @@
 ⍝ - global variables in globals
 ⍝ - source for the library (£,`L) code as libsrc
 ⍝ 
-⍝ [1] Save (as a global) the names of all the globals passed here for later use.
+⍝ [1] Save (at namespace level) the names of all the globals passed here for later use.
   GLOBALS← ⎕SE.∆F⍙Share.globals.⎕NL ¯2 ¯9  
 ⍝ [2] Merge the globals into this ns.
   ⎕THIS ⎕NS ⎕SE.∆F⍙Share.globals
@@ -91,6 +91,7 @@
       p= ≢⍵: ûsr TFProc ⍺, ⍵                           ⍝ Nothing special. Process literals => return.
         pfx← p↑⍵ ⋄ c← p⌷⍵ ⋄ w← (p+1)↓⍵                 ⍝ Found something!
       c= esc: (⍺, pfx, ûsr.nl TFEsc w) ∇ 1↓ w          ⍝ char is esc. Process. => Continue
+  ⍝  ~c∊ lb: ⎕SIGNAL êCfLogic  
   ⍝   c= lb: We may have a SF or a CF. We complete this TF, then check SF vs CF.
   ⍝          If we have a SF, complete it here; Else, we recurse to Code Field processing
         _← ûsr TFProc ⍺, pfx                           ⍝ Update this text field and then...
@@ -178,7 +179,7 @@
 ⍝   brC       -   running count of braces '{' lb, '}' rb. Set in dfn ScanAll.
 ⍝   cfL       -   code field running length (for SDCFs). Set in dfn ScanAll.
     ûsr← ⍺                                
-  ⍝ Validate all options passed in ûsr (⍺).  dfn∊ ¯1 0 1; others ∊ 0 1.
+  ⍝ Validate all options passed in ûsr (⍺).  dfn∊ ¯1 0 1; others ∊ 0 1. cache handled in fsc.Get.
     core← |ûsr.( dfn verbose box auto inline )         ⍝ For cache, see fsc.Get.
   11≠ ⎕DR core: ⎕SIGNAL êOpt                           ⍝ Are core opts bool?
     VMsg← (⎕∘←)⍣(ûsr.(verbose∧¯1≠dfn))                 ⍝ Verbose option message (returns ⍵) 
@@ -459,21 +460,21 @@
 ⍝      Sets the named parameter to a new value.
 ⍝      Returns the previous value. The parameter must be valid.
 ⍝ 
-  Special← { 
+  Special← { ⎕PW←200
     val← ⎕C ⍕⍵                                    ⍝ ⍺ is referenced for 'get' and 'set' only
   ⍝ pârms: Load any new pârms without a ]load. 
   ⍝        Returns display of default and user pârms (as mx) in alph order.
     2≠ ⎕NC 'val': ⎕SIGNAL êOpt  
   ⍝ LoadParms (isVerbose isCompact isRuntime)   
-    'parms-c'≡   val: _← libUtils.LoadParms  (verbose: 1 ⋄ compact: 1 ⋄ runtime: 1)
-    'parms'  ≡ 5↑val: _← libUtils.LoadParms  (verbose: 1 ⋄ compact: 0 ⋄ runtime: 1) 
-    'path'   ≡   val: _← ↑0 libUtils.ShowPath ⍬ 
+    'parms-c'≡   val: 1 0⍴⍬⊣ ⎕← libUtils.LoadParms  (verbose: 1 ⋄ compact: 1 ⋄ runtime: 1)
+    'parms'  ≡ 5↑val: 1 0⍴⍬⊣ ⎕← libUtils.LoadParms  (verbose: 1 ⋄ compact: 0 ⋄ runtime: 1) 
+    'path'   ≡   val: 1 0⍴⍬⊣ ⎕← ↑0 libUtils.ShowPath ⍬ 
   ⍝  globals
-    'glo'    ≡ 3↑val: _← ShowGlobalsIf 1                 ⍝ list all "globals"
+    'glo'    ≡ 3↑val: 1 0⍴⍬⊣ ⎕← ShowGlobalsIf 1                 ⍝ list all "globals"
   ⍝  symbols 
-    'sym'    ≡ 3↑val: _← ShowSymbols ⍬                   ⍝ special symbols
+    'sym'    ≡ 3↑val: 1 0⍴⍬⊣ ⎕← ShowSymbols ⍬                   ⍝ special symbols
   ⍝  * = all of the above
-    '*'      ≡   val: _← ShowAll⍬
+    '*'      ≡   val: 1 0⍴⍬⊣ ⎕← ShowAll⍬
   ⍝ If pfx of <val> not 'help', option error.
     'help'   ≢ 4↑val: ⎕SIGNAL êOpt 
   ⍝ help | help-n[arrow] | help-w[ide] 
@@ -500,7 +501,7 @@
       ('  Futures: "', FUTURES,'"')
     )
   } 
-  ShowAll←{
+  ShowAll←{   
       ⎕← 'Symbols:'
       ⎕← ShowSymbols⍬
       ⎕← 'Globals:'
@@ -529,25 +530,17 @@
 ⍝ Utilities for "userLibrary" shortcut (£, `L) 
 ⍝ See LoadLibAuto 
 :Namespace libUtils
-⍝⍝⍝⍝⍝ This is a local stub, pending (optional, but expected) load of LibUtils below.
-  ∇ {pârms}←  LibSimple libNs 
-    ⍝ external in the stub... 
-    ⍝   libUser, LibAuto, ShowPath, LoadParms, pârms 
-    ⍝ external loaded from LibUtils.aplns:
-    ⍝   libUser, LibAuto, ShowPath, LoadParms, pârms  
-      ⎕THIS.libUser← libNs
-      LibAuto← (⍕libNs)⍨                               ⍝ Must precede any ⎕DF of libNs 
-      ShowPath← '⍬'⍨        
-      LoadParms← ⍬⍨  
-      libNs.⎕DF ⎕NULL                                  ⍝ Clear any prior ⎕DF.
-      libNs.⎕DF '£=[',(⍕libNs),' ⋄ auto:0]'            ⍝ Now, set ours. 
-      pârms← (
-        ⍙readParms: 0 0
-        auto:       0
-      )
-  ∇
-⍝ Set name and ref for userLibrary here
-  pârms← LibSimple ##.userLibrary
+⍝ ***** This is a local stub, pending (optional, but expected) load of LibUtils below.
+    uL← ⍕##.userLibrary 
+    LibAuto← uL⍨                                         ⍝ Must precede any ⎕DF of libNs 
+    ##.userLibrary.⎕DF '£=[',uL,' ⋄ auto: 0]'            ⍝ Now, set ⎕DF.
+    ShowPath← '⍬'⍨        
+    LoadParms← ⍬⍨   
+    pârms← (
+      ⍙readParms: 0 0
+      auto:       0
+    )
+  ⎕EX 'uL'
 :EndNamespace
 :EndSection SKELETAL LIBRARY SERVICES 
 ⍝ ===================================================================================
@@ -631,8 +624,8 @@
     }
   ⍝ Serialise (display in APLAN)
     S← { 
-      ⎕ML←1⋄11 16 6::⍵⋄⍺←0⋄     
-      1=≢s←⍺⎕SE.Dyalog.Array.Serialise⍵:⊃s⋄
+      ⎕ML←1 ⋄ 11 16 6:: ⍵ ⋄ ⍺← 0     
+      1=≢s←⍺⎕SE.Dyalog.Array.Serialise⍵: ⊃s
       ⍪s
     }
   ⍝ Time / Date   
@@ -709,9 +702,9 @@
               ('^\h+|\h+$'          '')         ⍝ leading/trailing spaces
               ('\h*([←⋄⎕{}()]+)\h*' '\1')       ⍝ spaces before/after any of these "←⋄⎕{}()"
             )
-            ib← src ⎕R snk⍠('Mode' 'M')⊣ b                  ⍝ inline form of body
-          1= ≢ib: ⊃ib                          ⍝ single stmt; output as is.
-            '{', 1↓ ¯1↓ ∊'⋄',⍨¨ ib             ⍝ multi-stmt ( add stmt sep "⋄", remove extra one.)
+            ib← src ⎕R snk⍠('Mode' 'M')⊣ b      ⍝ inline form of body
+          1= ≢ib: ⊃ib                           ⍝ single stmt; output as is.
+            '{', '}',⍨ 1↓ ¯3↓ ∊'⋄',⍨¨ ib        ⍝ multi-stmt ( add stmt sep "⋄", remove extra one.)
         } 
       ⍝ "Experimental" - future operators (from Adam B's github repository)
         cdFut elFut rsuFut←  cd el rsu { (⍺∊ FUTURES) ∧ 0≠≢⍵ } cdNm elNm 'rsu-dummy'
@@ -721,9 +714,9 @@
           rsuFut,⍥⊂ (23↑'Select/Sane Indexing.'),   (25↑' ⊇ Right-Shoe Underscore'),'⎕UCS 8839'
         )
         _← {  
-            enabled details ⍵  
+            enabled details← ⍵  
             flag← '❌❌❌' '✅✅✅'⊃⍨ enabled
-          1: ⎕← '∆F ', flag, ' Future feature ', ('not '/⍨ ~enabled), 'available: ',detailed
+          1: ⎕← '∆F ', flag, ' Future feature ', ('not '/⍨ ~enabled), 'available: ',details
         }¨⍣ VERBOSE_LOADTIME⊢ grps 
 
       ⍝ User-callable functions:          A  B  C  D  F  J  Q  S  T  W 
@@ -751,16 +744,15 @@
       shortcuts 
     } 
 
-  ∇ {ok}← LoadHelp hfi;e1; e2 
+  ∇ {ok}← LoadHelp hfi 
   ⍝ Loading the help html file...
     :IF ⎕NEXISTS hfi 
         ⎕THIS.helpHtml← ⊃⎕NGET hfi
         :IF VERBOSE_LOADTIME ⋄ ⎕← '∆F ✅✅✅ Loaded Help Html File "',hfi,'"' ⋄ :EndIf  
         ok← 1 
     :Else 
-        e1← '∆F ❗❗❗ WARNING: When loading ∆Fapl, the help file "',hfi,'" was not found in current directory.'
-        e2← '∆F ❗❗❗ WARNING: ∆F help will not be available without user intervention.'
-        e1,(⎕UCS 13),e2
+        ⎕← '∆F ❗❗❗ WARNING: When loading ∆Fapl, the help file "',hfi,'" was not found in current directory.'
+        ⎕← '∆F ❗❗❗ WARNING: ∆F help will not be available without user intervention.'
         ok← 0 
     :EndIf  
   ∇
@@ -768,24 +760,22 @@
     ;how 
     how← ' from "',libFi,'" into "','"',⍨∆THIS 
     :If libAuto=0
-        ⎕←↑1⍴⊂'∆F ❗❗❗ WARNING: Library autoload services were not loaded',how
-        ⎕←'∆F ✅✅✅ LIB_AUTO is set to ',(⍕libObjs),' in ∆F/FString.aplns'
-        ⎕←'∆F ✅✅✅ £ and `L shortcuts are available without them, as if (auto: 0) is set.'
+        ⎕←'∆F ❗❗❗ Warning: The £ (`L) namespace is available without autoload services.'
+        ⎕←'∆F ❗❗❗ LIB_AUTO was set to 0 in ∆F/Globals.aplns.'
         :Return 
     :EndIf 
     :TRAP 22 
         ⎕FIX⍠ 'FixWithErrors' 0⊣ ⎕SE.∆F⍙Share.library
-        :If VERBOSE_LOADTIME 
-            ⎕←'∆F ✅✅✅ Loaded services for Library shortcut (£)',how  
-        :EndIf 
+        :If VERBOSE_LOADTIME ⋄ ⎕←'∆F ✅✅✅ Loaded services for Library shortcut (£)',how  ⋄ :EndIf 
     :Else
         libAuto← 0 
-        ⎕←↑1⍴⊂'∆F ❗❗❗ WARNING: Unable to load Library autoload services',how 
+        ⎕←'∆F ❗❗❗ WARNING: Unable to load Library autoload services',how 
         ⎕←'∆F ✅✅✅ £ and `L shortcuts are available without autoload (auto: 0).'
     :EndTrap
   ∇
 ⍝ Show the following special globals in this namespace.
-  ShowGlobalsIf←{  S← 1∘⎕SE.Dyalog.Array.Serialise
+  ShowGlobalsIf←{  
+      S← 1∘⎕SE.Dyalog.Array.Serialise
     ~⍵: _←1 0⍴0  
       vv← { 9= ⎕NC '⍵': ⊂⍕⍵ ⋄ S ⍵ }¨ ⎕VGET gg← ⊂∘⍋⍛⌷⍨GLOBALS 
       _← {((gg⍳⊂⍵)⊃vv)← ⊂ S ⎕VGET ⍵} 'QUOTE_STYLES'

@@ -15,9 +15,9 @@
 ⍝ SIGNAL_LIB_ERRS  SRC_FI         TRAP_ERRORS         VERBOSE_LOADTIME  
 ⍝ VERBOSE_RUNTIME  VERSION    
  
-  SRC_FI←         '∆F/FString.aplns'                 ⍝ Typically, rendered as namespace FString as well
+  SRC_FI←         '∆F/FString.aplns'                  ⍝ Typically, rendered as namespace FString as well
   ADD_∆F_TO_PATH←  1                                  ⍝ If 1, adds FString to Dyalog ⎕PATH.
-  VERSION← 'v.0.4.2'                                  ⍝ Set/updated by ∆F_Publish.dyalog...
+  VERSION← 'v.0.4.4'                                  ⍝ Set/updated by ∆F_Publish.dyalog...
 
 ⍝ TRAP_ERRORS: If 0, turns off error trapping in ∆F utility.
   TRAP_ERRORS← 1           
@@ -103,13 +103,13 @@
 ⍝ =======================================================================
 ⍝ Var     Setting  Do we want to use the SESSION LIBRARY (£, `L) autoload feature and
 ⍝                         allow the user to change user parameters (see LIB_USER_FI).
-⍝ LIB_AUTO:  2   Yes.   Yes.  
+⍝ LIB_AUTO:    2   Yes.   Yes.  
 ⍝                  Load default (see LIB_PARM_FI below) AND user parameters (see LIB_USER_FI)
 ⍝              1   Yes.   No. 
 ⍝                  Load default parameters ONLY, never user's. Good for a demo environment!
 ⍝              0   No.    No.
 ⍝                  No autoload features should be available.
-  LIB_AUTO←  2                                       ⍝ 2= Full functionality
+  LIB_AUTO←  2                                         ⍝ 2= Full functionality
   LIB_PARM_FI← '∆F/ParmDefs.apla' 
   LIB_USER_FI← '.∆F'                                   ⍝ User parameters, rel. to Apl ]CD
   LIB_SRC_FI←  '∆F/LibUtils.aplns'                     ⍝ Library shortcuts (£,  `L) utilities.

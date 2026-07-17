@@ -1,5 +1,5 @@
 ---
-title: "∆F Formatted String Literals (v.0.4.2)"
+title: "∆F Formatted String Literals (v.0.4.4)"
 toc: true
 ---
 
