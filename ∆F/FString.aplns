@@ -507,7 +507,7 @@
       ⎕← 'Globals:'
       ⎕← ShowGlobalsIf 1
       ⎕← '(Library) Parms:'
-      ⎕← '  ',,libUtils.LoadParms  (verbose: 1 ⋄ compact: 1 ⋄ runtime: 1)
+      ⎕← ' ', libUtils.LoadParms  (verbose: 1 ⋄ compact: 0 ⋄ runtime: 1)
       ⎕← '(Library) Path:'
       ⎕← '  ', libUtils.ShowPath ⍬
     1: _←⍬

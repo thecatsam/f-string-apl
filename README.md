@@ -1107,7 +1107,7 @@ explicit)</strong> <big><span class="blue">4.7</span></big></a><br>
 <div class="button-container">
 
 <input type="button" value="Back" class="button happy-button" onclick="history.back()"/>
-⍠⍠⍠    
+☺☺☺    
 <input type="button" class="button normal-button" value="Top" onclick="window.location='#top'"/>
 <input type="button" class="button normal-button" value="Quick Start" onclick="window.location='#inside-quick-start'"/>
 <input type="button" class="button normal-button" value="Examples" onclick="window.location='#inside-examples'"/>
@@ -1118,7 +1118,7 @@ explicit)</strong> <big><span class="blue">4.7</span></big></a><br>
 <input type="button" class="button normal-button" value="Index" onclick="window.location='#inside-index'"/>
 <input type="button" class="button normal-button" value="Bottom" onclick="window.location='#index-of-topics'"/>    
 <input type="button" class="button happy-button" value="Print" onclick="myPrint()">
-⍠⍠⍠
+☺☺☺
 
 </div>
 

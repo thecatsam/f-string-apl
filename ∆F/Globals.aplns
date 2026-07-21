@@ -17,7 +17,7 @@
  
   SRC_FI←         '∆F/FString.aplns'                  ⍝ Typically, rendered as namespace FString as well
   ADD_∆F_TO_PATH←  1                                  ⍝ If 1, adds FString to Dyalog ⎕PATH.
-  VERSION← 'v.0.4.4'                                  ⍝ Set/updated by ∆F_Publish.dyalog...
+  VERSION← 'v.0.4.5'                                  ⍝ Set/updated by ∆F_Publish.dyalog...
 
 ⍝ TRAP_ERRORS: If 0, turns off error trapping in ∆F utility.
   TRAP_ERRORS← 1           
