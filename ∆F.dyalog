@@ -18,41 +18,41 @@
 ⍝ ---------------------------------------------
 
 ∇ {ok}← Load gFi 
-  ;dest ;g ; in; out; lib; main; DE; NY; Note  
+  ;dest ; fs; g ; in; out; lib; main; DE; NY; Note  
   ⎕IO ⎕ML← 0 1 
-  dest← ⎕THIS.##                                        ⍝ The <main> ns goes to our parent, not us
+  dest← ⎕THIS.##                                          ⍝ The <main> ns goes to our parent, not us
   DE← ,∘(⊃∘'DISABLED' 'ENABLED')  
   NY← ,∘(⊃∘'NO' 'YES')
   :Trap 0
-      g← 0 ⎕FIX  gFi                                    ⍝ Load globals from file into namespace <g>
-    ⍝ Make sure key source files <main> and <lib> exist (if not: set to '')
-       main lib← { 
-        ~⎕NEXISTS ⍵: ⎕SIGNAL ⊂('EN' 22)('Message',⍥⊂'No such file or directory: "',⍵,'"') 
-        ⊃⎕NGET ⍵ 1
+      g← 0 ⎕FIX  gFi                                      ⍝ Load globals from file into namespace <g>
+    ⍝ Make sure key files g.(SRC_FI LIB_SRC_FI) exist and load their contents (or '' if they don't exist).
+      main lib← { 
+          ~⎕NEXISTS ⍵: ⎕SIGNAL ⊂('EN' 22)('Message',⍥⊂'No such file or directory: "',⍵,'"') 
+          ⊃⎕NGET ⍵ 1
       }¨ g.( SRC_FI LIB_SRC_FI ) 
       :If g.VERBOSE_LOADTIME
-        ⎕← '∆F ✅✅✅ Note: Global variables in "',gFi,'" may be customised (for all users)' 
-        ⎕← '∆F ✅✅✅ Verbose at load time (VERBOSE_LOADTIME): ENABLED'
-        ⎕← '∆F ✅✅✅ Verbose at run time (VERBOSE_RUNTIME):' DE g.VERBOSE_RUNTIME 
-        ⎕← '∆F ✅✅✅ Fstring cache: (FS_CACHE_ENABLED)' DE g.FS_CACHE_ENABLED 
-        ⎕← '∆F ✅✅✅ Keep source comments and blank lines (KEEP_SRC_CM): ' NY g.KEEP_SRC_CM 
+          ⎕← '∆F ✅✅✅ Note: Global variables in "',gFi,'" may be customised (for all users)' 
+          ⎕← '∆F ✅✅✅ Verbose at load time (VERBOSE_LOADTIME): ENABLED'
+          ⎕← '∆F ✅✅✅ Verbose at run time (VERBOSE_RUNTIME):' DE g.VERBOSE_RUNTIME 
+          ⎕← '∆F ✅✅✅ Fstring cache: (FS_CACHE_ENABLED)' DE g.FS_CACHE_ENABLED 
+          ⎕← '∆F ✅✅✅ Keep source comments and blank lines (KEEP_SRC_CM): ' NY g.KEEP_SRC_CM 
       :EndIf 
       :If ~g.KEEP_SRC_CM                                
           main lib← { 
             in out← ↓⍉↑( 
-              '''[^'']*'''    '&'      ⍝ Ignore quoted strings
-              '\h*⍝(?!\!).*'  ''       ⍝ Remove comments and prior spaces (keep ⍝! comments)
-              '^\h*$'         ''       ⍝ Blank lines => empty lines
+              '''[^'']*'''    '&'                         ⍝ Ignore quoted strings
+              '\h*⍝(?!\!).*'  ''                          ⍝ Remove comments and prior spaces (keep ⍝! comments)
+              '^\h*$'         ''                          ⍝ Blank lines => empty lines
             )
-            t/⍨ 0≠ ≢¨t← in ⎕R out⊢ ⍵   ⍝ Remove empty lines
+            t/⍨ 0≠ ≢¨t← in ⎕R out⊢ ⍵                      ⍝ Remove empty lines
           }¨ main lib 
       :EndIf 
     ⍝ Share globals and lib with <main> as it is fixed...
-      ⎕SE.∆F⍙Share← (globals: g ⋄ library: lib)         ⍝ lib ⎕FIXed in FString...
-      dest.⎕FIX⍠ 'FixWithErrors' 0 ⊣ main               ⍝ ⎕FIX main in <dest>
-      ⎕DF (⍕dest),'.FString [',g.VERSION,']'            ⍝ Report ∆F info via ⎕DF
+      ⎕SE.∆F⍙Share← (globals: g ⋄ library: lib)           ⍝ lib ⎕FIXed in FString...
+      fs← ⍕dest.⎕FIX⍠ 'FixWithErrors' 0 ⊣ main            ⍝ ⎕FIX main in <dest>
+      ⎕DF fs,' [',g.VERSION,']'                           ⍝ Report ∆F info via ⎕DF
   :Else                                                     
-      ⎕DF ∊⎕DMX.(                                       ⍝ Report error via ⎕DF
+      ⎕DF ∊⎕DMX.(                                         ⍝ Report error via ⎕DF
         '∆F ❗❗❗ ERROR LOADING ∆F: '
         EM, ': '/⍨0≠≢Message
         Message 

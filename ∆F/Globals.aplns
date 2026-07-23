@@ -72,7 +72,7 @@
       DE3: '‚‘'
       CH1: '《》'       ⍝ Chinese
       CH2: '「」'
-⍝ Note: The code can support all of these at the same time.
+⍝ Note: The code can support all of these (and more) at the same time.
   ) 
   QUOTES_SUPPLEMENTAL← QUOTE_STYLES.(FR1)  ⍝ May be null '' or ⍬.
   
