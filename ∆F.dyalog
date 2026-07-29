@@ -1,15 +1,29 @@
 :Namespace              ⍝ Unnamed NS.  Won't clutter destination ns.                 
 ⍝ ∆F Utility and Library Loader (Dyalog ≥20 Version!).
 ⍝ Does minimal loading itself; makes globals available to FString, which does rest of loading.
+⍝ 
+⍝ Files ultimately loaded by ∆F...
+⍝     ∆F.dyalog (this file)
+⍝        ∆F/...
+⍝          1. Globals.aplns*                      
+⍝          2. FString.aplns
+⍝             a. Globals.aplns*                  [*] Read by ∆F, imported into FString.
+⍝             b. ParmDefs.apla
+⍝             c. Help.html
+⍝             d. Futures/CircleDiaeresis.aplo
+⍝             e. Futures/Ellipsis.aplf
+⍝             f. LibUtils.aplns**  
+⍝          3. LibUtils.aplns**                   [**] Read by ∆F, fixed (⎕FIX) by FString.
+⍝ --------------------               
+⍝           
 ⍝ Load gFi
 ⍝ - gFi: a file with global variables: '∆F/∆FGlobals.aplns' ==> g (a local namespace)
 ⍝ - From g, gets name of the source for ∆F and its library,  g.SRC_FI (typically FString.dyalog) 
-⍝   as FString  
 ⍝ - From g, gets name of the "library £" file libSrc
 ⍝ - Creates temporary namespace ⎕SE.⍙FShare to share the globals and the contents of <libSrc>
 ⍝   establishes function ∆F in the dest ns.
 ⍝ - Establishes FString
-⍝ THen FString, in turn, 
+⍝ Then FString, in turn, 
 ⍝ - establishes FString.libUtils
 ⍝ - loads other items needed based on the global variables passed.
 ⍝ --------------

@@ -5,19 +5,21 @@
 ⍝ These are treated as "installation-level" variables, not user-level variables.
 ⍝ Exported via ∆F.dyalog "loader" to FString via temp ns ⎕SE.∆F⍙Share.  
 ⍝ See ∆F.dyalog for details.
-⍝ NOTE: ALL PARAMETERS MUST BE SPECIFIED (in general), whether "default" or otherwise.
-⍝ ============   
-⍝ ADD_∆F_TO_PATH   APL_VERSION    FS_CACHE_ENABLED    FS_CACHE_MAX 
-⍝ FS_CACHE_KEEP    ESCAPE_CHAR    FUTURES             HELP_HTML_FI 
-⍝ INLINE_DEF       KEEP_SRC_CM    LIB_AUTO            LIB_PARM_FI     
-⍝ LIB_SRC_FI       LIB_USER_FI    OPTS_DEFns          OPTS_DEFval
-⍝ OPTS_KW          PROMOTE_∆F     QS_FR1              QUOTES_SUPPLEMENTAL 
-⍝ SIGNAL_LIB_ERRS  SRC_FI         TRAP_ERRORS         VERBOSE_LOADTIME  
-⍝ VERBOSE_RUNTIME  VERSION    
+⍝ NOTE: Most globals must be specified here to avoid a runtime error. 
+⍝ ============ (Globals in Alphabetical Order )   
+⍝  ADD_∆F_TO_PATH   APL_VERSION          ESCAPE_CHAR       FS_CACHE_ENABLED 
+⍝  FS_CACHE_KEEP    FS_CACHE_MAX         FUTURES           HELP_HTML_FI  
+⍝  INLINE_DEF       KEEP_SRC_CM          LIB_AUTO          LIB_PARM_FI  
+⍝  LIB_SRC_FI       LIB_USER_FI          OPTS_DEFns        OPTS_DEFval  
+⍝  OPTS_KW          QUOTES_SUPPLEMENTAL  QUOTE_STYLES      SIGNAL_LIB_ERRS  
+⍝  SRC_FI           TRAP_ERRORS          VERBOSE_LOADTIME  VERBOSE_RUNTIME  
+⍝  VERSION
  
-  SRC_FI←         '∆F/FString.aplns'                  ⍝ Typically, rendered as namespace FString as well
-  ADD_∆F_TO_PATH←  1                                  ⍝ If 1, adds FString to Dyalog ⎕PATH.
-  VERSION← 'v.0.4.5'                                  ⍝ Set/updated by ∆F_Publish.dyalog...
+  SRC_FI←         '∆F/FString.aplns'    ⍝ Typically, rendered as namespace FString as well
+  ADD_∆F_TO_PATH←  1                    ⍝ If 1, adds FString to Dyalog ⎕PATH.
+  VERSION← 'v.0.4.5'                    ⍝ Version of ∆F package. Updated by ∆F_Publish.dyalog...
+⍝ Returns 20 if Dyalog 20, 19 if 19. (∆F package [now] requires Dyalog 20 or later)
+  APL_VERSION← ⊃⊃⌽'.'⎕VFI 1⊃'.' ⎕WG 'APLVersion' 
 
 ⍝ TRAP_ERRORS: If 0, turns off error trapping in ∆F utility.
   TRAP_ERRORS← 1           
@@ -28,29 +30,9 @@
 ⍝ Determines the "default" for user parm ¨verbose¨.
   VERBOSE_RUNTIME← 0
 
-⍝ VERBOSE_LOADTIME: Load (Fix)-Time verbosity flag
+⍝ VERBOSE_LOADTIME: Load (Fix)-Time verbosity flag. 
+⍝ If 1, be informative during ]load FString -t=⎕SE  (etc.)
   VERBOSE_LOADTIME← 0
-⍝              
-⍝ SIGNAL_LIB_ERRS: Affects £.nm and `L.nm constructions. See LibUtils.aplns.
-⍝ - If SIGNAL_LIB_ERRS← 1
-⍝   always ⎕SIGNAL any actual internal library search error (e.g. OBJECT NOT FOUND ON SEARCH PATH),
-⍝   even if the ∆F code containing any missing or invalid object is not executed! 
-⍝        |      (verbose:0)∆F'{0: £.pcox 12 ⋄ 3}'
-⍝        |  ∆F DOMAIN ERROR: Object "pcox" not found on search path                       
-⍝ - If SIGNAL_LIB_ERRS← 0
-⍝   1a.  If (verbose: 1) or (VERBOSE_RUNTIME=1) 
-⍝        report library (£) autoload errors ONLY as informational messages.  
-⍝        |     (verbose:1)∆F'{0: £.pcox 12 ⋄ 3}'
-⍝        |  ∆F DOMAIN ERROR: Object "pcox" not found on search path
-⍝        | { ⎕SE.FString.M ⌽⍬({0: (⎕SE.FString.userLibrary).pcox 12 ⋄ 3}⍵)}⍵
-⍝        |  3                                  ⍝ <== function string executed normally!
-⍝   1b.  If (verbose: 0) and (VERBOSE_RUNTIME=0) 
-⍝        no informational messages are generated.
-⍝   2.   If the ∆F code containing any missing object is executed,
-⍝        APL will signal the expected APL error (typically as a VALUE ERROR) 
-⍝        |      (verbose:0)∆F'{0:: £.pcox 12 ⋄ 3}'
-⍝        |  3
-  SIGNAL_LIB_ERRS← 0 
  
 ⍝ ESCAPE_CHAR: Allows an installation to use a non-standard "escape" char.
 ⍝ ESCAPE_CHAR must be a scalar.
@@ -62,33 +44,33 @@
 ⍝ QUOTES_SUPPLEMENTAL must consist of 0 or more PAIRS of left AND right quotes.
 ⍝ You might consider any of these additions among others:
   QUOTE_STYLES←(
-      FR1: '«»'        ⍝ French           ⍝ Help doc shows only these.
+      FR1: '«»'                         ⍝ French           ⍝ Help doc shows only these.
       FR2: '“”'  
       FR3: '‘’'           
-      JP1: '「」'       ⍝ Japanese         ⍝ "Double-wide" characters, best to use with Japanese
+      JP1: '「」'                        ⍝ Japanese         ⍝ "Double-wide" characters, best to use with Japanese
       JP2: '『』' 
-      DE1: '»«'        ⍝ German           ⍝ Reverse of French ;-) 
+      DE1: '»«'                         ⍝ German           ⍝ Reverse of French FR1 
       DE2: '„“'
       DE3: '‚‘'
-      CH1: '《》'       ⍝ Chinese
+      CH1: '《》'                        ⍝ Chinese
       CH2: '「」'
-⍝ Note: The code can support all of these (and more) at the same time.
   ) 
-  QUOTES_SUPPLEMENTAL← QUOTE_STYLES.(FR1)  ⍝ May be null '' or ⍬.
+⍝ Note: The code can support all of these (and more) at the same time.
+  QUOTES_SUPPLEMENTAL← QUOTE_STYLES.(FR1)   ⍝ May be null '' or ⍬.
   
 ⍝ INLINE_DEF. 
 ⍝ If 1 by default,
 ⍝     puts full definitions of internal utilities (shortcuts etc.) into the result.
 ⍝ If 0 by default,
 ⍝     refers to local copies of internal utilities in FString in the result.
-⍝ May be overridden by (inline: ⍵), where ⍵ is either 1 or 0.
+⍝ May be overridden in ∆F via (inline: ⍵), where ⍵ is either 1 or 0.
 ⍝ There are occasions where INLINE_DEF mode results in marginally faster code, but
 ⍝ in general with (verbose: 1), the code is very long and rather unreadable.
   INLINE_DEF← 0 
 
 ⍝ FUTURES
 ⍝ '⍥' ∊ FUTURES
-⍝    Potential future implementation of circle diaeresis (⍥) to include the Depth operation,  
+⍝    Potential "future" implementation of circle diaeresis (⍥) to include the Depth operation,  
 ⍝      i.e. to select subarrays based on depth (just as ⍤ selects subarrays based on Rank).
 ⍝    - If not enabled, only the standard behaviours of ⍥ (in versions 19 and 20) are enabled.
 ⍝    See CircleDiaeresis.dyalog in directory ∆F for attribution and license.
@@ -109,10 +91,10 @@
 ⍝                  Load default parameters ONLY, never user's. Good for a demo environment!
 ⍝              0   No.    No.
 ⍝                  No autoload features should be available.
-  LIB_AUTO←  2                                         ⍝ 2= Full functionality
+  LIB_AUTO←  2                          ⍝ 2= Full functionality
   LIB_PARM_FI← '∆F/ParmDefs.apla' 
-  LIB_USER_FI← '.∆F'                                   ⍝ User parameters, rel. to Apl ]CD
-  LIB_SRC_FI←  '∆F/LibUtils.aplns'                     ⍝ Library shortcuts (£,  `L) utilities.
+  LIB_USER_FI← '.∆F'                    ⍝ User parameters, rel. to Apl ]CD
+  LIB_SRC_FI←  '∆F/LibUtils.aplns'      ⍝ Library shortcuts (£,  `L) utilities.
 ⍝ HELP FILE          
 ⍝ File is loaded into FString at load-time for use by ∆F⍨'help'. 
   HELP_HTML_FI← '∆F/Help.html'                       
@@ -121,8 +103,8 @@
 ⍝ VARIABLES FOR ∆F OPTIONS: Positional and keyword 
 ⍝ See also globals: VERBOSE_RUNTIME, INLINE_DEF 
 ⍝ =======================================================================
-  OPTS_KW←      ↑'dfn' 'verbose'        'box' 'auto' 'inline'      'cache'        ⍝ In order 
-  OPTS_DEFval←    0    VERBOSE_RUNTIME   0     1      INLINE_DEF    1             ⍝ In order
+  OPTS_KW←      ↑'dfn' 'verbose'        'box' 'auto' 'inline'      'cache' ⍝ In order 
+  OPTS_DEFval←    0    VERBOSE_RUNTIME   0     1      INLINE_DEF    1 ⍝ In order
 
 ⍝ OPTS_DEFns: The defaults in namespace form. Treat as a read-only object.
   OPTS_DEFns← ()⎕VSET OPTS_KW OPTS_DEFval
@@ -130,12 +112,30 @@
 ⍝ KEEP_SRC_CM: Are source comments maintained in runtime ns's FString and FString.libUtils?
   KEEP_SRC_CM← 0 
 
-  FS_CACHE_ENABLED← 1          ⍝ Can also be turned off for a particular ∆F call: (cache: 0)
+  FS_CACHE_ENABLED← 1                   ⍝ Can also be turned off for a particular ∆F call: (cache: 0)
 ⍝ Fstring argument cache MAX and KEEP. KEEP is how many to keep when max number of elements 
 ⍝ in the f-string cache is exceeded.  Be sure FSTR_CACHE_KEEP << FSTR_CACHE_MAX. 
   FS_CACHE_MAX←   100
   FS_CACHE_KEEP←   50
 
-⍝ Returns 20 if Dyalog 20, 19 if 19. (This version requires Dyalog 20 or later)
-  APL_VERSION← ⊃⊃⌽'.'⎕VFI 1⊃'.' ⎕WG 'APLVersion' 
-:EndNamespace ⍝ ⍙FGlobals
+⍝ SIGNAL_LIB_ERRS: Affects £.nm and `L.nm constructions. See LibUtils.aplns.
+⍝ - If SIGNAL_LIB_ERRS← 1
+⍝   always ⎕SIGNAL any actual internal library search error (e.g. OBJECT NOT FOUND ON SEARCH PATH),
+⍝   even if the ∆F code containing any missing or invalid object is not executed! 
+⍝        |      (verbose:0)∆F'{0: £.pcox 12 ⋄ 3}'
+⍝        |  ∆F DOMAIN ERROR: Object "pcox" not found on search path                       
+⍝ - If SIGNAL_LIB_ERRS← 0
+⍝   1a.  If (verbose: 1) or (VERBOSE_RUNTIME=1) 
+⍝        report library (£) autoload errors ONLY as informational messages.  
+⍝        |     (verbose:1)∆F'{0: £.pcox 12 ⋄ 3}'
+⍝        |  ∆F DOMAIN ERROR: Object "pcox" not found on search path
+⍝        | { ⎕SE.FString.M ⌽⍬({0: (⎕SE.FString.userLibrary).pcox 12 ⋄ 3}⍵)}⍵
+⍝        |  3                                  ⍝ <== function string executed normally!
+⍝   1b.  If (verbose: 0) and (VERBOSE_RUNTIME=0) 
+⍝        no informational messages are generated.
+⍝   2.   If the ∆F code containing any missing object is executed,
+⍝        APL will signal the expected APL error (typically as a VALUE ERROR) 
+⍝        |      (verbose:0)∆F'{0:: £.pcox 12 ⋄ 3}'
+⍝        |  3
+  SIGNAL_LIB_ERRS← 0 
+:EndNamespace                           ⍝ ⍙FGlobals
