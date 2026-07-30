@@ -1,9 +1,10 @@
-⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-07-29') 
+⍝ ∆FLibUtils.dyalog      (UPDATE_TIME: '2026-07-30') 
 :Namespace libUtils
 ⍝ ===================================================================================
 ⍝ This namespace handles Library (£ or `L) shortcut automatic loading.
-⍝ See also LIB_PARM_FI ('./∆FParmDefs.apla') for customized library parameters.
 ⍝ *** It handles NOTHING ELSE ***
+⍝
+⍝ See also LIB_PARM_FI ('./∆FParmDefs.apla') for customized library parameters.
 ⍝ See sections for...
 ⍝ a. Runtime Routines 
 ⍝    (services used when an £ or `L is seen in the user's code field), and
@@ -48,22 +49,22 @@
 ⍝   That awaits a fresh reload of ∆F (whether by ]load or ⎕FIX).
   LibNoAuto← {ûLibTok} 
   LibAuto←{      
-    ~⍺.auto:                 ûLibTok                        ⍝ Not auto? →Return.
-        w← NoLB ⍵                                           ⍝     Skip blanks
-    '.'≠ ⊃w:                 ûLibTok                        ⍝ No initial period? →Return.
-        w← NoLB 1↓w                                         ⍝     Skip more blanks,
-        len← NmSpan w                                       ⍝     Grab the apparent name and length.
-        nm← len↑ w                                          ⍝      
-    nm⊂⍛∊ ⍺.lîbObjs:         ûLibTok                        ⍝ Saw it before? →Return.
-        ⍺.lîbObjs,← ⊂nm                                     ⍝     Mark as seen (even if invalid)
-    0≠ ûLib.⎕NC nm:          ûLibTok                        ⍝ In library (>1) or invalid name (-1)? →Return.
-        w← len↓w                                            ⍝     Skip the name.
-    '←'= ⊃w~ '∘ ':           ûLibTok                        ⍝ If assignment, →Return.
-        _← ⍺ LoadObj nm                                     ⍝ Try to load obj definition
-                             ûLibTok                        ⍝ →Return.                                       
+    ~⍺.auto:                 ûLibTok             ⍝ Not auto? →Return.
+        w← NoLB ⍵                                ⍝     Skip blanks
+    '.'≠ ⊃w:                 ûLibTok             ⍝ No initial period? →Return.
+        w← NoLB 1↓w                              ⍝     Skip more blanks,
+        len← NmSpan w                            ⍝     Grab the apparent name and length.
+        nm← len↑ w                               ⍝      
+    nm⊂⍛∊ ⍺.lîbObjs:         ûLibTok             ⍝ Saw it before? →Return.
+        ⍺.lîbObjs,← ⊂nm                          ⍝     Mark as seen (even if invalid)
+    0≠ ûLib.⎕NC nm:          ûLibTok             ⍝ In library (>1) or invalid name (-1)? →Return.
+        w← len↓w                                 ⍝     Skip the name.
+    '←'= ⊃w~ '∘ ':           ûLibTok             ⍝ If assignment, →Return.
+        _← ⍺ LoadObj nm                          ⍝ Try to load obj definition
+                             ûLibTok             ⍝ →Return.                                       
   } 
   ⍝ Support Fns: NoLB, NmSpan
-    NoLB← {(∨\' '≠⍵)/⍵}                                     ⍝ Fast Idiom. 
+    NoLB← {(∨\' '≠⍵)/⍵}                          ⍝ Fast Idiom. 
     ⍝ NmSpan: Find longest left-anchored span of symbols valid in APL simple user names.
     ⍝         We ensure the sequence is an actual valid name in a later step (see above).
     ⍝         For the fast span, it just needs to include all chars that appear in valid simple names.
@@ -115,28 +116,28 @@
     ⍝ ∘ Other errors reported as rcER. 
     ⍝ ∘ aplv - char vec with newlines, aplvv or txt - vec of char vecs, aplm - char mx
       SubScanFiles← {   
-        0= ≢⍵: rcNF ⍬ ⋄ 22 11:: rcER ⍬⊣ êDMX⊢←⎕DMX          ⍝ 22: FILE NAME ERROR
+        0= ≢⍵: rcNF ⍬ ⋄ 22 11:: rcER ⍬⊣ êDMX⊢←⎕DMX ⍝ 22: FILE NAME ERROR
         fi← ⊃⍵       
         ~⎕NEXISTS fi: ∇ 1↓⍵ 
         FixByType← { 
           sfx← ⊂⊃⌽⎕NPARTS fi← ⍵  
           ⍝ When ⎕FIX is applied to ¨fi¨, ¨êNm¨ must be among the names listed as ⎕FIXed.  
-          IfF sfx:  rcEN rcOK⊃⍨ êNm⊂⍛∊ êNms⊢← 2 ûLib.⎕FIX _FOpts êErrFi⊢←fi  ⍝ See below 
-          IfA sfx:  rcOK⊣ ûLib ⎕VSET ⊂êNm (AN2Apl ⊃⎕NGET fi 1)    ⍝   ...
-          IfJ sfx:  rcOK⊣ ûLib ⎕VSET ⊂êNm (⎕JSON _JOpts ⊃⎕NGET fi 0)     ⍝   ...
-          IfT sfx:  rcOK⊣ ûLib ⎕VSET ⊂êNm (⊃⎕NGET fi (OptT sfx)) ⍝   ...
-                    rcEN rcOK⊃⍨ êNm⊂⍛∊ êNms⊢← êNm FixOrAssign fi ⍝ Any other suffix                    
+          IfF sfx:  rcEN rcOK⊃⍨ êNm⊂⍛∊ êNms⊢← 2 ûLib.⎕FIX _FOpts êErrFi⊢←fi ⍝ See below 
+          IfA sfx:  rcOK⊣ ûLib ⎕VSET ⊂êNm (AN2Apl ⊃⎕NGET fi 1) ⍝   ...
+          IfJ sfx:  rcOK⊣ ûLib ⎕VSET ⊂êNm (⎕JSON _JOpts ⊃⎕NGET fi 0)  ⍝   ...
+          IfT sfx:  rcOK⊣ ûLib ⎕VSET ⊂êNm (⊃⎕NGET fi (OptT sfx))   ⍝   ...
+                    rcEN rcOK⊃⍨ êNm⊂⍛∊ êNms⊢← êNm FixOrAssign fi   ⍝ Any other suffix                    
         }
         (FixByType fi) ('file:"',fi,'"')         
       } 
     ⍝ IfF, etc.: Type tests for FixByType (above); OptT: Option for ⎕NGET for type <t>
               t0← '.aplf' '.aplo' '.apln' '.dyalog'
-      IfF←    ∊∘t0                                          ⍝ ⎕FIXable obj.
-      IfA←    ≡∘⊂∘'.apla'                                   ⍝ APLAN obj.
-      IfJ←    ≡∘⊂∘'.json'                                   ⍝ JSON obj
+      IfF←    ∊∘t0                               ⍝ ⎕FIXable obj.
+      IfA←    ≡∘⊂∘'.apla'                        ⍝ APLAN obj.
+      IfJ←    ≡∘⊂∘'.json'                        ⍝ JSON obj
               t1←'.txt' '.aplv' '.aplvv' '.aplm'
-      IfT←    ∊∘t1                                          ⍝ char. obj (vec+nl, vec+nl, vv, m)  
-      OptT←   ⌷∘0 0 1 2 (t1∘⍳)                              ⍝ ⎕NGET as target type
+      IfT←    ∊∘t1                               ⍝ char. obj (vec+nl, vec+nl, vv, m)  
+      OptT←   ⌷∘0 0 1 2 (t1∘⍳)                   ⍝ ⎕NGET as target type
     ⍝           ↑ ↑ ↑ ↑__ mx
     ⍝           | | |____ vec of vec
     ⍝           |_|______ vec w/ LF (⎕UCS 10) 
@@ -148,8 +149,8 @@
     ⍝ If it fails due to 19/11, try reading <fi> as an array notation object, assigning its value to <nm>.
       ⍝ 19: FILE ACCESS ERROR (⎕FIX/⎕NGET). 11: ERROR ⎕FIXING object contents.
       FixOrAssign← { 
-        19 11:: ⍺⊂⍛⊣ ûLib ⎕VSET ⊂⍺ (AN2Apl ⊃⎕NGET ⍵ 1)      ⍝ Array Notation? Assign value to ⍺.
-          2 ûLib.⎕FIX _FOpts êErrFi⊢← ⍵                     ⍝ Fixable object? Return what ⎕FIX returns.
+        19 11:: ⍺⊂⍛⊣ ûLib ⎕VSET ⊂⍺ (AN2Apl ⊃⎕NGET ⍵ 1)   ⍝ Array Notation? Assign value to ⍺.
+          2 ûLib.⎕FIX _FOpts êErrFi⊢← ⍵          ⍝ Fixable object? Return what ⎕FIX returns.
       }
       
     ⍝ SubScanWS:     
@@ -182,8 +183,8 @@
     ⍝   - Otherwise (rcOK or rcER), return from ScanPath.
       ScanPath← {  
         0= ≢⍵: rcNF ⍬ ⋄ path← ⍵ ⋄ cur← ⊃path
-        1< |≡cur: path SubScanWS cur                        ⍝ If VCV, => at least 1 workspace.    
-          ff← ,(⊂cur)∘.,(⊂êNm),¨pârms.suffix                ⍝ cur is a CV. Generate ff, list of files.  
+        1< |≡cur: path SubScanWS cur             ⍝ If VCV, => at least 1 workspace.    
+          ff← ,(⊂cur)∘.,(⊂êNm),¨pârms.suffix     ⍝ cur is a CV. Generate ff, list of files.  
           rcNF≠⊃ret← SubScanFiles ff: ret 
           ∇ 1↓path                       
       }
@@ -202,7 +203,7 @@
         (~êVerbose)∧ rc= rcOK: rc ⋄ (srcFi dest)← ⍵  
           qNms← '"',⍨ 3↓ ∊(êNm⊂⍛, êNms~ ⊂êNm),⍨¨⊂'", "' 
         rc=rcOK: rc⊣ ⎕← '∆F: Copied ', qNms, ' into £ibrary',(0≠ ≢srcFi)/ ' from ',srcFi
-          Ê← rc∘{                                           ⍝ Error msgs, either signaled or simply reported.
+          Ê← rc∘{ ⍝⍝ Error msgs, either signaled or simply reported.
             en message← ⍵ 
             libE: ⎕SIGNAL ⊂('EN' en) ('Message' message)('EM') 
             ~êVerbose: ⍺ ⋄ ⍺⊣ ⎕← ('∆F ',⎕EM en),': ',message   
@@ -216,10 +217,10 @@
     ⍝   Executive for LoadObj 
     ⍝   ===========================================================================
     ⍝ extern: ûLib, pârms.
-      ûsr← ⍺                                                ⍝ ûsr - From the ∆F runtime code. => ns.  
-      êNms← ,⊂êNm← ⍵                                        ⍝ êNm - always => CV. êNms - always => VCV, initialliy ,⊂êNm.  See ScanPath.
-      êDMX← ⍬                                               ⍝ Set in SubScanFiles; ref'd in EndScan only. => ⍬|ns
-      êErrFi← ''                                            ⍝ Referenced in EndScan only...   => CV.
+      ûsr← ⍺                                     ⍝ ûsr - From the ∆F runtime code. => ns.  
+      êNms← ,⊂êNm← ⍵                             ⍝ êNm - always => CV. êNms - always => VCV, initialliy ,⊂êNm.  See ScanPath.
+      êDMX← ⍬                                    ⍝ Set in SubScanFiles; ref'd in EndScan only. => ⍬|ns
+      êErrFi← ''                                 ⍝ Referenced in EndScan only...   => CV.
       êVerbose← ∨/ (ûsr pârms).verbose  
       ⍝ Return codes: 
       ⍝   rcOK (êNm found and loaded), 
@@ -230,7 +231,7 @@
     ⍝ êVerbose: READ in SubScanFiles and EndScan 
       rc where← ScanPath pârms.⍙fullPath 
     1: _← rc ##.SIGNAL_LIB_ERRS EndScan where ûLib  
-  }                                                         ⍝ End LoadObj 
+  }                                              ⍝ End LoadObj 
 
 :EndSection Runtime Routines 
 
@@ -244,12 +245,12 @@
 ⍝      actual ref is typically ##.userLibrary, local ref (alias): ûLib, local name: ûLibNm.
 ⍝ Returns: ûLib, ûLibNm, ûLibTok← libRef libTok libNm
   MakeLibActive← {
-    libRef← ⍵                                               ⍝ Get library reference
-    _← libRef.⎕DF ⎕NULL                                     ⍝ Be sure default display form
-    libNm← ⍕libRef                                          ⍝ Save default ⎕DF as name
-    libTok← libNm, ' '                                      ⍝ ... and as a special token
-    _← libRef.⎕DF '£=[',libNm,' ⋄ auto: 1]'                 ⍝ Set user-friendly display form
-    libRef libNm libTok                                     ⍝ Return ref, name, token 
+    libRef← ⍵                                    ⍝ Get library reference
+    _← libRef.⎕DF ⎕NULL                          ⍝ Be sure default display form
+    libNm← ⍕libRef                               ⍝ Save default ⎕DF as name
+    libTok← libNm, ' '                           ⍝ ... and as a special token
+    _← libRef.⎕DF '£=[',libNm,' ⋄ auto: 1]'      ⍝ Set user-friendly display form
+    libRef libNm libTok                          ⍝ Return ref, name, token 
   }
 
 ⍝ LoadParms: Load default and user pârms for Library processing. (A .∆F LOAD TIME utility)
@@ -275,28 +276,28 @@
 ⍝   LoadErr 
 ⍝   _VShowParms 
   LoadParms← { 
-    ⍺← pârms ⋄ parms attr← ⍺ ⍵                              ⍝ Extern: pârms 
+    ⍺← pârms ⋄ parms attr← ⍺ ⍵                   ⍝ Extern: pârms 
     kw←  ↑'verbose' 'compact' 'runtime'
     verbose compact runtime← attr ⎕VGET kw 0
-    baseP←(                                                 ⍝ Define baseline parms  
-          ⍙readParms: 0 0                                   ⍝ (in case nothing else is valid)
+    baseP←(                                      ⍝ Define baseline parms  
+          ⍙readParms: 0 0                        ⍝ (in case nothing else is valid)
           auto:       0
           path:       ⍬
           prefix:     ⍬
           suffix:     ⍬
           verbose:    ##.VERBOSE_RUNTIME
     )           
-    _← parms ⎕NS baseP                                      ⍝ Copy baseP into parms                            
+    _← parms ⎕NS baseP                           ⍝ Copy baseP into parms                            
     LPMain← {
-      ##.LIB_AUTO= 0: 0                                     ⍝ LIB_AUTO turned off? DO nothing
-        rc← LoadDefaultParms ##.LIB_PARM_FI parms           ⍝ Get default parms
-      0= rc: 0                                              ⍝ Failed on default parms? Return...
-        rc← LoadUserParms ##.LIB_USER_FI parms runtime      ⍝ Get user parms
-      0= rc: 0                                              ⍝ Failed on user parms? Return  
+      ##.LIB_AUTO= 0: 0                          ⍝ LIB_AUTO turned off? DO nothing
+        rc← LoadDefaultParms ##.LIB_PARM_FI parms ⍝ Get default parms
+      0= rc: 0                                   ⍝ Failed on default parms? Return...
+        rc← LoadUserParms ##.LIB_USER_FI parms runtime   ⍝ Get user parms
+      0= rc: 0                                   ⍝ Failed on user parms? Return  
         EvalPath←{                   
-            hasPath← ~0∊ ≢¨parms.(prefix path)              ⍝ Do we have a non-null path?                  
-          hasPath: parms.⍙fullPath← GenFullPath parms       ⍝ ... Yes: Generate and Return.
-            parms.⍙fullPath← ⍬                              ⍝ ... No: Complain.
+            hasPath← ~0∊ ≢¨parms.(prefix path)   ⍝ Do we have a non-null path?                  
+          hasPath: parms.⍙fullPath← GenFullPath parms  ⍝ ... Yes: Generate and Return.
+            parms.⍙fullPath← ⍬                   ⍝ ... No: Complain.
             emptyÊ← 'The user parameter file specifies an empty search path.'
             verbose parms LoadErr emptyÊ
         } 
@@ -316,12 +317,12 @@
   ⍝ These are the default APL Array Notation settings: format ok whether Dyalog 20 or earlier.
   ⍝ User can override in  ##.LIB_USER_FI (.∆F), also in APLAN format. 
     LoadDefaultParms← { fi parms← ⍵ 
-        parms.⍙readParms[0]← 0                              ⍝ Default: failure to read from defaults
+        parms.⍙readParms[0]← 0                   ⍝ Default: failure to read from defaults
       2 6 11::  0⊣ 0 parms LoadErr 'Default parameter file "',fi,'" has errors'
       ~⎕NEXISTS fi: 0⊣ fi Err 'does not exist'
           _← parms ⎕NS AN2Apl ⊃⎕NGET fi 1  
           parms.verbose← (⍬ ⎕NULL∊⍨ ⊂parms.verbose)⊃ parms.verbose ##.VERBOSE_RUNTIME 
-      1: parms.⍙readParms[0]←1                              ⍝ Success: we read from defaults
+      1: parms.⍙readParms[0]←1                   ⍝ Success: we read from defaults
     } 
   ⍝ LoadUserParms: Loadtime routine
   ⍝    success@B← ∇ parmFi@S parms@ns isRun@B
@@ -342,7 +343,7 @@
         warn← '∆F ❗❗❗ ∆F LIB. WARNING: ' 
         availmsg← (⊂'Library Autoload is '),¨ 'not available' 'available',¨'' ' with default parameters.'
         _← { 0=≢⍵: ⍬ ⋄ ⊢⎕← warn, ⍵ }¨ msg ⎕DMX.Message (isUsrP⊃ availmsg)    
-        ⎕THIS.(LibAuto← LibNoAuto)                          ⍝ No Auto function!
+        ⎕THIS.(LibAuto← LibNoAuto)               ⍝ No Auto function!
         parms.(auto ⍙readParms← 0 (0 0))  
       1: _← 0 
     }
@@ -351,8 +352,8 @@
       Iterate← { 
         0=≢⍵: ⍺ 
           p← ⊂⊃⍵ 
-        2<|≡p: (⍺, p) ∇ 1↓⍵                                 ⍝ workspace
-          (⍺, ,p∘., '/'∘., pfx) ∇ 1↓⍵                       ⍝ file 
+        2<|≡p: (⍺, p) ∇ 1↓⍵                      ⍝ workspace
+          (⍺, ,p∘., '/'∘., pfx) ∇ 1↓⍵            ⍝ file 
       } 
       pfx path← ⍵.(prefix path)
       ⍬ Iterate path  
@@ -365,8 +366,8 @@
       ~⎕NEXISTS parmFi: 0 
       0:: 0⊣ 1 parms LoadErr '∆F ReadUserParms Failed, but error was not trapped'
       2 6 11:: 0⊣  1 parms LoadErr 'User parameter file "', parmFi,'" has errors: ',⎕DMX.EM  
-        _← parms ⎕NS AN2Apl ⊃⎕NGET parmFi 1                 ⍝ Merge parm file into internal defaults
-      1⊣ parms.⍙readParms[1]← 1                             ⍝ Set read flag to 1 and return 1.
+        _← parms ⎕NS AN2Apl ⊃⎕NGET parmFi 1      ⍝ Merge parm file into internal defaults
+      1⊣ parms.⍙readParms[1]← 1                  ⍝ Set read flag to 1 and return 1.
     } 
   ⍝ Handle special-case values for  verbose, prefix, auto, path, suffix
   ⍝ ∘ If any parm in namespace ⍵ found in (⊃¨⍺) has value ⎕NULL or ⍬, 
@@ -403,8 +404,8 @@
 
 ⍝ =========================================================================
 ⍝ EXECUTIVE
-  ûLib ûLibNm ûLibTok← MakeLibActive ##.userLibrary         ⍝ Get "globals": ûLib ûLibTok ûLibNm
-  'pârms' ⎕NS ⍬                                             ⍝ Create global parameters <pârms>
-  LoadParms ()                                              ⍝ Load the library parameters...
+  ûLib ûLibNm ûLibTok← MakeLibActive ##.userLibrary ⍝ Get "globals": ûLib ûLibTok ûLibNm
+  'pârms' ⎕NS ⍬                                  ⍝ Create global parameters <pârms>
+  LoadParms ()                                   ⍝ Load the library parameters...
 :EndSection Loadtime Routines
-:EndNamespace                                               ⍝ libUtils
+:EndNamespace                                    ⍝ libUtils

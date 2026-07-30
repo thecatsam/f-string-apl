@@ -591,10 +591,42 @@
   ⍝ Display
     Ð← {0∘⎕SE.Dyalog.Utils.disp¯1∘↓⍵}
   ⍝ Format        
-    F← ⎕FMT                 
+    F← ⎕FMT 
+  ⍝ G: GetUrlText
+  ⍝   lines@CVV ← [⍺←1] ∇ url 
+  ⍝   Retrieve URL ⍵ (assumes default 'https://' prefix, if prefix is omitted)
+  ⍝   If ⍺=1, remove all html and scripts and return lines as a vector of CVs.
+  ⍝   Otherwise return lines raw.
+    G←{  
+      ⍺← 1 
+      pats repl←↓⍉↑(
+          '<script[^>]*>.*?</script[^>]*>' ''
+          '<style[^>]*>.*?</style[^>]*>'   ''
+          '<!-{0,2}.*?-->'                 ''
+          '<[^>]+>'   ''
+          '&amp;'     '&'
+          '&lt;'      '<'
+          '&gt;'      '>'
+          '&quot;'    '"'
+          '&nbsp;'    ' '
+      )
+      _Opts←⍠('Mode' 'M')('DotAll' 1)
+      GetRaw←{  
+          url← { ⍵,⍨ 'https://'/⍨~1∊'://'⍷⍵ } ⍵
+          rec← (⎕SE.SALT.Load'HttpCommand').Get url
+        rec.rc=  0: rec.Data 
+        rec.rc= ¯1: ⎕SIGNAL ⊂('EN' 11)('Message' 'Invalid URL')
+          ⎕SIGNAL ⊂('EN' 11)('Message' 'Unable to find URL')
+      }
+      Repl←pats ⎕R repl _Opts
+      Split← (⎕UCS 10 13)∘((~∊⍨)⊆⊢)
+      NoDup←'(\R\h*$)+'⎕R'\n'_Opts
+      raw← GetRaw ⍵ 
+    ⍺=0: raw ⋄ NoDup Split Repl raw 
+  }                
   ⍝ Justify
     J← {
-        ⎕PP←34 ⋄ 
+        ⎕PP←34 
         ⍺←'L'⋄B←{+/∧\' '=⍵}
         w⌽⍨(1⎕C⍺) { o← ⊂⍺                                     ⍝ Treat ⍺ as a scalar.
           o∊'L'¯1:B ⍵
@@ -660,7 +692,7 @@
 ⍝ At ⎕FIX time, load the run-time userLibrary names and code for user Shortcuts
 ⍝ and similar code (Ð, display, is used internally, so not a true user shortcut).
 ⍝ The userLibrary entries created in ∆Fapl are: 
-⍝  ∘  for shortcuts:    A, B, C, F, Q, T, W                   ⍝ T supports `T, `D
+⍝  ∘  for shortcuts:    A, B, C, F, G, Q, T, W                   ⍝ T supports `T, `D
 ⍝  ∘  used internally:  M, Ð.
 ⍝ A (etc): a dfn
 ⍝ scA (etc): [0] local absolute name of dfn (with spaces), [1] its code              
@@ -670,6 +702,7 @@
 ⍝ C       [⍺]COMMAS       ambi       `C                Add commas (⍺[1]) to numbers every 3 (⍺[0]) digits R-to-L
 ⍝ Ð       DISPLAY ⍵       dyadic                       Var Ð only used internally...
 ⍝ F       [⍺]FORMAT ⍵     ambi       `F, $             ⎕FMT.   Std is $
+⍝ G       GETURL ⍵        monadic    `G                Get URL (https:// prefix assumed by default)
 ⍝ J       [⍺]JUSTIFY ⍵    ambi       `J                justify rows of ⍵. ⍺←'l'. ⍺∊'lcr' left/ctr/rght.
 ⍝ -       LIBRARY         niladic     £, `L            £.nm1 (etc) handled in line (ad hoc) 
 ⍝ M       [⍺]MERGE ⍵      ambi                         Var M only used internally...
@@ -678,7 +711,7 @@
 ⍝ T       [⍺]DATE-TIME ⍵  ambi       `T, `D            Format ⍵, 1 or more timestamps, acc. to ⍺.
 ⍝ W       [⍺1 ⍺2]WRAP ⍵   ambi       `W                Wrap ⍵ in decorators, ⍺1 ⍺2.  ⍺←''''. See doc.
 ⍝
-⍝ For A, B, C, D, F, J, M, Q, T, W; all like A example shown here:
+⍝ For A, B, C, D, F, G, J, M, Q, T, W; all like A example shown here:
 ⍝     A← an executable dfn in this namespace (⎕THIS).
 ⍝     scA2← name codeString, where
 ⍝           name is ∆THIS,'.A'
@@ -720,14 +753,14 @@
           1: ⎕← '∆F ', flag, ' Future feature ', ('not '/⍨ ~enabled), 'available: ',details
         }¨⍣v⊢ grps 
 
-      ⍝ User-callable functions:          A  B  C  D  F  J  Q  S  T  W 
+      ⍝ User-callable functions:          A  B  C  D  F  G J  Q  S  T  W 
       ⍝                                   L (handled ad hoc); D (synonym to T)
       ⍝ ∆F-internal (non-user) funtions:  Ð  M
       ⍝ Others (if enabled) 
       ⍝    CircleDiaeresis, Select, Ellipsis: called only via symbol "⍥, ⊇, …"  
 
     ⍝ Shortcuts: (name code). Passed outside this fn via returned value <shortcuts>
-      scA2 scB2 scC2 scJ2 scM2 scQ2 scS2 scT2 scW2 ← CPublish¨ 'ABCJMQSTW' 
+      scA2 scB2 scC2 scG2 scJ2 scM2 scQ2 scS2 scT2 scW2 ← CPublish¨ 'ABCGJMQSTW' 
       scÐ2←   '0∘⎕SE.Dyalog.Utils.disp¯1∘↓' CPublish 'Ð'     
       scF2←   2⍴⊂ ' ⎕FMT ' 
       scCD2 scEl2← (cdNm cd) (elNm el) CPublish⍨¨ cdFut elFut 
@@ -735,9 +768,9 @@
       
     ⍝ Using shortcut namespace in ∆F routines. 
     ⍝ Members: byMap, byVar, len, Map.
-      scMappable← 'ABCDFJQSTW'                                ⍝ D points to scT2 
-      shortcuts← (                                            ⍝        A    B     C     D    F    J    Q    S    T    W  ∊ scMappable 
-        byMap:         ↓⍉↑scA2 scB2  scC2  scT2 scF2 scJ2 scQ2 scS2 scT2 scW2  
+      scMappable← 'ABCDFGJQSTW'                                ⍝ D points to scT2 
+      shortcuts← (  ⍝⍝      A    B    C    D    F    G    J    Q    S    T    W  ∊ scMappable 
+        byMap:         ↓⍉↑scA2 scB2 scC2 scT2 scF2 scG2 scJ2 scQ2 scS2 scT2 scW2  
         len: ≢scMappable
         byVar:  0 1⊃¨ ⊂↓⍉↑scA2 scCD2 scEl2 scÐ2 scF2 scM2 scSel2  
       )

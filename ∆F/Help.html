@@ -1131,6 +1131,13 @@ Shortcuts</strong></caption>
 <td style="text-align: justify;"><code>⍺ ⎕FMT ⍵</code>.</td>
 </tr>
 <tr>
+<td style="text-align: justify;"><strong>`G</strong></td>
+<td style="text-align: center;">GetURL</td>
+<td style="text-align: center;"><code>[⍺]`G ⍵</code></td>
+<td style="text-align: justify;">Get url at ⍵, either raw or
+<em>cooked</em> (default).</td>
+</tr>
+<tr>
 <td style="text-align: justify;"><strong>`J</strong></td>
 <td style="text-align: center;">Justify</td>
 <td style="text-align: center;"><code>[⍺]`J ⍵</code></td>
@@ -2456,6 +2463,15 @@ formats numbers to the left of an optional decimal point.</small></td>
 <td style="text-align: center;"><code>[⍺] $ ⍵</code></td>
 <td style="text-align: justify;">Short for <code>[⍺] ⎕FMT ⍵</code>. (See
 <em>APL</em> doc­ument­ation).</td>
+</tr>
+<tr>
+<td style="text-align: justify;"><strong>`G</strong></td>
+<td style="text-align: center;">GetURL</td>
+<td style="text-align: center;"><code>[⍺]`G ⍵</code></td>
+<td style="text-align: justify;">Return text at url <code>⍵</code> as a
+vector of character vectors.<br> (⍺=1) Return <em>user</em> text only
+(default).<br> (⍺=0) Return <em>raw</em> text. <br><code>⍵</code> by
+default has prefix <code>htpps://</code>.</td>
 </tr>
 <tr>
 <td style="text-align: justify;"><strong>`J</strong></td>
