@@ -49,7 +49,14 @@
   ⍝   If ⍺=1, remove all html and scripts and return lines as a vector of CVs.
   ⍝   Otherwise return lines raw.
     G←{  
-      ⍺← 1 
+          ⍺← 1 
+    ⍝  Loads HttpCommand (creates namespace) when first used...
+      LoadHttp← {  
+        0:: ⎕SIGNAL ⊂(
+          'EN' 11 ⋄ 'Message' 'Http Commands are unavailable'
+        )      
+          ⎕SE.SALT.Load 'HttpCommand' 
+      } 
       pats repl←↓⍉↑(
           '<script[^>]*>.*?</script[^>]*>' ''
           '<style[^>]*>.*?</style[^>]*>'   ''
@@ -63,8 +70,9 @@
       )
       _Opts←⍠('Mode' 'M')('DotAll' 1)
       GetRaw←{  
-          url← { ⍵,⍨ 'https://'/⍨~1∊'://'⍷⍵ } ⍵
-          rec← (⎕SE.SALT.Load'HttpCommand').Get url
+          FullUrl← { ⍵,⍨ 'https://'/⍨~1∊'://'⍷⍵ } 
+        9≠ ⎕NC 'HttpCommand': ∇ ⍵ ⊣ LoadHttp⍬
+          rec← HttpCommand.Get FullUrl ⍵
         rec.rc=  0: rec.Data 
         rec.rc= ¯1: ⎕SIGNAL ⊂('EN' 11)('Message' 'Invalid URL')
           ⎕SIGNAL ⊂('EN' 11)('Message' 'Unable to find URL')
@@ -74,7 +82,7 @@
       NoDup←'(\R\h*$)+'⎕R'\n'_Opts
       raw← GetRaw ⍵ 
     ⍺=0: raw ⋄ NoDup Split Repl raw 
-  }                
+  }             
   ⍝ Justify
     J← {
         ⎕PP←34 

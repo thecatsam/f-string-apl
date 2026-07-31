@@ -552,8 +552,10 @@
 :Section Import Shortcuts 
 
 ⍝⍝⍝ Import General Shortcuts `A, etc., from Shortcuts.dyalog
+    HttpCommand← ⎕NULL       ⍝ Will be a namespace after first use (see `G).
     2 ⎕FIX '∆F/Shortcuts.dyalog' 
     F← ⎕FMT 
+  ⍝ Initialise salt in ⎕THIS directory
 
   ⍝ Import Futures
   ⍝ [1] CircleDiaeresis (op)
