@@ -27,11 +27,11 @@
   ⍝          Items omitted in the left arg will have their defaults: 3 ","
     C←{ 
       ⎕IO ⎕ML←0 1 ⋄ nd← ≢def← 3 ',' ⋄ ⍺← def 
-      Opt← ⍕¨{                                                ⍝ Get options; def=defaults, o=options (⍺) 
-        o←⍵ ⋄ isN← (⎕D∊⍨ ⊃o)∨ 0=⊃0⍴o                          ⍝ isN=1 if first option is <a number or digit>
+      Opt← ⍕¨{                              ⍝ Get options; def=defaults, o=options (⍺) 
+        o←⍵ ⋄ isN← (⎕D∊⍨ ⊃o)∨ 0=⊃0⍴o        ⍝ isN=1 if first option is <a number or digit>
         isN: o,(def↑⍨-0⌈nd-≢o) ⋄ (def↑⍨0⌈nd-≢o),⌽o    
       }  
-      Esc← { ⍵≡⍥, '&': '\&' ⋄ ⍵/⍨1+ '\'= ⍵}                   ⍝ Escapes. In case & or \ is the char separator
+      Esc← { ⍵≡⍥, '&': '\&' ⋄ ⍵/⍨1+ '\'= ⍵} ⍝ Escapes. In case & or \ is the char separator
       n s← Opt ⍺
       src← '[.Ee]\d+',⍥⊂ '(?<=\d)(?=(\d{', n, '})+([-¯.Ee]|(?=\s|$)))'
       snk← '&',⍥⊂ '&',⍨ Esc s 
@@ -52,10 +52,9 @@
           ⍺← 1 
     ⍝  Loads HttpCommand (creates namespace) when first used...
       LoadHttp← {  
-        0:: ⎕SIGNAL ⊂(
-          'EN' 11 ⋄ 'Message' 'Http Commands are unavailable'
-        )      
-          ⎕SE.SALT.Load 'HttpCommand' 
+        0:: ⎕SIGNAL ⊂('EN' 11 ⋄ 'Message' 'Http Commands are unavailable')      
+          HttpCommand⊢←()                   ⍝ Make empty ns in case Load fails.
+          ⎕SE.SALT.Load 'HttpCommand'       ⍝ Try load.
       } 
       pats repl←↓⍉↑(
           '<script[^>]*>.*?</script[^>]*>' ''
@@ -87,10 +86,10 @@
     J← {
         ⎕PP←34 
         ⍺←'L'⋄B←{+/∧\' '=⍵}
-        w⌽⍨(1⎕C⍺) { o← ⊂⍺                                     ⍝ Treat ⍺ as a scalar.
+        w⌽⍨(1⎕C⍺) { o← ⊂⍺                   ⍝ Treat ⍺ as a scalar.
           o∊'L'¯1:B ⍵
           o∊'R' 1:-B⌽⍵ 
-          o∊'C' 0: ⌈0.5×⍵-⍥B⌽⍵                                ⍝ If o is invalid, drop off ends of earth.
+          o∊'C' 0: ⌈0.5×⍵-⍥B⌽⍵              ⍝ If o is invalid, drop off ends of earth.
           ⎕SIGNAL ⊂ ('EN' 11) ('Message' 'Shortcut option (⍺) was invalid')
         } w←⎕FMT⍵
     }
